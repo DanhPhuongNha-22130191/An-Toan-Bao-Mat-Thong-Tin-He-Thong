@@ -16,7 +16,9 @@ public class CartDTO {
 	public void addAll(List<CartItemDTO> listItems) {
 		items.addAll(listItems);
 	}
-
+	public double getSubTotal() {
+		return items.stream().mapToDouble(e->e.getTotalPrice()).sum();
+	}
 	public class CartItemDTO {
 		private long productId;
 		private String productName;
