@@ -5,18 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import database.DBConnection;
+
 /**
- * @author minhhien
- * Class dùng để thực hiện query
+ * @author minhhien Class dùng để thực hiện query
  */
-public class ExcuteSQLUtil {
+public class ExecuteSQLUtil {
 	/**
-	 * Phương thức  thực hiện lệnh update, insert, delete
+	 * Phương thức thực hiện lệnh update, insert, delete
+	 * 
 	 * @param query lệnh query
-	 * @param data tham số
+	 * @param data  tham số
 	 * @return true nếu thành công, ngược lại false
 	 */
-	public static boolean excuteUpdate(String query, Object... data) {
+	public static boolean executeUpdate(String query, Object... data) {
 		Connection connect = DBConnection.getConnection();
 		try {
 			PreparedStatement preStatement = connect.prepareStatement(query);
@@ -25,7 +26,7 @@ public class ExcuteSQLUtil {
 			return preStatement.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
-		return false;
 	}
 }
