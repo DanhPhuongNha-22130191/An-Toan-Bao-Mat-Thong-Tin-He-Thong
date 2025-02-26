@@ -16,18 +16,19 @@ public class CartDTO {
 	public void addAll(List<CartItemDTO> listItems) {
 		items.addAll(listItems);
 	}
+
 	public double getSubTotal() {
-		return items.stream().mapToDouble(e->e.getTotalPrice()).sum();
+		return items.stream().mapToDouble(e -> e.getTotalPrice()).sum();
 	}
+
 	public class CartItemDTO {
 		private long productId;
 		private String productName;
 		private String productImg;
 		private double productPrice;
-		private double quantity;
+		private int quantity;
 
-		public CartItemDTO(long productId, String productName, String productImg, double productPrice,
-				double quantity) {
+		public CartItemDTO(long productId, String productName, String productImg, double productPrice, int quantity) {
 			this.productId = productId;
 			this.productName = productName;
 			this.productImg = productImg;
@@ -71,11 +72,11 @@ public class CartDTO {
 			this.productPrice = productPrice;
 		}
 
-		public double getQuantity() {
+		public int getQuantity() {
 			return quantity;
 		}
 
-		public void setQuantity(double quantity) {
+		public void setQuantity(int quantity) {
 			this.quantity = quantity;
 		}
 

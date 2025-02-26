@@ -22,7 +22,7 @@ public class CartDao implements IDao<CartItem, Long[]> {
 	@Override
 	public CartItem getById(Long[] id) {
 		String query = "select * from CartItem where accountId=? and productId=?";
-		ResultSet resultSet = ExecuteSQLUtil.ExcuteQuery(query, id[0], id[1]);
+		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, id[0], id[1]);
 		CartItem cartItem = null;
 		try {
 			if (resultSet.next()) {
@@ -37,7 +37,7 @@ public class CartDao implements IDao<CartItem, Long[]> {
 	@Override
 	public List<CartItem> getAll() {
 		String query = "select * from CartItem";
-		ResultSet resultSet = ExecuteSQLUtil.ExcuteQuery(query, new Object[0]);
+		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, new Object[0]);
 		List<CartItem> listCart = new LinkedList<CartItem>();
 		try {
 			while (resultSet.next()) {
@@ -53,7 +53,7 @@ public class CartDao implements IDao<CartItem, Long[]> {
 
 	public List<CartItem> getCartByAcc(Long id) {
 		String query = "select * from CartItem where accountId=?";
-		ResultSet resultSet = ExecuteSQLUtil.ExcuteQuery(query, id);
+		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, id);
 		List<CartItem> listCart = new LinkedList<CartItem>();
 		try {
 			while (resultSet.next()) {
@@ -65,6 +65,12 @@ public class CartDao implements IDao<CartItem, Long[]> {
 			listCart = null;
 		}
 		return listCart;
+	}
+
+	public boolean updateCart(Long[] id, int quantity) {
+		String query = "update CartItem set quantity=? where accountId=? and productId=?";
+		return ExecuteSQLUtil.executeUpdate(query, quantity, id[0], id[1]);
+
 	}
 
 	@Override
