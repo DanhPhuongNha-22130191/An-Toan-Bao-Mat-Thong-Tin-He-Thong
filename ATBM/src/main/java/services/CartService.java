@@ -41,8 +41,8 @@ public class CartService implements IService<CartItem, Long[]> {
 		return listDTO;
 	}
 
-	public boolean updateCart(CartItemDTO cartItem, long accountId) {
-		Long[] id = new Long[] { accountId, cartItem.getProductId() };
+	public boolean updateCart(CartItem cartItem) {
+		Long[] id = new Long[] {  cartItem.getAccountId(), cartItem.getProductId() };
 		if (cartItem.getQuantity() == 0)
 			return delete(id);
 		else
