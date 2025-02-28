@@ -38,7 +38,7 @@ public class ExecuteSQLUtil {
 	 * @param data  tham số
 	 * @return ResultSet đại diện cho từng dòng giá trị
 	 */
-	public static ResultSet ExcuteQuery(String query, Object... data) {
+	public static ResultSet executeQuery(String query, Object... data) {
 		Connection connect = DBConnection.getConnection();
 		try {
 			PreparedStatement preStatement = connect.prepareStatement(query);

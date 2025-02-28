@@ -1,12 +1,20 @@
 package dto;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import models.Product;
 
 public class CartDTO {
 	private List<CartItemDTO> items;
 
-	public void add(CartItemDTO item) {
-		items.add(item);
+	public CartDTO() {
+		items = new LinkedList<CartDTO.CartItemDTO>();
+	}
+
+	public void add(Product product, int quantity) {
+		items.add(new CartItemDTO(product.getProductId(), product.getName(), product.getImage(), product.getPrice(),
+				quantity));
 	}
 
 	public List<CartItemDTO> getItems() {
@@ -16,9 +24,11 @@ public class CartDTO {
 	public void addAll(List<CartItemDTO> listItems) {
 		items.addAll(listItems);
 	}
+
 	public double getSubTotal() {
-		return items.stream().mapToDouble(e->e.getTotalPrice()).sum();
+		return items.stream().mapToDouble(e -> e.getTotalPrice()).sum();
 	}
+
 	public class CartItemDTO {
 		private long productId;
 		private String productName;

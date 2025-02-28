@@ -18,9 +18,9 @@ public class CartController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		CartDTO dto = new CartDTO();
 		CartService service = new CartService();
-		dto.addAll(service.convertToDTO());
+		long accountId = Long.parseLong(req.getAttribute("accountId").toString());
+		CartDTO dto = service.convertToDTO(accountId);
 		req.setAttribute("cartDTO", dto);
 		req.getRequestDispatcher("").forward(req, resp);
 	}
