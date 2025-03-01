@@ -67,9 +67,10 @@ public class CartDao implements IDao<CartItem, Long[]> {
 		return listCart;
 	}
 
-	public boolean updateCart(Long[] id, int quantity) {
+	@Override
+	public boolean update(CartItem entity) {
 		String query = "update CartItem set quantity=? where accountId=? and productId=?";
-		return ExecuteSQLUtil.executeUpdate(query, quantity, id[0], id[1]);
+		return ExecuteSQLUtil.executeUpdate(query, entity.getQuantity(), entity.getAccountId(), entity.getProductId());
 
 	}
 

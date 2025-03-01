@@ -4,9 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import models.Product;
+import models.Voucher;
 
 public class CartDTO {
 	private List<CartItemDTO> items;
+	private Voucher voucher;
 
 	public CartDTO() {
 		items = new LinkedList<CartDTO.CartItemDTO>();
@@ -27,6 +29,18 @@ public class CartDTO {
 
 	public double getSubTotal() {
 		return items.stream().mapToDouble(e -> e.getTotalPrice()).sum();
+	}
+
+	public double getTotalPrice() {
+		return getSubTotal() - getDiscount();
+	}
+
+	public double getDiscount() {
+		return getSubTotal() * voucher.getPercentDescrease();
+	}
+
+	public void addVoucher(Voucher voucher) {
+		this.voucher = voucher;
 	}
 
 	public class CartItemDTO {

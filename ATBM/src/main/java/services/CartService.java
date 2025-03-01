@@ -52,7 +52,7 @@ public class CartService implements IService<CartItem, Long[]> {
 		if (cartItem.getQuantity() == 0)
 			return delete(id);
 		else
-			return dao.updateCart(id, cartItem.getQuantity());
+			return dao.update(cartItem);
 	}
 
 	@Override
@@ -60,5 +60,6 @@ public class CartService implements IService<CartItem, Long[]> {
 		return dao.delete(id);
 
 	}
+	
 
 }
