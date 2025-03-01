@@ -15,7 +15,7 @@ public class CartDao implements IDao<CartItem, Long[]> {
 
 	@Override
 	public boolean insert(CartItem entity) {
-		String query = "insert from CartItem (accountId,productId,quantity) values (?,?,?)";
+		String query = "insert into CartItem (accountId,productId,quantity) values (?,?,?)";
 		return ExecuteSQLUtil.executeUpdate(query, entity.getAccountId(), entity.getProductId(), entity.getQuantity());
 	}
 

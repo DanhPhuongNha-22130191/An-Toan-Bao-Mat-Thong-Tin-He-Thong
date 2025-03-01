@@ -1,11 +1,11 @@
 package services;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import dao.CartDao;
-import dto.CartDTO.CartItemDTO;
+import dto.CartDTO;
 import models.CartItem;
+import models.Product;
 
 public class CartService implements IService<CartItem, Long[]> {
 	private CartDao dao;
@@ -29,16 +29,18 @@ public class CartService implements IService<CartItem, Long[]> {
 		return dao.getAll();
 	}
 
-	public List<CartItemDTO> convertToDTO() {
-		List<CartItem> cartItems = getAll();
-		List<CartItemDTO> listDTO = new LinkedList<>();
-//		ProductService productService = new ProductService();
-//		for (CartItem cartItem : cartItems) {
-//			Product product = productService.getById(cartItem.getProductId());
-//			listDTO.add(new CartItemDTO(product.getProductId(), product.getProductName(), product.getProductImg(),
-//					product.getProductPrice(), cartItem.getQuantity()));
-//		}
-		return listDTO;
+	public CartDTO convertToDTO(long accountId) {
+		CartDTO dto = new CartDTO();
+		List<CartItem> cartItems = getByAccId(accountId);
+		ProductService productService = new ProductService();
+		for (CartItem cartItem : cartItems) {
+			Product product = productService.getById(cartItem.getProductId());
+			dto.add(product, cartItem.getQuantity());
+		}
+		return dto;
+	}
+	public List<CartItem> getByAccId(long accountId){
+		return dao.getCartByAcc(accountId);
 	}
 
 	public boolean updateCart(CartItem cartItem) {
