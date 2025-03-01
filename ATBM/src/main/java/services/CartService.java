@@ -16,6 +16,9 @@ public class CartService implements IService<CartItem, Long[]> {
 
 	@Override
 	public boolean insert(CartItem entity) {
+		if (getById(new Long[] { entity.getAccountId(), entity.getProductId() }) != null) {
+			return update(entity);
+		}
 		return dao.insert(entity);
 	}
 
@@ -39,12 +42,13 @@ public class CartService implements IService<CartItem, Long[]> {
 		}
 		return dto;
 	}
-	public List<CartItem> getByAccId(long accountId){
+
+	public List<CartItem> getByAccId(long accountId) {
 		return dao.getCartByAcc(accountId);
 	}
-
-	public boolean updateCart(CartItem cartItem) {
-		Long[] id = new Long[] {  cartItem.getAccountId(), cartItem.getProductId() };
+	@Override
+	public boolean update(CartItem cartItem) {
+		Long[] id = new Long[] { cartItem.getAccountId(), cartItem.getProductId() };
 		if (cartItem.getQuantity() == 0)
 			return delete(id);
 		else

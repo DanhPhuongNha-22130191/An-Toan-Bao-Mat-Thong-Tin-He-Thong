@@ -32,7 +32,7 @@ public class CartController extends HttpServlet {
 				StringTokenizer tokens = new StringTokenizer(string, "-");
 				long productId = Long.parseLong(tokens.nextToken());
 				int quantity = Integer.parseInt(tokens.nextToken());
-				service.updateCart(new CartItem(accountId, productId, quantity));
+				service.update(new CartItem(accountId, productId, quantity));
 			}
 		}
 
