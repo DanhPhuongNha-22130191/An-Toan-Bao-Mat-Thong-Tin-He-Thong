@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -60,6 +61,22 @@ public class VoucherDao implements IDao<Voucher, Long> {
 	@Override
 	public boolean update(Voucher entity) {
 		return false;
+	}
+
+	public boolean voucherIsUsed(long accountId, String code) {
+		String query = "select * from UsedVoucher where accountId=? and code=?";
+		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, accountId, code);
+		try {
+			return resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean usingVoucher(long accountId, String code, Date currentDate) {
+		String query = "insert into UsedVoucher (accountId,code,usedAt) values (?,?,?)";
+		return ExecuteSQLUtil.executeUpdate(query, accountId, code, currentDate);
 	}
 
 }
