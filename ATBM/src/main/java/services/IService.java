@@ -10,4 +10,6 @@ public interface IService<T, ID> {
 	List<T> getAll();
 
 	boolean delete(ID id);
+
+	boolean update(T entity);
 }

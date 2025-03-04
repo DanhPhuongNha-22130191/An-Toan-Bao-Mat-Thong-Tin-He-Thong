@@ -1,31 +1,34 @@
 package services;
 
+import dao.ProductDao;
+import models.Product;
 import java.util.List;
 
-import models.Product;
+public class ProductService implements IService<Product, Long> {
+	private ProductDao productDao = new ProductDao();
 
-public class ProductService implements IService<Product, Long>{
 	@Override
-	public Product getById(Long id) {		
-		return null;
+	public boolean insert(Product product) {
+		return productDao.insert(product);
 	}
 
 	@Override
-	public boolean insert(Product entity) {
-		// TODO Auto-generated method stub
-		return false;
+	public Product getById(Long productId) {
+		return productDao.getById(productId);
 	}
 
 	@Override
 	public List<Product> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return productDao.getAll();
 	}
 
 	@Override
-	public boolean delete(Long id) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean delete(Long productId) {
+		return productDao.delete(productId);
 	}
 
+	@Override
+	public boolean update(Product product) {
+		return productDao.update(product);
+	}
 }
