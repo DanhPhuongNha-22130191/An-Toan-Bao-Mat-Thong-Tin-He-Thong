@@ -34,6 +34,9 @@ public class CartDTO {
 		private String productImg;
 		private double productPrice;
 		private int quantity;
+ 
+		public CartItemDTO() {
+		}
 
 		public CartItemDTO(long productId, String productName, String productImg, double productPrice, int quantity) {
 			this.productId = productId;
