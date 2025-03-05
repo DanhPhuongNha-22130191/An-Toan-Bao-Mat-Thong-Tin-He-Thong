@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/styles.css">
 </head>
 <body>
   <!--================ Start Header Menu Area =================-->
@@ -102,21 +103,21 @@
     <section class="section-margin mt-0">
       <div class="owl-carousel owl-theme hero-carousel">
         <div class="hero-carousel__slide">
-          <img src="${pageContext.request.contextPath}/assests/img/home/hero-slide1.png" alt="" class="img-fluid">
+          <img src="${pageContext.request.contextPath}/assests/img/home/qc1.jpeg" alt="" class="img-fluid">
           <a href="#" class="hero-carousel__slideOverlay">
             <h3>Wireless Headphone</h3>
             <p>Accessories Item</p>
           </a>
         </div>
         <div class="hero-carousel__slide">
-          <img src="${pageContext.request.contextPath}/assests/img/home/hero-slide2.png" alt="" class="img-fluid">
+          <img src="${pageContext.request.contextPath}/assests/img/home/w2.jpg" alt="" class="img-fluid">
           <a href="#" class="hero-carousel__slideOverlay">
             <h3>Wireless Headphone</h3>
             <p>Accessories Item</p>
           </a>
         </div>
         <div class="hero-carousel__slide">
-          <img src="${pageContext.request.contextPath}/assests/img/home/hero-slide3.png" alt="" class="img-fluid">
+          <img src="${pageContext.request.contextPath}/assests/img/home/w3.jpg" alt="" class="img-fluid">
           <a href="#" class="hero-carousel__slideOverlay">
             <h3>Wireless Headphone</h3>
             <p>Accessories Item</p>
@@ -154,7 +155,7 @@
           <div class="col-md-6 col-lg-4 col-xl-3">
             <div class="card text-center card-product">
               <div class="card-product__img">
-                <img class="card-img" src="${pageContext.request.contextPath}/assests/img/product/product2.png" alt="">
+                <img class="card-img" src="${pageContext.request.contextPath}/assests/img/product/w1.jpg" alt="">
                 <ul class="card-product__imgOverlay">
                   <li><button><i class="ti-search"></i></button></li>
                   <li><button><i class="ti-shopping-cart"></i></button></li>

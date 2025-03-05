@@ -1,0 +1,26 @@
+@charset "UTF-8";
+.hero-carousel__slide {
+  position: relative;
+  width: 633px;  /* Set fixed width */
+  height: 550px; /* Set fixed height */
+}
+
+.hero-carousel__slide img {
+  width: 100%;     /* Ensures the image fills the width of the container */
+  height: 100%;    /* Ensures the image fills the height of the container */
+  object-fit: cover; /* Ensures the image aspect ratio is maintained while covering the container */
+}
+
+.hero-carousel__slideOverlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: adds overlay for readability */
+  padding: 10px;
+}
+
+.hero-carousel__slide h3, .hero-carousel__slide p {
+  margin: 0;
+}
