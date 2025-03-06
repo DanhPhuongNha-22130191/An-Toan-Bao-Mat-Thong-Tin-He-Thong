@@ -14,29 +14,25 @@ import javax.servlet.http.HttpServletResponse;
 import dto.CartDTO;
 import models.CartItem;
 import services.CartService;
+
 @WebServlet("/user/cart")
 public class CartController extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String action = req.getParameter("action");
-		if ("update".equals(action.toLowerCase())) {
-			updateCart(req, resp);
-		}
-	}
-
-	private void updateCart(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String[] productQuantity = req.getParameterValues("product-quantity");
 		if (productQuantity != null) {
 			CartService service = new CartService();
-			long accountId = Long.parseLong(req.getAttribute("accountId").toString());
+//			long accountId = Long.parseLong(req.getAttribute("accountId").toString());
+			long accountId = 101;
 			for (String string : productQuantity) {
 				StringTokenizer tokens = new StringTokenizer(string, "-");
-				long productId = Long.parseLong(tokens.nextToken());
-				int quantity = Integer.parseInt(tokens.nextToken());
-				service.update(new CartItem(accountId, productId, quantity));
+				if (tokens.countTokens() == 2) {
+					long productId = Long.parseLong(tokens.nextToken());
+					int quantity = Integer.parseInt(tokens.nextToken());
+					service.update(new CartItem(accountId, productId, quantity));
+				}
 			}
 		}
-
 	}
 
 	@Override
