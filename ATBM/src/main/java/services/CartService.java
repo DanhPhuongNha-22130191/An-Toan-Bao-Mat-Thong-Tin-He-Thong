@@ -46,7 +46,6 @@ public class CartService implements IService<CartItem, Long[]> {
 	public List<CartItem> getByAccId(long accountId) {
 		return dao.getCartByAcc(accountId);
 	}
-
 	@Override
 	public boolean update(CartItem cartItem) {
 		Long[] id = new Long[] { cartItem.getAccountId(), cartItem.getProductId() };

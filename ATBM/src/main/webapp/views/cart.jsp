@@ -91,8 +91,9 @@
 								<td></td>
 								<td>
 									<div class="cupon_text d-flex align-items-center">
-										<input type="text" placeholder="Coupon Code"> <a
-											class="primary-btn" href="#">Áp dụng</a>
+										<input type="text" placeholder="Voucher Code"
+											id="voucher-code">
+										<button class="primary-btn" id="voucher-btn">Áp dụng</button>
 									</div>
 								</td>
 							</tr>
@@ -103,7 +104,7 @@
 									<h5>Tổng tiền hàng</h5>
 								</td>
 								<td>
-									<h5>$2160.00</h5>
+									<h5>${cartDTO.subTotal}</h5>
 								</td>
 							</tr>
 							<tr class="shipping_area">
@@ -179,6 +180,28 @@
 	    })
 	    .catch(error => console.error("Lỗi cập nhật:", error));
 	});
+	document.getElementById("voucher-btn").addEventListener("click", function () {
+	    let code = document.getElementById("voucher-code").value;
+	    if(code)
+	    fetch("/ATBM/user/voucher", {  // Đường dẫn Servlet
+	        method: "POST",
+	        headers: {
+	            "Content-Type": "application/x-www-form-urlencoded"
+	        },
+	        body: new URLSearchParams({ "voucher-code": code })
+	    })
+	    .then(response => response.text()) // Nhận kết quả từ server
+	    .then(data => {
+	        if (data.trim() === "1") {  // So sánh với chuỗi "1"
+	            alert("Áp voucher thành công");
+	            location.reload();
+	        } else {
+	            alert("Mã voucher không hợp lệ hoặc đã hết hạn!");
+	        }
+	    })
+	    .catch(error => console.error("Lỗi cập nhật:", error));
+	});
+
 
 	</script>
 </body>

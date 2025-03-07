@@ -1,8 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import dto.CartDTO;
 import models.CartItem;
 import services.CartService;
+import services.VoucherService;
 
 @WebServlet("/user/cart")
 public class CartController extends HttpServlet {
@@ -41,6 +40,10 @@ public class CartController extends HttpServlet {
 //		long accountId = Long.parseLong(req.getAttribute("accountId").toString());
 		long accountId = 101;
 		CartDTO dto = service.convertToDTO(accountId);
+		Object code = req.getSession().getAttribute("voucher");
+		if (code != null) {
+			dto.setVoucher(new VoucherService().getByCode(code.toString()));
+		}
 		req.setAttribute("cartDTO", dto);
 		req.getRequestDispatcher("/views/cart.jsp").forward(req, resp);
 	}
