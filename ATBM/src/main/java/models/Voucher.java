@@ -19,6 +19,14 @@ public class Voucher {
 		this.name = name;
 		this.quantity = quantity;
 	}
+	public Voucher( String code, Date expirationTime, double percentDescrease, String name,
+			int quantity) {
+		this.code = code;
+		this.expirationTime = expirationTime;
+		this.percentDescrease = percentDescrease;
+		this.name = name;
+		this.quantity = quantity;
+	}
 
 	public long getVoucherId() {
 		return voucherId;

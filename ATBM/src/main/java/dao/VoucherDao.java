@@ -60,11 +60,13 @@ public class VoucherDao implements IDao<Voucher, Long> {
 
 	@Override
 	public boolean update(Voucher entity) {
-		return false;
+		String query = "UPDATE Voucher SET code = ?, expirationTime = ?, percentDescrease = ?, name = ?, quantity = ? WHERE voucherId = ?";
+		return ExecuteSQLUtil.executeUpdate(query, entity.getCode(), entity.getExpirationTime(),
+				entity.getPercentDescrease(), entity.getName(), entity.getQuantity(),entity.getVoucherId());
 	}
 
 	public boolean voucherIsUsed(long accountId, String code) {
-		String query = "select * from UsedVoucher where accountId=? and code=?";
+		String query = "select * from UsedVouchers where accountId=? and code=?";
 		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, accountId, code);
 		try {
 			return resultSet.next();
@@ -75,8 +77,23 @@ public class VoucherDao implements IDao<Voucher, Long> {
 	}
 
 	public boolean usingVoucher(long accountId, String code, Date currentDate) {
-		String query = "insert into UsedVoucher (accountId,code,usedAt) values (?,?,?)";
+		String query = "insert into UsedVouchers (accountId,code,usedAt) values (?,?,?)";
 		return ExecuteSQLUtil.executeUpdate(query, accountId, code, currentDate);
+	}
+
+	public Voucher getByCode(String code) {
+		String query = "select * from Voucher where code=?";
+		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, code);
+		Voucher voucher = null;
+		try {
+			if (resultSet.next()) {
+				voucher = new Voucher(resultSet.getLong(1), resultSet.getString(2), resultSet.getDate(3),
+						resultSet.getDouble(4), resultSet.getString(5), resultSet.getInt(6));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return voucher;
 	}
 
 }
