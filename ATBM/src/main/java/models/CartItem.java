@@ -1,11 +1,12 @@
 package models;
+
 /**
- * @author minhhien
- * Thể hiện sản phẩm trong giỏ hàng của người dùng
+ * @author minhhien Thể hiện sản phẩm trong giỏ hàng của người dùng
  */
 public class CartItem {
 	private long accountId;
 	private long productId;
+	private long orderId;
 	private int quantity;
 
 	public CartItem(long accountId, long productId, int quantity) {
@@ -36,6 +37,15 @@ public class CartItem {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+
+	public long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(long orderId) {
+		this.orderId = orderId;
 	}
 
 }
