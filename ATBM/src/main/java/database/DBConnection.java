@@ -5,25 +5,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    static Connection connection;
+	static Connection connection;
 
-    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=WatchShop;encrypt=true;trustServerCertificate=true";
-    private static final String DB_USER = "sa"; 
-    private static final String DB_PASSWORD = "123"; 
+	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=WatchShop;encrypt=true;trustServerCertificate=true";
+	private static final String DB_USER = "sa";
+	private static final String DB_PASSWORD = "123";
 
-    public static Connection getConnection() {
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+	public static Connection getConnection() {
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("SQL Server JDBC Driver not found.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return connection;
+	}
 
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            System.out.println("Connection successed.");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("SQL Server JDBC Driver not found.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Connection failed.");
-        }
-        return connection;
-    }
 }

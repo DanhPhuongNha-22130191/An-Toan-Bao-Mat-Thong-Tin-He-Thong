@@ -76,4 +76,10 @@ public class TrendingProductDTO {
 		this.image = image;
 	}
 
+	@Override
+	public String toString() {
+		return "TrendingProductDTO [productId=" + productId + ", categoryId=" + categoryId + ", name=" + name
+				+ ", price=" + price + ", description=" + description + ", stock=" + stock + ", image=" + image + "]";
+	}
+
 }

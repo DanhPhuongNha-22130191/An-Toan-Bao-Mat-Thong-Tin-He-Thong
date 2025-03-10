@@ -23,15 +23,18 @@ public class HomeController extends HttpServlet {
         homeService = new HomeService();  
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<TrendingProductDTO> trendingProducts = homeService.getAllTrendingProducts();
 
+        // Kiểm tra xem có dữ liệu không
+//        System.out.println("Số lượng sản phẩm trending: " + trendingProducts.size());
+
+
         request.setAttribute("trendingProducts", trendingProducts);
 
-        request.getRequestDispatcher("/index.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    }
 
 }

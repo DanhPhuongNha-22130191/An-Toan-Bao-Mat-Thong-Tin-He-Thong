@@ -72,7 +72,7 @@ public class ProductDao implements IDao<Product, Long> {
 	// Lấy các sản phẩm trending, haveTrending = true
 	public List<TrendingProductDTO> getTrendingProducts() {
 		List<TrendingProductDTO> trendingProducts = new ArrayList<>();
-		String query = "SELECT * FROM Product WHERE haveTrending = true";
+		String query = "SELECT * FROM Product WHERE haveTrending = 1";
 		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query);
 		try {
 			while (rs != null && rs.next()) {
@@ -86,4 +86,8 @@ public class ProductDao implements IDao<Product, Long> {
 		}
 		return trendingProducts;
 	}
+//	public static void main(String[] args) {
+//		ProductDao dao = new ProductDao();
+//		System.out.println(dao.getTrendingProducts().toString());
+//	}
 }
