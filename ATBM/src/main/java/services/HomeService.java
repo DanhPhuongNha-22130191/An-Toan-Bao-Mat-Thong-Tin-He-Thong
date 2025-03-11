@@ -2,6 +2,8 @@ package services;
 
 import dao.ProductDao;
 import dto.TrendingProductDTO;
+import models.Product;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -51,4 +53,9 @@ public class HomeService {
 //	HomeService service = new HomeService();
 //	System.out.println(service.isTrendingProduct(1L));
 //}
+	// Lấy tất cả sản phẩm bán chạy nhất
+	public List<Product> getAllBestSeller() {
+		return null;
+		
+	}
 }

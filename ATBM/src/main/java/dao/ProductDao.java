@@ -88,6 +88,6 @@ public class ProductDao implements IDao<Product, Long> {
 	}
 //	public static void main(String[] args) {
 //		ProductDao dao = new ProductDao();
-//		System.out.println(dao.getTrendingProducts().toString());
+//		System.out.println(dao.getTrendingProducts());
 //	}
 }
