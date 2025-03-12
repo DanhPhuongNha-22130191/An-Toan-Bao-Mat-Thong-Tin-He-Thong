@@ -1,11 +1,40 @@
 package models;
 
+import dto.CartDTO;
+
 public class Order {
 	private long orderId;
 	private long accountId;
 	private double shipping;
 	private String paymentMethod;
-	private long voucherId;
+	private Long voucherId;
+	private CartDTO cartDTO;
+	private OrderDetail orderDetail;
+
+	public Order(long accountId, double shipping, String paymentMethod,  CartDTO cartDTO,
+			OrderDetail orderDetail) {
+		this.accountId = accountId;
+		this.shipping = shipping;
+		this.paymentMethod = paymentMethod;
+		this.cartDTO = cartDTO;
+		this.orderDetail = orderDetail;
+	}
+
+	public CartDTO getCartDTO() {
+		return cartDTO;
+	}
+
+	public void setCartDTO(CartDTO cartDTO) {
+		this.cartDTO = cartDTO;
+	}
+
+	public OrderDetail getOrderDetail() {
+		return orderDetail;
+	}
+
+	public void setOrderDetail(OrderDetail orderDetail) {
+		this.orderDetail = orderDetail;
+	}
 
 	public long getOrderId() {
 		return orderId;
@@ -39,12 +68,18 @@ public class Order {
 		this.paymentMethod = paymentMethod;
 	}
 
-	public long getVoucherId() {
+	public Long getVoucherId() {
 		return voucherId;
 	}
 
 	public void setVoucherId(long voucherId) {
 		this.voucherId = voucherId;
+	}
+
+	public Order(long accountId, double shipping, String paymentMethod) {
+		this.accountId = accountId;
+		this.shipping = shipping;
+		this.paymentMethod = paymentMethod;
 	}
 
 	public Order(long orderId, long accountId, double shipping, String paymentMethod, long voucherId) {

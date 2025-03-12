@@ -9,6 +9,17 @@ public class OrderDetail {
 	private String address;
 	private String orderNote;
 
+	public OrderDetail(String fullName, String phone, String email, String address, String orderNote) {
+		this.fullName = fullName;
+		this.phone = phone;
+		this.email = email;
+		this.address = address;
+		this.orderNote = orderNote;
+	}
+
+	public OrderDetail() {
+	}
+
 	public long getOrderDetailId() {
 		return orderDetailId;
 	}

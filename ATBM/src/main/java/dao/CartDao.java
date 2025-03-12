@@ -52,7 +52,7 @@ public class CartDao implements IDao<CartItem, Long[]> {
 	}
 
 	public List<CartItem> getCartByAcc(Long id) {
-		String query = "select * from CartItem where accountId=?";
+		String query = "select * from CartItem where accountId=? and orderId is null";
 		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, id);
 		List<CartItem> listCart = new LinkedList<CartItem>();
 		try {

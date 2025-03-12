@@ -13,17 +13,24 @@ public class CartDTO {
 	public CartDTO() {
 		items = new LinkedList<CartDTO.CartItemDTO>();
 	}
+
 	public void add(Product product, int quantity) {
 		items.add(new CartItemDTO(product.getProductId(), product.getName(), product.getImage(), product.getPrice(),
 				quantity));
 	}
 
+	public long getVoucherId() {
+		return voucher.getVoucherId();
+	}
+
 	public Voucher getVoucher() {
 		return voucher;
 	}
+
 	public void setVoucher(Voucher voucher) {
 		this.voucher = voucher;
 	}
+
 	public List<CartItemDTO> getItems() {
 		return items;
 	}
@@ -35,12 +42,13 @@ public class CartDTO {
 	public double getSubTotal() {
 		return items.stream().mapToDouble(e -> e.getTotalPrice()).sum();
 	}
+
 	public double getTotalPrice() {
 		return getSubTotal() - getDiscount();
 	}
 
 	public double getDiscount() {
-		return getSubTotal() * voucher.getPercentDescrease();
+		return (getSubTotal() * (voucher == null ? 0 : voucher.getPercentDescrease())) / 100;
 	}
 
 	public void addVoucher(Voucher voucher) {
@@ -53,6 +61,7 @@ public class CartDTO {
 		private String productImg;
 		private double productPrice;
 		private int quantity;
+
 		public CartItemDTO() {
 		}
 

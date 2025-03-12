@@ -17,14 +17,14 @@ public class VoucherController extends HttpServlet {
 		resp.setCharacterEncoding("UTF-8");
 
 		String code = req.getParameter("voucher-code");
-		long accountId = 101; // Giả lập accountId
+		long accountId = 101;
 
 		VoucherService service = new VoucherService();
-		if (service.applyVoucher(code, accountId)) {
+		if (service.isVoucherValid(code, accountId)) {
 			req.getSession().setAttribute("voucher", code);
-			resp.getWriter().write("1"); // Gửi về chuỗi "1"
+			resp.getWriter().write("1");
 		} else {
-			resp.getWriter().write("0"); // Gửi về chuỗi "0"
+			resp.getWriter().write("0");
 		}
 	}
 }

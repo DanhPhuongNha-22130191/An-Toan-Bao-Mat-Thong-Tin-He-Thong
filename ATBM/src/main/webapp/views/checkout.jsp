@@ -57,31 +57,33 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<h3>Thông tin giao hàng</h3>
-						<form class="row contact_form" action="#" method="post"
-							novalidate="novalidate">
+						<form class="row contact_form" action="checkout" id="contact-form"
+							method="post" novalidate="novalidate">
 							<div class="col-md-12 form-group p_star">
-								<input type="text" class="form-control" id="full" name="name"
-									placeholder="Họ và tên"> <span class="placeholder"
-									data-placeholder="Full name"></span>
+								<input type="text" class="form-control" id="full"
+									name="full-name" placeholder="Họ và tên" required> <span
+									class="placeholder" data-placeholder="Full name"></span>
 							</div>
 							<div class="col-md-6 form-group p_star">
-								<input type="text" class="form-control" id="number"
-									name="number" placeholder="Số điện thoại"> <span
+								<input type="text" class="form-control" id="phone-number"
+									name="number" placeholder="Số điện thoại" required
+									pattern="^[0-9]{10}$"
+									title="Số điện thoại phải có đúng 10 chữ số"> <span
 									class="placeholder" data-placeholder="Phone number"></span>
 							</div>
 							<div class="col-md-6 form-group p_star">
-								<input type="text" class="form-control" id="email"
-									placeholder="Email" name="compemailany"> <span
+								<input type="email" class="form-control" id="email"
+									placeholder="Email" name="email" required title="Email phải có định dạng hợp lệ, ví dụ: example@gmail.com"> <span
 									class="placeholder" data-placeholder="Email Address"></span>
 							</div>
 							<div class="col-md-12 form-group p_star">
-								<input type="text" class="form-control" id="add" name="add"
-									placeholder="Địa chỉ"> <span class="placeholder"
-									data-placeholder="Address"></span>
+								<input type="text" class="form-control" id="add" name="address"
+									placeholder="Địa chỉ" required> <span
+									class="placeholder" data-placeholder="Address"></span>
 							</div>
 							<div class="col-md-12 form-group mb-0">
-								<textarea class="form-control" name="message" id="message"
-									rows="1" placeholder="Ghi chú"></textarea>
+								<textarea class="form-control" name="note" id="message" rows="1"
+									placeholder="Ghi chú"></textarea>
 							</div>
 						</form>
 					</div>
@@ -89,25 +91,25 @@
 						<div class="order_box">
 							<h2>Đơn đặt hàng</h2>
 							<ul class="list">
-								<li><a href="#"><h4>
+								<li><a><h4>
 											Sản phẩm <span>Tổng</span>
 										</h4></a></li>
-								<c:forEach var="cartItem" values="${cartDTO.items }">
-									<li><a href="#">${cartItem.productName}<span
-											class="middle">x {cartItem.quantity}</span> <span
-											class="last">>${cartItem.productPrice}</span></a></li>
+								<c:forEach var="cartItem" items="${cartDTO.items }">
+									<li><a>${cartItem.productName}<span class="middle">x
+												${cartItem.quantity}</span> <span class="last">${cartItem.productPrice}</span></a></li>
 								</c:forEach>
 							</ul>
 							<ul class="list list_2">
-								<li><a href="#">Tổng tiền hàng <span>${cartDTO.subTotal}</span></a></li>
-								<li><a href="#">Phí giao hàng <span>0</span></a></li>
-								<li><a href="#">Phiếu giảm giá <span>-${cartDTO.discount }</span></a></li>
-								<li><a href="#">Tổng cộng <span>${cartDTO.totalPrice}</span></a></li>
+								<li><a>Tổng tiền hàng <span>${cartDTO.subTotal}</span></a></li>
+								<li><a>Phí giao hàng <span>0</span></a></li>
+								<li><a>Phiếu giảm giá <span>-
+											${cartDTO.discount}</span></a></li>
+								<li><a>Tổng cộng <span>${cartDTO.totalPrice}</span></a></li>
 							</ul>
 							<div class="payment_item active">
 								<div class="radion_btn">
-									<input type="radio" id="f-option6" name="selector"> <label
-										for="f-option6">Thanh toán khi nhận hàng </label>
+									<input type="radio" id="f-option6" name="selector" checked>
+									<label for="f-option6">Thanh toán khi nhận hàng </label>
 									<div class="check"></div>
 								</div>
 								<p>Phương thức thanh toán được chọn là Thanh toán khi nhận
@@ -115,14 +117,14 @@
 									tiếp cho nhân viên giao hàng khi nhận được sản phẩm.</p>
 							</div>
 							<div class="text-center">
-								<a class="button button-paypal" href="#">Xác nhận đặt đơn</a>
+								<a class="button button-paypal" id="pay" href="#">Xác nhận
+									đặt đơn</a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-	</div>
-	</section>
+		</section>
 	</div>
 	<!--================End Checkout Area =================-->
 
@@ -142,5 +144,18 @@
 	<script
 		src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
 	<script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
+	<script type="text/javascript">
+		document.getElementById("pay").addEventListener("click",
+				function(event) {
+					event.preventDefault();
+					let form = document.getElementById("contact-form");
+					if (form.checkValidity()) {
+						form.submit();
+					} else {
+						form.reportValidity(); // Hiển thị lỗi trên các input
+					}
+
+				})
+	</script>
 </body>
 </html>

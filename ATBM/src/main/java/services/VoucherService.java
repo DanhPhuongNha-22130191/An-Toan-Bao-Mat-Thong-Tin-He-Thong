@@ -43,13 +43,14 @@ public class VoucherService implements IService<Voucher, Long> {
 
 	public boolean applyVoucher(String code, long accountId) {
 		java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-		Voucher voucher = getByCode(code);
-		if (voucher != null && currentDate.before(voucher.getExpirationTime())
-				&& !dao.voucherIsUsed(accountId, voucher.getCode())) {
-			return dao.usingVoucher(accountId, voucher.getCode(), currentDate);
-		}
-		return false;
+		return dao.usingVoucher(accountId, code, currentDate);
+	}
 
+	public boolean isVoucherValid(String code, long accountId) {
+		java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+		Voucher voucher = getByCode(code);
+		return voucher != null && currentDate.before(voucher.getExpirationTime())
+				&& !dao.voucherIsUsed(accountId, voucher.getCode());
 	}
 
 }

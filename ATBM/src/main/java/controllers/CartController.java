@@ -44,7 +44,7 @@ public class CartController extends HttpServlet {
 		if (code != null) {
 			dto.setVoucher(new VoucherService().getByCode(code.toString()));
 		}
-		req.setAttribute("cartDTO", dto);
+		req.getSession().setAttribute("cartDTO", dto);
 		req.getRequestDispatcher("/views/cart.jsp").forward(req, resp);
 	}
 

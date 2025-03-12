@@ -128,7 +128,7 @@
 								<td>
 									<div class="checkout_btn_inner d-flex align-items-center">
 										<a class="gray_btn" href="#">Tiếp tục mua sắm</a> <a
-											class="primary-btn ml-2" href="user/checkout">Thanh toán</a>
+											class="primary-btn ml-2" href="checkout">Thanh toán</a>
 									</div>
 								</td>
 							</tr>

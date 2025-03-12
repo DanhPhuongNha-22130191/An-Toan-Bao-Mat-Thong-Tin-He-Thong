@@ -4,6 +4,7 @@ import java.util.List;
 
 import dao.CartDao;
 import dto.CartDTO;
+import dto.CartDTO.CartItemDTO;
 import models.CartItem;
 import models.Product;
 
@@ -41,6 +42,9 @@ public class CartService implements IService<CartItem, Long[]> {
 			dto.add(product, cartItem.getQuantity());
 		}
 		return dto;
+	}
+	public CartItem convertToModel(CartItemDTO dto) {
+		return new CartItem(0, dto.getProductId(), dto.getQuantity());
 	}
 
 	public List<CartItem> getByAccId(long accountId) {
