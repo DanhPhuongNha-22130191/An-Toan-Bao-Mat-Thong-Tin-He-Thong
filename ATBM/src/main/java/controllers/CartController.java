@@ -18,17 +18,15 @@ import services.VoucherService;
 public class CartController extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String[] productQuantity = req.getParameterValues("product-quantity");
+		String[] productQuantity = req.getParameterValues("cartItem-quantity");
 		if (productQuantity != null) {
 			CartService service = new CartService();
-//			long accountId = Long.parseLong(req.getAttribute("accountId").toString());
-			long accountId = 101;
 			for (String string : productQuantity) {
 				StringTokenizer tokens = new StringTokenizer(string, "-");
 				if (tokens.countTokens() == 2) {
-					long productId = Long.parseLong(tokens.nextToken());
+					long cartItemId = Long.parseLong(tokens.nextToken());
 					int quantity = Integer.parseInt(tokens.nextToken());
-					service.update(new CartItem(accountId, productId, quantity));
+					service.update(new CartItem(cartItemId, quantity));
 				}
 			}
 		}

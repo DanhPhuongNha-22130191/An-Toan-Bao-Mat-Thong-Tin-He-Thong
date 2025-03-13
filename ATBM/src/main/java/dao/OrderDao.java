@@ -84,9 +84,14 @@ public class OrderDao implements IDao<Order, Long> {
 	}
 
 	public boolean insertOrderItem(CartItem cartItems) {
-		String query = "update CartItem set orderId=? where accountId=? and productId=?";
-		return ExecuteSQLUtil.executeUpdate(query, cartItems.getOrderId(), cartItems.getAccountId(),
-				cartItems.getProductId());
+		String query = "update CartItem set orderId=? where cartItemId=?";
+		return ExecuteSQLUtil.executeUpdate(query, cartItems.getOrderId(), cartItems.getCartItemId());
+	}
+
+	public void updateProduct(long productId, int quantity) {
+		String query = "update Product set stock=? where productId=?";
+		ExecuteSQLUtil.executeUpdate(query, quantity, productId);
+
 	}
 
 }

@@ -21,8 +21,8 @@ public class OrderService implements IService<Order, Long> {
 	public boolean insert(Order entity) {
 		if (dao.insert(entity)) {
 			long id = dao.getIdOrder(entity.getAccountId());
-			return insertOrderDetail(entity.getOrderDetail(), id) && insertOrderItems(
-					getListCartItem(entity.getCartDTO(), entity.getAccountId(), entity.getOrderId()));
+			return insertOrderDetail(entity.getOrderDetail(), id)
+					&& insertOrderItems(getListCartItem(entity.getCartDTO(), entity.getOrderId()));
 		}
 		return false;
 	}
@@ -31,21 +31,26 @@ public class OrderService implements IService<Order, Long> {
 		return dao.insertOrderDetail(detail, orderId);
 	}
 
+	private void updateProduct(long productId, int quantity) {
+		dao.updateProduct(productId, quantity);
+	}
+
 	private boolean insertOrderItems(List<CartItem> items) {
 		for (CartItem cartItem : items) {
-			if (!dao.insertOrderItem(cartItem))
+			if (!dao.insertOrderItem(cartItem)) {
 				return false;
+			}
+			updateProduct(cartItem.getProductId(), cartItem.getQuantity());
 		}
 		return true;
 	}
 
-	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId, long accountId) {
+	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
 		CartService cartService = new CartService();
 		List<CartItem> cartItems = new LinkedList<CartItem>();
 		for (CartItemDTO dto : cartDTO.getItems()) {
 			CartItem item = cartService.convertToModel(dto);
 			item.setOrderId(orderId);
-			item.setAccountId(accountId);
 			cartItems.add(item);
 		}
 		return cartItems;

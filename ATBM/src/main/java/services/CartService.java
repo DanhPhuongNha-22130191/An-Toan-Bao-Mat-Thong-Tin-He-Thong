@@ -8,7 +8,7 @@ import dto.CartDTO.CartItemDTO;
 import models.CartItem;
 import models.Product;
 
-public class CartService implements IService<CartItem, Long[]> {
+public class CartService implements IService<CartItem, Long> {
 	private CartDao dao;
 
 	public CartService() {
@@ -17,14 +17,14 @@ public class CartService implements IService<CartItem, Long[]> {
 
 	@Override
 	public boolean insert(CartItem entity) {
-		if (getById(new Long[] { entity.getAccountId(), entity.getProductId() }) != null) {
+		if (getById(entity.getCartItemId()) != null) {
 			return update(entity);
 		}
 		return dao.insert(entity);
 	}
 
 	@Override
-	public CartItem getById(Long[] id) {
+	public CartItem getById(Long id) {
 		return dao.getById(id);
 	}
 
@@ -39,28 +39,29 @@ public class CartService implements IService<CartItem, Long[]> {
 		ProductService productService = new ProductService();
 		for (CartItem cartItem : cartItems) {
 			Product product = productService.getById(cartItem.getProductId());
-			dto.add(product, cartItem.getQuantity());
+			dto.add(product, cartItem.getCartItemId(), cartItem.getQuantity());
 		}
 		return dto;
 	}
+
 	public CartItem convertToModel(CartItemDTO dto) {
-		return new CartItem(0, dto.getProductId(), dto.getQuantity());
+		return new CartItem(dto.getCartItemId(), dto.getQuantity());
 	}
 
 	public List<CartItem> getByAccId(long accountId) {
 		return dao.getCartByAcc(accountId);
 	}
+
 	@Override
 	public boolean update(CartItem cartItem) {
-		Long[] id = new Long[] { cartItem.getAccountId(), cartItem.getProductId() };
 		if (cartItem.getQuantity() == 0)
-			return delete(id);
+			return delete(cartItem.getCartItemId());
 		else
 			return dao.update(cartItem);
 	}
 
 	@Override
-	public boolean delete(Long[] id) {
+	public boolean delete(Long id) {
 		return dao.delete(id);
 
 	}

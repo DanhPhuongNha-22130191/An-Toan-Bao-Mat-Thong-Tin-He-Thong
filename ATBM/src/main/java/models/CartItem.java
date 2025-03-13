@@ -4,14 +4,21 @@ package models;
  * @author minhhien Thể hiện sản phẩm trong giỏ hàng của người dùng
  */
 public class CartItem {
+	private long cartItemId;
 	private long accountId;
 	private long productId;
 	private long orderId;
 	private int quantity;
 
-	public CartItem(long accountId, long productId, int quantity) {
-		this.accountId = accountId;
+
+	public CartItem(long cartItemId, long productId, int quantity) {
+		this.cartItemId = cartItemId;
 		this.productId = productId;
+		this.quantity = quantity;
+	}
+
+	public CartItem(long cartItemId, int quantity) {
+		this.cartItemId = cartItemId;
 		this.quantity = quantity;
 	}
 
@@ -46,6 +53,14 @@ public class CartItem {
 
 	public void setOrderId(long orderId) {
 		this.orderId = orderId;
+	}
+
+	public long getCartItemId() {
+		return cartItemId;
+	}
+
+	public void setCartItemId(long cartItemId) {
+		this.cartItemId = cartItemId;
 	}
 
 }

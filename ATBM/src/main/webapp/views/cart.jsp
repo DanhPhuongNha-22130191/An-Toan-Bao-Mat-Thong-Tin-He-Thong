@@ -48,7 +48,7 @@
 						</thead>
 						<tbody>
 							<c:forEach var="cart" items="${cartDTO.items}">
-								<tr class="cart-item" data-id="${cart.productId}">
+								<tr class="cart-item" data-id="${cart.cartItemId}">
 									<td>
 										<div class="media">
 											<div class="d-flex">
@@ -163,7 +163,7 @@
 	    items.forEach(item => {
 	        let id = item.getAttribute("data-id");
 	        let quantity = document.getElementById("sst-"+id).value;
-	        params.append("product-quantity", id+'-'+quantity); 
+	        params.append("cartItem-quantity", id+'-'+quantity); 
 	    });
 
 	    fetch("/ATBM/user/cart", { // Đảm bảo đường dẫn đúng

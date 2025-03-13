@@ -14,8 +14,8 @@ public class CartDTO {
 		items = new LinkedList<CartDTO.CartItemDTO>();
 	}
 
-	public void add(Product product, int quantity) {
-		items.add(new CartItemDTO(product.getProductId(), product.getName(), product.getImage(), product.getPrice(),
+	public void add(Product product,long cartItemId, int quantity) {
+		items.add(new CartItemDTO(cartItemId,product.getProductId(), product.getName(), product.getImage(), product.getPrice(),
 				quantity));
 	}
 
@@ -56,6 +56,7 @@ public class CartDTO {
 	}
 
 	public class CartItemDTO {
+		private long cartItemId;
 		private long productId;
 		private String productName;
 		private String productImg;
@@ -65,12 +66,20 @@ public class CartDTO {
 		public CartItemDTO() {
 		}
 
-		public CartItemDTO(long productId, String productName, String productImg, double productPrice, int quantity) {
+		public CartItemDTO(long cartItemId,long productId, String productName, String productImg, double productPrice, int quantity) {
 			this.productId = productId;
 			this.productName = productName;
 			this.productImg = productImg;
 			this.productPrice = productPrice;
 			this.quantity = quantity;
+		}
+
+		public long getCartItemId() {
+			return cartItemId;
+		}
+
+		public void setCartItemId(long cartItemId) {
+			this.cartItemId = cartItemId;
 		}
 
 		public double getTotalPrice() {
