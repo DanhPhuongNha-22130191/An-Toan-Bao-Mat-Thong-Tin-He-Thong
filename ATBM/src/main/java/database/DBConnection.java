@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 public class DBConnection {
 	static Connection connection;
-
 	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=WatchShop;encrypt=true;trustServerCertificate=true";
 	private static final String DB_USER = "sa";
 	private static final String DB_PASSWORD = "123";
@@ -22,6 +21,13 @@ public class DBConnection {
 			e.printStackTrace();
 		}
 		return connection;
+	}
+	public static void main(String[] args) {
+		if(DBConnection.getConnection()!=null) {
+			System.out.println("S");
+		}else {
+			System.out.println("F");
+		}
 	}
 
 }

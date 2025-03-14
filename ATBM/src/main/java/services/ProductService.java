@@ -31,6 +31,10 @@ public class ProductService implements IService<Product, Long> {
 	public boolean update(Product product) {
 		return productDao.update(product);
 	}
+	
+	public List<Product> getAllTrendingProduct() {
+		return productDao.getTrendingProducts();
+	}
 	public static void main(String[] args) {
 		ProductService service = new ProductService();
 		System.out.println(service.getAll());
