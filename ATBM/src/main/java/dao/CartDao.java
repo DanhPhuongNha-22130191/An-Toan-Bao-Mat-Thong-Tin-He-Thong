@@ -26,7 +26,8 @@ public class CartDao implements IDao<CartItem, Long> {
 		CartItem cartItem = null;
 		try {
 			if (resultSet.next()) {
-				cartItem = new CartItem(resultSet.getLong(1), resultSet.getLong(3), resultSet.getInt(3));
+				cartItem = new CartItem(resultSet.getLong("cartItemId"), resultSet.getLong("productId"),
+						resultSet.getInt("quantity"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -41,7 +42,8 @@ public class CartDao implements IDao<CartItem, Long> {
 		List<CartItem> listCart = new LinkedList<CartItem>();
 		try {
 			while (resultSet.next()) {
-				CartItem cartItem = new CartItem(resultSet.getLong(1), resultSet.getLong(3), resultSet.getInt(3));
+				CartItem cartItem = new CartItem(resultSet.getLong("cartItemId"), resultSet.getLong("productId"),
+						resultSet.getInt("quantity"));
 				listCart.add(cartItem);
 			}
 		} catch (SQLException e) {
@@ -57,7 +59,8 @@ public class CartDao implements IDao<CartItem, Long> {
 		List<CartItem> listCart = new LinkedList<CartItem>();
 		try {
 			while (resultSet.next()) {
-				CartItem cartItem = new CartItem(resultSet.getLong(1), resultSet.getLong(3), resultSet.getInt(3));
+				CartItem cartItem = new CartItem(resultSet.getLong("cartItemId"), resultSet.getLong("productId"),
+						resultSet.getInt("quantity"));
 				listCart.add(cartItem);
 			}
 		} catch (SQLException e) {

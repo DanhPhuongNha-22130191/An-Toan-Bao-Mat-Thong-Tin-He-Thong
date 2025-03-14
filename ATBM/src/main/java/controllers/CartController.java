@@ -30,6 +30,7 @@ public class CartController extends HttpServlet {
 				}
 			}
 		}
+		
 	}
 
 	@Override
@@ -43,6 +44,7 @@ public class CartController extends HttpServlet {
 			dto.setVoucher(new VoucherService().getByCode(code.toString()));
 		}
 		req.getSession().setAttribute("cartDTO", dto);
+		
 		req.getRequestDispatcher("/views/cart.jsp").forward(req, resp);
 	}
 

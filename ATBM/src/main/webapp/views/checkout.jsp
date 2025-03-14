@@ -66,7 +66,7 @@
 							</div>
 							<div class="col-md-6 form-group p_star">
 								<input type="text" class="form-control" id="phone-number"
-									name="number" placeholder="Số điện thoại" required
+									name="phone-number" placeholder="Số điện thoại" required
 									pattern="^[0-9]{10}$"
 									title="Số điện thoại phải có đúng 10 chữ số"> <span
 									class="placeholder" data-placeholder="Phone number"></span>

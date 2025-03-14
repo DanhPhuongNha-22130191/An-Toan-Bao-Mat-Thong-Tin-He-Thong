@@ -3,6 +3,7 @@ package dto;
 import java.util.LinkedList;
 import java.util.List;
 
+import dto.CartDTO.CartItemDTO;
 import models.Product;
 import models.Voucher;
 
@@ -14,9 +15,10 @@ public class CartDTO {
 		items = new LinkedList<CartDTO.CartItemDTO>();
 	}
 
-	public void add(Product product,long cartItemId, int quantity) {
-		items.add(new CartItemDTO(cartItemId,product.getProductId(), product.getName(), product.getImage(), product.getPrice(),
-				quantity));
+	public void add(Product product, long cartItemId, int quantity) {
+		CartItemDTO dto = new CartItemDTO(cartItemId, product.getProductId(), product.getName(), product.getImage(),
+				product.getPrice(), quantity);
+		items.add(dto);
 	}
 
 	public long getVoucherId() {
@@ -66,7 +68,9 @@ public class CartDTO {
 		public CartItemDTO() {
 		}
 
-		public CartItemDTO(long cartItemId,long productId, String productName, String productImg, double productPrice, int quantity) {
+		public CartItemDTO(long cartItemId, long productId, String productName, String productImg, double productPrice,
+				int quantity) {
+			this.cartItemId = cartItemId;
 			this.productId = productId;
 			this.productName = productName;
 			this.productImg = productImg;

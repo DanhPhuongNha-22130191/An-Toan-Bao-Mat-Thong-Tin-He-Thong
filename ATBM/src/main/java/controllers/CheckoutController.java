@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dto.CartDTO;
 import models.Order;
@@ -22,6 +23,10 @@ public class CheckoutController extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		CartDTO cartDto = (CartDTO) req.getSession().getAttribute("cartDTO");
+		if(cartDto==null) {
+			resp.sendRedirect("/user/cart");
+		}
 		OrderService service = new OrderService();
 		String fullName = req.getParameter("full-name");
 		String phoneNumber = req.getParameter("phone-number");
@@ -29,8 +34,9 @@ public class CheckoutController extends HttpServlet {
 		String address = req.getParameter("address");
 		String note = req.getParameter("note");
 		OrderDetail orderDetail = new OrderDetail(fullName, phoneNumber, email, address, note);
-		CartDTO cartDto = (CartDTO) req.getSession().getAttribute("cartDTO");
-		long accountId = (Long) req.getSession().getAttribute("accountId");
+		
+//		long accountId = (Long) req.getSession().getAttribute("accountId");
+		long accountId = 101;
 		Order order = new Order(accountId, 0, "COD",cartDto,orderDetail);
 		if (cartDto.getVoucher() != null) {
 			order.setVoucherId(cartDto.getVoucherId());

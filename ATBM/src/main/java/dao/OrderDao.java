@@ -14,13 +14,13 @@ public class OrderDao implements IDao<Order, Long> {
 
 	@Override
 	public boolean insert(Order entity) {
-		String query = "insert into Order (accountId,shipping,paymentMethod,voucherId) values(?,?,?,?)";
+		String query = "insert into Orders (accountId,shipping,paymentMethod,voucherId) values(?,?,?,?)";
 		return ExecuteSQLUtil.executeUpdate(query, entity.getAccountId(), entity.getShipping(),
 				entity.getPaymentMethod(), entity.getVoucherId());
 	}
 
 	public long getIdOrder(long accountId) {
-		String query = "select orderId from Order where accountId=?";
+		String query = "select orderId from Orders where accountId=?";
 		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, accountId);
 		long newOrderId = 0;
 		try {
@@ -34,7 +34,7 @@ public class OrderDao implements IDao<Order, Long> {
 
 	@Override
 	public Order getById(Long id) {
-		String query = "select * from Order where orderId=?";
+		String query = "select * from Orders where orderId=?";
 		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, id);
 		Order order = null;
 		try {
@@ -50,7 +50,7 @@ public class OrderDao implements IDao<Order, Long> {
 
 	@Override
 	public List<Order> getAll() {
-		String query = "select * from Order";
+		String query = "select * from Orders";
 		ResultSet resultSet = ExecuteSQLUtil.executeQuery(query, new Object[0]);
 		List<Order> listOrder = new LinkedList<Order>();
 		try {
@@ -68,7 +68,7 @@ public class OrderDao implements IDao<Order, Long> {
 
 	@Override
 	public boolean delete(Long id) {
-		String query = "delete  from order where orderId=?";
+		String query = "delete  from Orders where orderId=?";
 		return ExecuteSQLUtil.executeUpdate(query, id);
 	}
 

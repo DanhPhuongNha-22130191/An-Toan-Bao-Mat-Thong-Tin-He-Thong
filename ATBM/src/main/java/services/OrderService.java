@@ -22,7 +22,7 @@ public class OrderService implements IService<Order, Long> {
 		if (dao.insert(entity)) {
 			long id = dao.getIdOrder(entity.getAccountId());
 			return insertOrderDetail(entity.getOrderDetail(), id)
-					&& insertOrderItems(getListCartItem(entity.getCartDTO(), entity.getOrderId()));
+					&& insertOrderItems(getListCartItem(entity.getCartDTO(), id));
 		}
 		return false;
 	}

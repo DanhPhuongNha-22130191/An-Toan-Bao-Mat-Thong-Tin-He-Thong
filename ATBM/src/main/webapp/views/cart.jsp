@@ -64,16 +64,16 @@
 									</td>
 									<td>
 										<div class="product_count">
-											<input type="text" name="qty" id="sst-${cart.productId}"
+											<input type="text" name="qty" id="sst-${cart.cartItemId}"
 												maxlength="12" value="${cart.quantity}" title="Quantity:"
 												class="input-text qty">
 											<button
-												onclick="var result = document.getElementById('sst-${cart.productId}'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+												onclick="var result = document.getElementById('sst-${cart.cartItemId}'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
 												class="increase items-count" type="button">
 												<i class="lnr lnr-chevron-up"></i>
 											</button>
 											<button
-												onclick="var result = document.getElementById('sst-${cart.productId}'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;"
+												onclick="var result = document.getElementById('sst-${cart.cartItemId}'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;"
 												class="reduced items-count" type="button">
 												<i class="lnr lnr-chevron-down"></i>
 											</button>
