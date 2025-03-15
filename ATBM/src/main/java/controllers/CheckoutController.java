@@ -18,13 +18,13 @@ import services.OrderService;
 public class CheckoutController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.getRequestDispatcher("/views/checkout.jsp").forward(req, resp);
+		resp.sendRedirect("/ATBM/views/checkout.jsp");
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		CartDTO cartDto = (CartDTO) req.getSession().getAttribute("cartDTO");
-		if(cartDto==null) {
+		if (cartDto == null) {
 			resp.sendRedirect("/user/cart");
 		}
 		OrderService service = new OrderService();
@@ -34,14 +34,18 @@ public class CheckoutController extends HttpServlet {
 		String address = req.getParameter("address");
 		String note = req.getParameter("note");
 		OrderDetail orderDetail = new OrderDetail(fullName, phoneNumber, email, address, note);
-		
+
 //		long accountId = (Long) req.getSession().getAttribute("accountId");
 		long accountId = 101;
-		Order order = new Order(accountId, 0, "COD",cartDto,orderDetail);
+		Order order = new Order(accountId, 0, "COD", cartDto, orderDetail);
 		if (cartDto.getVoucher() != null) {
 			order.setVoucherId(cartDto.getVoucherId());
 		}
-		service.insert(order);
+		if (service.insert(order)) {
+			cartDto.setOrderDetail(orderDetail);
+			cartDto.setOrder(service.getById(service.getIdOrder(accountId)));
+			resp.sendRedirect("/ATBM/views/confirmation.jsp");
+		}
 
 	}
 }

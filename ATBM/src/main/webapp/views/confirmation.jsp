@@ -37,36 +37,55 @@
 			<p class="text-center billing-alert">Cảm ơn bạn. Đơn hàng bạn sẽ
 				sớm được đưa cho đơn vị vận chuyển</p>
 			<div class="row mb-5">
-				<div class="col-md-6 col-xl-6 mb-4 mb-xl-0">
+				<div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
 					<div class="confirmation-card">
 						<h3 class="billing-title">Thông tin đơn hàng</h3>
 						<table class="order-rable">
 							<tr>
 								<td>Mã đơn hàng</td>
-								<td>: ${orderDTO.orderId}</td>
+								<td>: ${cartDTO.orderId}</td>
 							</tr>
 							<tr>
 								<td>Tổng tiền</td>
-								<td>: ${orderDTO.totalPrice}</td>
+								<td>: ${cartDTO.totalPrice}</td>
 							</tr>
 							<tr>
 								<td>Phương thức thanh toán</td>
-								<td>: ${orderDTO.paymentMethod}</td>
+								<td>: ${cartDTO.paymentMethod}</td>
 							</tr>
 						</table>
 					</div>
 				</div>
-				<div class="col-md-6 col-xl-6 mb-4 mb-xl-0">
+				<div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
+					<div class="confirmation-card">
+						<h3 class="billing-title">Thông tin người nhận</h3>
+						<table class="order-rable">
+							<tr>
+								<td>Tên người nhận</td>
+								<td>: ${cartDTO.fullName}</td>
+							</tr>
+							<tr>
+								<td>Số diện thoại</td>
+								<td>: ${cartDTO.phone}</td>
+							</tr>
+							<tr>
+								<td>Email</td>
+								<td>: ${cartDTO.email}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-6 col-xl-4 mb-4 mb-xl-0">
 					<div class="confirmation-card">
 						<h3 class="billing-title">Địa chỉ giao hàng</h3>
 						<table class="order-rable">
 							<tr>
 								<td>Địa chỉ</td>
-								<td>: ${orderDTO.address }</td>
+								<td>: ${cartDTO.address}</td>
 							</tr>
 							<tr>
 								<td>Ghi chú</td>
-								<td>: ${orderDTO.orderNote}</td>
+								<td>: ${cartDTO.orderNote}</td>
 							</tr>
 						</table>
 					</div>
@@ -84,7 +103,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach items="${orderDTO.items}" var="item">
+							<c:forEach items="${cartDTO.items}" var="item">
 								<tr>
 									<td>
 										<p>${item.productName}</p>
@@ -105,7 +124,7 @@
 									<h5></h5>
 								</td>
 								<td>
-									<p>${orderDTO.subTotal}</p>
+									<p>${cartDTO.subTotal}</p>
 								</td>
 							</tr>
 							<tr>
@@ -116,7 +135,7 @@
 									<h5></h5>
 								</td>
 								<td>
-									<p>${ orderDTO.shipping}</p>
+									<p>${ cartDTO.shipping}</p>
 								</td>
 							</tr>
 							<tr>
@@ -127,7 +146,7 @@
 									<h5></h5>
 								</td>
 								<td>
-									<h4>${orderDTO.totalPrice}</h4>
+									<h4>${cartDTO.totalPrice}</h4>
 								</td>
 							</tr>
 						</tbody>

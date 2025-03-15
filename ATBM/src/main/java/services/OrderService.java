@@ -20,11 +20,14 @@ public class OrderService implements IService<Order, Long> {
 	@Override
 	public boolean insert(Order entity) {
 		if (dao.insert(entity)) {
-			long id = dao.getIdOrder(entity.getAccountId());
+			long id = getIdOrder(entity.getAccountId());
 			return insertOrderDetail(entity.getOrderDetail(), id)
 					&& insertOrderItems(getListCartItem(entity.getCartDTO(), id));
 		}
 		return false;
+	}
+	public long getIdOrder(long accountId) {
+		return dao.getIdOrder(accountId);
 	}
 
 	private boolean insertOrderDetail(OrderDetail detail, long orderId) {

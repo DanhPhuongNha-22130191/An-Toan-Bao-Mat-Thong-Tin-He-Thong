@@ -57,7 +57,7 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<h3>Thông tin giao hàng</h3>
-						<form class="row contact_form" action="checkout" id="contact-form"
+						<form class="row contact_form" action="/ATBM/user/checkout" id="contact-form"
 							method="post" novalidate="novalidate">
 							<div class="col-md-12 form-group p_star">
 								<input type="text" class="form-control" id="full"

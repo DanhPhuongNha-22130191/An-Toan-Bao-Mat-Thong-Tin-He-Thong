@@ -45,7 +45,7 @@ public class CartController extends HttpServlet {
 		}
 		req.getSession().setAttribute("cartDTO", dto);
 		
-		req.getRequestDispatcher("/views/cart.jsp").forward(req, resp);
+		resp.sendRedirect("/ATBM/views/cart.jsp");
 	}
 
 }
