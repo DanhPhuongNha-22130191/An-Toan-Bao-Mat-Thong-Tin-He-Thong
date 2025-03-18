@@ -1,0 +1,187 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Aroma Shop - Login</title>
+<link rel="icon" href="img/Fevicon.png" type="image/png">
+<link rel="stylesheet" href="assets/vendors/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="assets/vendors/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+    .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    z-index: 1000;
+    display: none;
+    text-align: center;
+}
+
+.modal-content {
+    padding: 15px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.modal button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.modal button:hover {
+    background-color: #218838;
+}
+
+.close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+    color: red;
+}
+
+</style>
+</head>
+<body>
+	<section class="login_box_area section-margin">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="login_box_img">
+						<div class="hover">
+							<h4>Mới sử dụng trang web của chúng tôi?</h4>
+							<p>Hãy đăng ký ngay để khám phá nhiều tính năng hấp dẫn!</p>
+							<a class="button button-account" href="register.jsp">Tạo tài
+								khoản</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="login_form_inner">
+						<h3>Đăng nhập để tiếp tục</h3>
+
+						<c:if test="${not empty error}">
+							<p style="color: red;">${error}</p>
+						</c:if>
+
+						<c:if test="${param.success eq 'registered'}">
+							<p style="color: green;">Đăng ký thành công! Vui lòng đăng
+								nhập.</p>
+						</c:if>
+<c:if test="${not empty message}">
+    <p style="color: green;">${message}</p>
+</c:if>
+
+
+						<form class="row login_form" action="account" method="post">
+							<input type="hidden" name="action" value="login">
+							<div class="col-md-12 form-group">
+								<input type="text" class="form-control" name="username"
+									placeholder="Tên đăng nhập" required>
+							</div>
+							<div class="col-md-12 form-group">
+								<input type="password" class="form-control" name="password"
+									placeholder="Mật khẩu" required>
+							</div>
+							<div class="col-md-12 form-group">
+								<button type="submit" class="button button-login w-100">Đăng
+									nhập</button>
+							</div>
+							<div class="col-md-12 form-group text-center">
+								<a href="#" id="forgotPasswordLink">Quên mật khẩu?</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Popup nhập email -->
+<div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h4>Khôi phục mật khẩu</h4>
+        <p>Nhập email để nhận mật khẩu mới:</p>
+        <form id="forgotPasswordForm" action="account" method="post">
+            <input type="hidden" name="action" value="forgotPassword">
+            <input type="email" name="email" placeholder="Nhập email của bạn" required class="form-control">
+            <button type="submit" class="button button-reset">Gửi</button>
+        </form>
+        <p id="message" style="margin-top: 10px; font-weight: bold;"></p>
+    </div>
+</div>
+
+
+
+	<script>
+	// Thêm đoạn mã này vào phần <script> của bạn
+	document.getElementById("forgotPasswordLink").addEventListener("click", function() {
+	    document.getElementById("forgotPasswordModal").style.display = "block";
+	});
+
+	document.querySelector(".close").addEventListener("click", function() {
+	    document.getElementById("forgotPasswordModal").style.display = "none";
+	});
+
+	// Đoạn mã xử lý form submit vẫn giữ nguyên
+	document.getElementById("forgotPasswordForm").addEventListener("submit", function(event) {
+	    event.preventDefault();
+	    var formData = new FormData(this);
+	    var message = document.getElementById("message");
+	    
+	    fetch("account", {
+	        method: "POST",
+	        body: formData
+	    }).then(response => response.text()).then(data => {
+	        console.log("Phản hồi từ server:", data); // Debug
+
+	        var message = document.getElementById("message");
+	        if (data.trim() === "success") { // Sử dụng trim() để loại bỏ khoảng trắng
+	            message.style.color = "green";
+	            message.innerText = "Mật khẩu đã được gửi qua email của bạn.";
+	        } else if (data.trim() === "email-not-found") {
+	            message.style.color = "red";
+	            message.innerText = "Email không tồn tại trong hệ thống.";
+	        } else if (data.trim() === "update-error") {
+	            message.style.color = "red";
+	            message.innerText = "Không thể cập nhật mật khẩu. Vui lòng thử lại.";
+	        } else if (data.trim() === "email-error") {
+	            message.style.color = "red";
+	            message.innerText = "Gửi email thất bại! Vui lòng thử lại sau.";
+	        } else {
+	            message.style.color = "red";
+	            message.innerText = "Đã xảy ra lỗi. Vui lòng thử lại!";
+	        }
+	    }).catch(error => {
+	        console.error("Lỗi kết nối:", error);
+	        message.style.color = "red";
+	        message.innerText = "Đã xảy ra lỗi kết nối. Vui lòng thử lại!";
+	    });
+
+	});
+</script>
+	<script src="assets/vendors/jquery/jquery-3.2.1.min.js"></script>
+	<script src="assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>
