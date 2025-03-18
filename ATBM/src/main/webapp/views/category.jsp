@@ -6,6 +6,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Aroma Shop - Category</title>
+
+
 <link rel="icon"
 	href="${pageContext.request.contextPath}/assests/img/Fevicon.png"
 	type="image/png">
@@ -130,82 +132,59 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xl-3 col-lg-4 col-md-5">
-					<div class="sidebar-categories">
-						<div class="head">Browse Categories</div>
+					<!-- <div class="sidebar-categories">
+						<div class="head">Lọc sản phẩm theo:</div>
 						<ul class="main-categories">
 							<li class="common-filter">
 								<form action="#">
 									<ul>
 										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="men" name="brand"><label for="men">Men<span>
-													(3600)</span></label></li>
+											type="radio" id="men" name="brand"><label for="men">Xu
+												hướng</label></li>
 										<li class="filter-list"><input class="pixel-radio"
 											type="radio" id="women" name="brand"><label
-											for="women">Women<span> (3600)</span></label></li>
-										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="accessories" name="brand"><label
-											for="accessories">Accessories<span> (3600)</span></label></li>
-										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="footwear" name="brand"><label
-											for="footwear">Footwear<span> (3600)</span></label></li>
-										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="bayItem" name="brand"><label
-											for="bayItem">Bay item<span> (3600)</span></label></li>
-										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="electronics" name="brand"><label
-											for="electronics">Electronics<span> (3600)</span></label></li>
-										<li class="filter-list"><input class="pixel-radio"
-											type="radio" id="food" name="brand"><label for="food">Food<span>
-													(3600)</span></label></li>
+											for="women">Chống nước</label></li>
 									</ul>
 								</form>
 							</li>
 						</ul>
-					</div>
+					</div> -->
 					<div class="sidebar-filter">
 						<div class="top-filter-head">Product Filters</div>
+						<!-- =============================Brand filter========================================== -->
 						<div class="common-filter">
 							<div class="head">Brands</div>
-							<form action="#">
+							<form id="brandFilterForm" method="get"
+								action="/ATBM/CategoryController">
 								<ul>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="apple" name="brand"><label
-										for="apple">Apple<span>(29)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="asus" name="brand"><label for="asus">Asus<span>(29)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="gionee" name="brand"><label
-										for="gionee">Gionee<span>(19)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="micromax" name="brand"><label
-										for="micromax">Micromax<span>(19)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="samsung" name="brand"><label
-										for="samsung">Samsung<span>(19)</span></label></li>
+									<c:forEach var="brand" items="${brands}">
+										<li class="filter-list">
+											<!-- Trigger AJAX filter on radio button click, without form submission -->
+											<input class="pixel-radio" type="radio" id="${brand.brandId}"
+											name="brandId" value="${brand.brandId}"
+											onclick="filterProductsByBrand('${brand.brandId}')">
+											<label for="${brand.brandId}">${brand.name}</label>
+										</li>
+									</c:forEach>
 								</ul>
 							</form>
 						</div>
-						<div class="common-filter">
-							<div class="head">Color</div>
+						<!-- =============================Brand filter========================================== -->
+						<!-- =============================Strap Color filter========================================== -->
+						<%-- <div class="common-filter">
+							<div class="head">Strap Colors</div>
 							<form action="#">
 								<ul>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="black" name="color"><label
-										for="black">Black<span>(29)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="balckleather" name="color"><label
-										for="balckleather">Black Leather<span>(29)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="blackred" name="color"><label
-										for="blackred">Black with red<span>(19)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="gold" name="color"><label for="gold">Gold<span>(19)</span></label></li>
-									<li class="filter-list"><input class="pixel-radio"
-										type="radio" id="spacegrey" name="color"><label
-										for="spacegrey">Spacegrey<span>(19)</span></label></li>
+									<c:forEach var="strap" items="${straps}">
+										<li class="filter-list"><input class="pixel-radio"
+											type="radio" id="${strap.strapId} name="strap"> <label
+											for="${strap.strapId}"> ${strap.color}</label></li>
+									</c:forEach>
 								</ul>
 							</form>
-						</div>
+						</div> --%>
+						<!-- =============================Strap Color filter========================================== -->
+						<!-- =============================Price filter========================================== -->
 						<div class="common-filter">
 							<div class="head">Price</div>
 							<div class="price-range-area">
@@ -220,6 +199,7 @@
 								</div>
 							</div>
 						</div>
+						<!-- =============================Price filter========================================== -->
 					</div>
 				</div>
 				<div class="col-xl-9 col-lg-8 col-md-7">
@@ -252,7 +232,8 @@
 					</div>
 					<!-- End Filter Bar -->
 					<!-- Start Trending Product -->
-					<section class="lattest-product-area pb-40 category-list">
+					<section class="lattest-product-area pb-40 category-list"
+						id="productList">
 						<div class="row">
 							<c:forEach var="product" items="${trendingProducts}">
 								<div class="col-md-6 col-lg-4">
@@ -261,17 +242,6 @@
 											<img class="card-img"
 												src="${pageContext.request.contextPath}/assets/img/product/${product.image}"
 												alt="${product.name}">
-											<ul class="card-product__imgOverlay">
-												<li><button>
-														<i class="ti-search"></i>
-													</button></li>
-												<li><button>
-														<i class="ti-shopping-cart"></i>
-													</button></li>
-												<li><button>
-														<i class="ti-heart"></i>
-													</button></li>
-											</ul>
 										</div>
 										<div class="card-body">
 											<p>${product.description != null ? product.description : 'No Category'}</p>
@@ -285,7 +255,12 @@
 								</div>
 							</c:forEach>
 						</div>
+
+
+
 					</section>
+
+
 					<!-- End Trending Product -->
 
 				</div>
@@ -557,7 +532,9 @@
 					<p class="col-lg-12 footer-text text-center">
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 						Copyright &copy;
-						<script>document.write(new Date().getFullYear());</script>
+						<script>
+							document.write(new Date().getFullYear());
+						</script>
 						All rights reserved | This template is made with <i
 							class="fa fa-heart" aria-hidden="true"></i> by <a
 							href="https://colorlib.com" target="_blank">Colorlib</a>
@@ -588,5 +565,7 @@
 	<script
 		src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
 	<script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
+		<script src="${pageContext.request.contextPath}/assests/js/category.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
