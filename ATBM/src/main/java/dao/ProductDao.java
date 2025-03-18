@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dto.Brand;
+import dto.Strap;
 import models.Product;
 import utils.ExecuteSQLUtil;
 
@@ -91,75 +93,40 @@ public class ProductDao implements IDao<Product, Long> {
 		return trendingProducts;
 	}
 
-	// Lọc theo chống nước
-	public List<Product> getProductsByWaterResistance(boolean waterResistance) {
-		List<Product> products = new ArrayList<>();
-		String query = "SELECT * FROM Product WHERE waterResistance = ?";
-		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query, waterResistance);
+	// Lấy ds các nhãn hàng
+	public List<Brand> getBrands() {
+		List<Brand> brands = new ArrayList<>();
+		String query = "SELECT * FROM Brand";
+		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query);
 		try {
 			while (rs != null && rs.next()) {
-				products.add(new Product(rs.getLong("productId"), rs.getString("name"), rs.getDouble("price"),
-						rs.getString("description"), rs.getInt("stock"), rs.getString("image"),
-						rs.getBoolean("haveTrending"), rs.getDouble("size"), rs.getBoolean("waterResistance"),
-						rs.getDouble("batteryLife")));
+				brands.add(new Brand(rs.getLong("productId"), rs.getLong("brandId"), rs.getString("name")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return products;
+		return brands;
 	}
 
-	// Lọc theo kích thước mặt đồng hồ
-	public List<Product> getProductsBySizes(List<Double> sizes) {
+	// Lọc
+//	public List<Product> filter() {
+//		List<Product> products = new ArrayList<>();
+//		String query = "SELECT * FROM Product WHERE";
+//		
+//	}
+	
+
+	// Lấy ds sản phẩm bằng brandId
+	public List<Product> getProductsByBrand(String brandId) {
 		List<Product> products = new ArrayList<>();
-		String query = "SELECT * FROM Product WHERE size IN ("
-				+ String.join(",", Collections.nCopies(sizes.size(), "?")) + ")";
-
-		List<Object> params = new ArrayList<>(sizes);
-
-		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query, params.toArray());
-		try {
-			while (rs != null && rs.next()) {
-				products.add(new Product(rs.getLong("productId"), rs.getString("name"), rs.getDouble("price"),
-						rs.getString("description"), rs.getInt("stock"), rs.getString("image"),
-						rs.getBoolean("haveTrending"), rs.getDouble("size"), rs.getBoolean("waterResistance"),
-						rs.getDouble("batteryLife")));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return products;
-	}
-
-	// Lọc theo thương hiệu (brand)
-	public List<Product> getProductsByBrand(long brandId) {
-		List<Product> products = new ArrayList<>();
-		String query = "SELECT * FROM Product WHERE brandId = ?"; // Assuming brandId is in Product table
+		String query = "SELECT p.* FROM Product p " + "JOIN Brand b ON p.productId = b.productId "
+				+ "WHERE b.brandId = ?";
 		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query, brandId);
 		try {
 			while (rs != null && rs.next()) {
 				products.add(new Product(rs.getLong("productId"), rs.getString("name"), rs.getDouble("price"),
 						rs.getString("description"), rs.getInt("stock"), rs.getString("image"),
 						rs.getBoolean("haveTrending"), rs.getDouble("size"), rs.getBoolean("waterResistance"),
-						rs.getDouble("batteryLife") // Assuming batteryLife is also stored in Product
-				));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return products;
-	}
-
-	// Lọc theo loại đồng hồ (watch type)
-	public List<Product> getProductsByWatchType(long typeId) {
-		List<Product> products = new ArrayList<>();
-		String query = "SELECT * FROM Product WHERE typeId = ?";
-		ResultSet rs = ExecuteSQLUtil.ExcuteQuery(query, typeId);
-		try {
-			while (rs != null && rs.next()) {
-				products.add(new Product(rs.getLong("productId"), rs.getString("name"), rs.getDouble("price"),
-						rs.getString("description"), rs.getInt("stock"), rs.getString("image"),
-						rs.getBoolean("haveTrending"), rs.getDouble("size"), rs.getBoolean("waterResistance"),
 						rs.getDouble("batteryLife")));
 			}
 		} catch (SQLException e) {
@@ -167,9 +134,8 @@ public class ProductDao implements IDao<Product, Long> {
 		}
 		return products;
 	}
-
-//	public static void main(String[] args) {
-//		ProductDao dao = new ProductDao();
-//		System.out.println(dao.getProductsByBrand(1L));
-//	}
+	public static void main(String[] args) {
+		ProductDao dao = new ProductDao();
+		System.out.println(dao.getProductsByBrand("1"));
+	}
 }

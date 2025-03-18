@@ -28,6 +28,10 @@ public class Brand {
 	public void setName(String name) {
 		this.name = name;
 	}
+	@Override
+	public String toString() {
+		return "Brand [productId=" + productId + ", brandId=" + brandId + ", name=" + name + "]";
+	}
 
 	
 

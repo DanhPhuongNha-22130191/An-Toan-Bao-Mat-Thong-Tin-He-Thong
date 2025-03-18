@@ -44,5 +44,10 @@ public class Strap {
 	public void setLength(double length) {
 		this.length = length;
 	}
+	@Override
+	public String toString() {
+		return "Strap [productId=" + productId + ", strapId=" + strapId + ", color=" + color + ", material=" + material
+				+ ", length=" + length + "]";
+	}
 
 }
