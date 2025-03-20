@@ -2,11 +2,8 @@ INDEX VERSION 1.134+D:\ATBMHTTT\An-Toan-Bao-Mat-Thong-Tin-He-Thong\.metadata\.pl
 3634328219.index
 3721936636.index
 1173509994.index
-2212398764.index
 548271683.index
 4027538551.index
-1295097964.index
-3713735532.index
 2497974317.index
 2913394398.index
 3584872962.index
@@ -21,7 +18,6 @@ INDEX VERSION 1.134+D:\ATBMHTTT\An-Toan-Bao-Mat-Thong-Tin-He-Thong\.metadata\.pl
 229519920.index
 4140614450.index
 2009907622.index
-1850461747.index
 245500370.index
 1558137024.index
 3191261302.index
@@ -36,5 +32,4 @@ INDEX VERSION 1.134+D:\ATBMHTTT\An-Toan-Bao-Mat-Thong-Tin-He-Thong\.metadata\.pl
 485551162.index
 46605742.index
 1331180429.index
-2142268466.index
 460767570.index
