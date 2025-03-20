@@ -1,5 +1,0 @@
-INDEX VERSION 1.4+D:\ATBMHTTT\An-Toan-Bao-Mat-Thong-Tin-He-Thong\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
-1198568131.index
-2594807903.index
-1111197963.index
-3007420311.index
