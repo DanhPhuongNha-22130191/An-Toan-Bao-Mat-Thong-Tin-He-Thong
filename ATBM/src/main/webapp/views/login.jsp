@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>Aroma Shop - Login</title>
 <link rel="icon" href="img/Fevicon.png" type="image/png">
-<link rel="stylesheet" href="assets/vendors/bootstrap/bootstrap.min.css">
-<link rel="stylesheet" href="assets/vendors/fontawesome/css/all.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="../assets/vendors/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../assets/vendors/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="../assets/css/style.css">
 <style>
 /* Căn chỉnh modal cho đẹp hơn */
 .modal {
@@ -158,7 +158,7 @@
 							document.getElementById("forgotPasswordModal").style.display = "none";
 						});
 	</script>
-	<script src="assets/vendors/jquery/jquery-3.2.1.min.js"></script>
-	<script src="assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="../assets/vendors/jquery/jquery-3.2.1.min.js"></script>
+	<script src="../assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

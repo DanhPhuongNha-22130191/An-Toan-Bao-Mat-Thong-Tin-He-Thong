@@ -8,20 +8,20 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>Aroma Shop - Footer</title>
 <link rel="icon" href="img/Fevicon.png" type="image/png">
-<link rel="stylesheet" href="assets/vendors/bootstrap/bootstrap.min.css">
-<link rel="stylesheet" href="assets/vendors/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="../assets/vendors/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../assets/vendors/fontawesome/css/all.min.css">
 <link rel="stylesheet"
-	href="assets/vendors/themify-icons/themify-icons.css">
-<link rel="stylesheet" href="assets/vendors/linericon/style.css">
+	href="../assets/vendors/themify-icons/themify-icons.css">
+<link rel="stylesheet" href="../assets/vendors/linericon/style.css">
 <link rel="stylesheet"
-	href="assets/vendors/owl-carousel/owl.theme.default.min.css">
+	href="../assets/vendors/owl-carousel/owl.theme.default.min.css">
 <link rel="stylesheet"
-	href="assets/vendors/owl-carousel/owl.carousel.min.css">
-<link rel="stylesheet" href="assets/vendors/nice-select/nice-select.css">
+	href="../assets/vendors/owl-carousel/owl.carousel.min.css">
+<link rel="stylesheet" href="../assets/vendors/nice-select/nice-select.css">
 <link rel="stylesheet"
-	href="assets/vendors/nouislider/nouislider.min.css">
+	href="../assets/vendors/nouislider/nouislider.min.css">
 
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 	<!--================ Start footer Area  =================-->
