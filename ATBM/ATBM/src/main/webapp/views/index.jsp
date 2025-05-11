@@ -7,6 +7,10 @@
 <head>
 <meta charset="UTF-8">
 <title>Aroma Shop - Home</title>
+	<c:if test="${empty trendingProducts}">
+		<c:redirect url="HomeController" />
+	</c:if>
+
 <link rel="icon"
 	href="${pageContext.request.contextPath}/assests/img/Fevicon.png"
 	type="image/png">
