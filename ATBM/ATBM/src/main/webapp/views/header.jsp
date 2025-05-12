@@ -28,7 +28,7 @@
 		<div class="main_menu">
 			<nav class="navbar navbar-expand-lg navbar-light">
 				<div class="container">
-					<a class="navbar-brand logo_h" href="index.html"><img
+					<a class="navbar-brand logo_h" href="shop/home"><img
 						src="img/logo.png" alt=""></a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse"
 						data-target="#navbarSupportedContent"
@@ -40,28 +40,21 @@
 					<div class="collapse navbar-collapse offset"
 						id="navbarSupportedContent">
 						<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-							<li class="nav-item"><a class="nav-link" href="home.jsp">Trang
+							<li class="nav-item"><a class="nav-link" href="shop/home">Trang
 									chủ</a></li>
-							<li class="nav-item"><a class="nav-link" href="shop.jsp">Cửa
-									hàng</a></li>
-							<li class="nav-item"><a class="nav-link" href="Blog.jsp">Blog</a></li>
-							<li class="nav-item"><a class="nav-link" href="contact.html">Liên
-									hệ</a></li>
-
-
+							<li class="nav-item"><a class="nav-link" href="product/category">Lọc</a></li>
+							<li class="nav-item"><a class="nav-link" href="Blog.jsp">Tool mã hóa</a></li>
 							<li class="nav-item d-flex align-items-center"><a
-								href="Cart.jsp" class="cart-link"> <i
+								href="user/cart" class="cart-link"> <i
 									class="ti-shopping-cart"></i> <span class="nav-shop__circle"></span>
 							</a></li>
-
-
 							<li class="nav-item submenu dropdown"><a href="#"
 								class="nav-link dropdown-toggle" data-toggle="dropdown"
 								role="button" aria-haspopup="true" aria-expanded="false"><i
 									class="ti-user"></i></a>
 								<ul class="dropdown-menu">
 									<li class="nav-item"><a class="nav-link"
-										href="profile.jsp">Xem thông tin</a></li>
+										href="views/profile.jsp">Xem thông tin</a></li>
 									<li class="nav-item"><a class="nav-link" href="account?action=logout">Đăng xuất</a></li>
 								</ul></li>
 						</ul>

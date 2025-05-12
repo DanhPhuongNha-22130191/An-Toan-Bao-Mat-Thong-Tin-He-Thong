@@ -120,5 +120,8 @@ public class AccountDao implements IDao<Account, Long> {
         return null;
     }
 
+    public static void main(String[] args) {
+        new AccountDao().getAll();
+    }
 
 }

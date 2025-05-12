@@ -7,9 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Aroma Shop - Home</title>
-	<c:if test="${empty trendingProducts}">
-		<c:redirect url="HomeController" />
-	</c:if>
+
 
 <link rel="icon"
 	href="${pageContext.request.contextPath}/assests/img/Fevicon.png"
@@ -34,79 +32,7 @@
 </head>
 <body>
 	<!--================ Start Header Menu Area =================-->
-	<header class="header_area">
-		<div class="main_menu">
-			<nav class="navbar navbar-expand-lg navbar-light">
-				<div class="container">
-					<a class="navbar-brand logo_h"
-						href="${pageContext.request.contextPath}/views/index.jsp"><img
-						src="${pageContext.request.contextPath}/assests/img/logo.png"
-						alt=""></a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse"
-						data-target="#navbarSupportedContent"
-						aria-controls="navbarSupportedContent" aria-expanded="false"
-						aria-label="Toggle navigation">
-						<span class="icon-bar"></span> <span class="icon-bar"></span> <span
-							class="icon-bar"></span>
-					</button>
-					<div class="collapse navbar-collapse offset"
-						id="navbarSupportedContent">
-						<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-							<li class="nav-item active"><a class="nav-link"
-								href="${pageContext.request.contextPath}/views/index.jsp">Home</a></li>
-							<li class="nav-item submenu dropdown"><a href="#"
-								class="nav-link dropdown-toggle" data-toggle="dropdown"
-								role="button" aria-haspopup="true" aria-expanded="false">Shop</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link"
-										href="${pageContext.request.contextPath}/views/category.jsp">Shop
-											Category</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="single-product.html">Product Details</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="checkout.html">Product Checkout</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="confirmation.html">Confirmation</a></li>
-									<li class="nav-item"><a class="nav-link" href="cart.html">Shopping
-											Cart</a></li>
-								</ul></li>
-							<li class="nav-item submenu dropdown"><a href="#"
-								class="nav-link dropdown-toggle" data-toggle="dropdown"
-								role="button" aria-haspopup="true" aria-expanded="false">Blog</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link"
-										href="${pageContext.request.contextPath}/views/blog.jsp">Blog</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="single-blog.html">Blog Details</a></li>
-								</ul></li>
-							<li class="nav-item submenu dropdown"><a href="#"
-								class="nav-link dropdown-toggle" data-toggle="dropdown"
-								role="button" aria-haspopup="true" aria-expanded="false">Pages</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="register.html">Register</a></li>
-									<li class="nav-item"><a class="nav-link"
-										href="tracking-order.html">Tracking</a></li>
-								</ul></li>
-							<li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-						</ul>
-
-						<ul class="nav-shop">
-							<li class="nav-item"><button>
-									<i class="ti-search"></i>
-								</button></li>
-							<li class="nav-item"><button>
-									<i class="ti-shopping-cart"></i><span class="nav-shop__circle">3</span>
-								</button></li>
-							<li class="nav-item"><a class="button button-header"
-								href="#">Buy Now</a></li>
-						</ul>
-					</div>
-				</div>
-			</nav>
-		</div>
-	</header>
+	<jsp:include page="/views/header.jsp" />
 	<!--================ End Header Menu Area =================-->
 
 	<main class="site-main">
@@ -285,95 +211,7 @@
 
 
 
-		<!-- ================ Blog section start ================= -->
-		<section class="blog">
-			<div class="container">
-				<div class="section-intro pb-60px">
-					<p>Popular Item in the market</p>
-					<h2>
-						Latest <span class="section-intro__style">News</span>
-					</h2>
-				</div>
 
-				<div class="row">
-					<div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-						<div class="card card-blog">
-							<div class="card-blog__img">
-								<img class="card-img rounded-0"
-									src="${pageContext.request.contextPath}/assests/img/blog/blog1.png"
-									alt="">
-							</div>
-							<div class="card-body">
-								<ul class="card-blog__info">
-									<li><a href="#">By Admin</a></li>
-									<li><a href="#"><i class="ti-comments-smiley"></i> 2
-											Comments</a></li>
-								</ul>
-								<h4 class="card-blog__title">
-									<a href="single-blog.html">The Richland Center Shooping
-										News and weekly shooper</a>
-								</h4>
-								<p>Let one fifth i bring fly to divided face for bearing
-									divide unto seed. Winged divided light Forth.</p>
-								<a class="card-blog__link" href="#">Read More <i
-									class="ti-arrow-right"></i></a>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-						<div class="card card-blog">
-							<div class="card-blog__img">
-								<img class="card-img rounded-0"
-									src="${pageContext.request.contextPath}/assests/img/blog/blog2.png"
-									alt="">
-							</div>
-							<div class="card-body">
-								<ul class="card-blog__info">
-									<li><a href="#">By Admin</a></li>
-									<li><a href="#"><i class="ti-comments-smiley"></i> 2
-											Comments</a></li>
-								</ul>
-								<h4 class="card-blog__title">
-									<a href="single-blog.html">The Shopping News also offers
-										top-quality printing services</a>
-								</h4>
-								<p>Let one fifth i bring fly to divided face for bearing
-									divide unto seed. Winged divided light Forth.</p>
-								<a class="card-blog__link" href="#">Read More <i
-									class="ti-arrow-right"></i></a>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-						<div class="card card-blog">
-							<div class="card-blog__img">
-								<img class="card-img rounded-0"
-									src="${pageContext.request.contextPath}/assests/img/blog/blog3.png"
-									alt="">
-							</div>
-							<div class="card-body">
-								<ul class="card-blog__info">
-									<li><a href="#">By Admin</a></li>
-									<li><a href="#"><i class="ti-comments-smiley"></i> 2
-											Comments</a></li>
-								</ul>
-								<h4 class="card-blog__title">
-									<a href="single-blog.html">Professional design staff and
-										efficient equipment you’ll find we offer</a>
-								</h4>
-								<p>Let one fifth i bring fly to divided face for bearing
-									divide unto seed. Winged divided light Forth.</p>
-								<a class="card-blog__link" href="#">Read More <i
-									class="ti-arrow-right"></i></a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- ================ Blog section end ================= -->
 
 		<!-- ================ Subscribe section start ================= -->
 		<section class="subscribe-position">

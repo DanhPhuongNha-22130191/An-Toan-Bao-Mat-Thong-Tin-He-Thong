@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/HomeController")
+@WebServlet("/shop/home")
 public class HomeController extends HttpServlet {
 
     private ProductService productService;

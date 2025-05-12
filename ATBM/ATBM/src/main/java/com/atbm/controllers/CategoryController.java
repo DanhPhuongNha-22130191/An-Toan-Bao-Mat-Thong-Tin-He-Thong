@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/CategoryController")
+@WebServlet("/product/category")
 public class CategoryController extends HttpServlet {
     private ProductService productService = new ProductService();
 
@@ -29,23 +29,26 @@ public class CategoryController extends HttpServlet {
             throws ServletException, IOException {
 
         String brandIdParam = request.getParameter("brandId");
+        String strapIdParam = request.getParameter("strapId");
+        String minPriceParam = request.getParameter("minPrice");
+        String maxPriceParam = request.getParameter("maxPrice");
 
         List<Brand> brands = productService.getAllBrand();
         List<Strap> straps = productService.getAllStrap();
         List<Product> products;
 
-        if (brandIdParam != null && !brandIdParam.isEmpty()) {
-            int brandId = Integer.parseInt(brandIdParam);
-            products = productService.getByBrandId(brandId); 
-            System.out.println(brandId);
-        } else {
-            products = productService.getAll();
-        }
+        Integer brandId = brandIdParam != null && !brandIdParam.isEmpty() ? Integer.parseInt(brandIdParam) : null;
+        Integer strapId = strapIdParam != null && !strapIdParam.isEmpty() ? Integer.parseInt(strapIdParam) : null;
+        Double minPrice = minPriceParam != null && !minPriceParam.isEmpty() ? Double.parseDouble(minPriceParam) : null;
+        Double maxPrice = maxPriceParam != null && !maxPriceParam.isEmpty() ? Double.parseDouble(maxPriceParam) : null;
+
+        products = productService.filterProducts(brandId, strapId, minPrice, maxPrice);
 
         request.setAttribute("brands", brands);
         request.setAttribute("straps", straps);
         request.setAttribute("products", products);
         request.getRequestDispatcher("/views/category.jsp").forward(request, response);
     }
+
 
 }

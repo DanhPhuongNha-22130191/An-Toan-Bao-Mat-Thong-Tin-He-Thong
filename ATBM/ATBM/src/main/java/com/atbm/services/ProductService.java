@@ -55,6 +55,9 @@ public class ProductService implements services.IService<Product, Long> {
 	public List<Product> getByBrandId(int brandId) {
 		return productDao.getProductsByBrandId(brandId);
 	}
+	public List<Product> filterProducts(Integer brandId, Integer strapId, Double minPrice, Double maxPrice) {
+		return productDao.filterProducts(brandId, strapId, minPrice, maxPrice);
+	}
 
 	public static void main(String[] args) {
 		ProductService service = new ProductService();

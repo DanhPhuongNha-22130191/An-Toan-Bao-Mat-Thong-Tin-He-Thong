@@ -25,7 +25,7 @@
             <div class="col-lg-6">
                 <div class="login_form_inner register_form_inner">
                     <h3>Tạo tài khoản</h3>
-                    <form class="row login_form" action="account" method="post" id="register_form">
+                    <form class="row login_form" action="/ATBM/user/account" method="post" id="register_form">
                         <input type="hidden" name="action" value="register">
                         
                         <div class="col-md-12 form-group">

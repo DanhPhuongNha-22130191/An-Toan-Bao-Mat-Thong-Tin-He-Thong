@@ -189,6 +189,59 @@ public class ProductDao implements IDao<Product, Long> {
 	    }
 	    return Products;
 	}
+	public List<Product> filterProducts(Integer brandId, Integer strapId, Double minPrice, Double maxPrice) {
+		List<Product> products = new ArrayList<>();
+		StringBuilder query = new StringBuilder(
+				"SELECT DISTINCT p.* FROM Product p " +
+						"LEFT JOIN Brand b ON p.ProductId = b.ProductId " +
+						"LEFT JOIN Strap s ON p.ProductId = s.ProductId " +
+						"WHERE 1=1 "
+		);
+
+		List<Object> params = new ArrayList<>();
+
+		if (brandId != null) {
+			query.append("AND b.brandId = ? ");
+			params.add(brandId);
+		}
+
+		if (strapId != null) {
+			query.append("AND s.strapId = ? ");
+			params.add(strapId);
+		}
+
+		if (minPrice != null) {
+			query.append("AND p.price >= ? ");
+			params.add(minPrice);
+		}
+
+		if (maxPrice != null) {
+			query.append("AND p.price <= ? ");
+			params.add(maxPrice);
+		}
+
+		ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query.toString(), params.toArray());
+		try {
+			while (rs != null && rs.next()) {
+				products.add(new Product(
+						rs.getLong("ProductId"),
+						rs.getString("name"),
+						rs.getDouble("price"),
+						rs.getString("description"),
+						rs.getInt("stock"),
+						rs.getString("image"),
+						rs.getBoolean("haveTrending"),
+						rs.getDouble("size"),
+						rs.getBoolean("waterResistance"),
+						rs.getDouble("batteryLife") // Ensure this field is in the SELECT
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return products;
+	}
 
 	public static void main(String[] args) {
 		ProductDao dao = new ProductDao();

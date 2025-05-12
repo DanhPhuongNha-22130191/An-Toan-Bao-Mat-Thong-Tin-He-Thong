@@ -4,6 +4,7 @@ import com.atbm.mail.EmailUtil;
 import com.atbm.services.AccountService;
 import dto.AccountDTO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Random;
-
+@WebServlet("/user/account")
 public class AccountController extends HttpServlet {
     private AccountService accountService = new AccountService();
 
@@ -42,7 +43,7 @@ public class AccountController extends HttpServlet {
             resp.sendRedirect("login.jsp?success=registered");
         } else {
             req.setAttribute("error", "Tên tài khoản đã tồn tại.");
-            req.getRequestDispatcher("register.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
         }
     }
 
@@ -58,7 +59,7 @@ public class AccountController extends HttpServlet {
             resp.sendRedirect("home.jsp");
         } else {
             req.setAttribute("error", "Sai tài khoản hoặc mật khẩu.");
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
         }
     }
 
