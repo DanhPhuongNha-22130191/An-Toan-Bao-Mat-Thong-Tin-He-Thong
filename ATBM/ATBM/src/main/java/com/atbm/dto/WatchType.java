@@ -1,4 +1,4 @@
-package dto;
+package com.atbm.dto;
 
 public class WatchType {
 	private long productId; 
