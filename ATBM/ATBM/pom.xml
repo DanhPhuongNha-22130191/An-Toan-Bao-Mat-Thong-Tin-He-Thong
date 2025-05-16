@@ -64,6 +64,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version> <!-- Bạn có thể thay đổi version nếu cần -->
+        </dependency>
+
     </dependencies>
 
     <build>

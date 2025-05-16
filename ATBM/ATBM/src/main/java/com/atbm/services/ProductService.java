@@ -58,10 +58,20 @@ public class ProductService implements services.IService<Product, Long> {
 	public List<Product> filterProducts(Integer brandId, Integer strapId, Double minPrice, Double maxPrice) {
 		return productDao.filterProducts(brandId, strapId, minPrice, maxPrice);
 	}
+	public Double getMinProductPrice() {
+		return productDao.getMinPrice();
+	}
+
+	public Double getMaxProductPrice() {
+		return productDao.getMaxPrice();
+	}
 
 	public static void main(String[] args) {
 		ProductService service = new ProductService();
-		System.out.println(service.getByBrandId(1));
+		List<Product> filteredProducts = service.filterProducts(1, 1, service.getMinProductPrice(), service.getMaxProductPrice());
+		for (Product p : filteredProducts) {
+			System.out.println(p);
+		}
 	}
 
 }

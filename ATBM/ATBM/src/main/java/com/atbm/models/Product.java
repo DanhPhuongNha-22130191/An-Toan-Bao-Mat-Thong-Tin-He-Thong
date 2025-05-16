@@ -14,7 +14,6 @@ public class Product {
 	public Product(Long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance) {
 	}
 
-
 	public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance) {
         this.productId = productId;
         this.name = name;

@@ -1,119 +1,142 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Aroma Shop - Category</title>
-	<link rel="icon" href="${pageContext.request.contextPath}/assests/img/Fevicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Aroma Shop - Category</title>
+    <link rel="icon" href="${pageContext.request.contextPath}/assests/img/Fevicon.png" type="image/png">
 
-	<!-- CSS -->
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
 </head>
 
 <body>
-
 <!-- ================ category section start ================= -->
 <section class="section-margin--small mb-5">
-	<div class="container">
-		<div class="row">
-			<div class="col-xl-3 col-lg-4 col-md-5">
-				<form id="filterForm" action="category" method="get">
-					<!-- Brand Filter -->
-					<div class="sidebar-categories">
-						<div class="head">Browse Brands</div>
-						<ul class="main-categories">
-							<li class="common-filter">
-								<ul>
-									<c:forEach var="brand" items="${brands}">
-										<li class="filter-list">
-											<input class="pixel-radio" type="radio" name="brandId"
-												   id="brand${brand.brandId}" value="${brand.brandId}"
-												   onchange="document.getElementById('filterForm').submit();"
-												   <c:if test="${param.brandId == brand.brandId}">checked</c:if>>
-											<label for="brand${brand.brandId}">${brand.name}</label>
-										</li>
-									</c:forEach>
-								</ul>
-							</li>
-						</ul>
-					</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-5">
+                <form id="filterForm" action="category" method="get">
+                    <!-- Brand Filter -->
+                    <div class="sidebar-categories">
+                        <div class="head">Browse Brands</div>
+                        <ul class="main-categories">
+                            <li class="common-filter">
+                                <ul>
+                                    <c:forEach var="brand" items="${brands}">
+                                        <li class="filter-list">
+                                            <input class="pixel-radio" type="radio" name="brandId"
+                                                   id="brand${brand.brandId}" value="${brand.brandId}"
+                                                   onchange="applyFilters();">
+                                            <label for="brand${brand.brandId}">${brand.name}</label>
+                                            <c:choose>
+                                                <c:when test="${param.brandId == brand.brandId}">
+                                                    <script>document.getElementById('brand${brand.brandId}').checked = true;</script>
+                                                </c:when>
+                                            </c:choose>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
 
-					<!-- Strap Filter -->
-					<div class="sidebar-filter">
-						<div class="top-filter-head">Product Filters</div>
-						<div class="common-filter">
-							<div class="head">Strap Material</div>
-							<ul>
-								<c:forEach var="strap" items="${straps}">
-									<li class="filter-list">
-										<input class="pixel-radio" type="radio" name="strapId"
-											   id="strap${strap.strapId}" value="${strap.strapId}"
-											   onchange="document.getElementById('filterForm').submit();"
-											   <c:if test="${param.strapId == strap.strapId}">checked</c:if>>
-										<label for="strap${strap.strapId}">${strap.material}</label>
-									</li>
-								</c:forEach>
-							</ul>
-						</div>
+                    <!-- Strap Filter -->
+                    <div class="sidebar-filter">
+                        <div class="top-filter-head">Product Filters</div>
+                        <div class="common-filter">
+                            <div class="head">Strap Material</div>
+                            <ul>
+                                <c:forEach var="strap" items="${straps}">
+                                    <li class="filter-list">
+                                        <input class="pixel-radio" type="radio" name="strapId"
+                                               id="strap${strap.strapId}" value="${strap.strapId}"
+                                               onchange="applyFilters();">
+                                        <label for="strap${strap.strapId}">${strap.material}</label>
+                                        <c:choose>
+                                            <c:when test="${param.strapId == strap.strapId}">
+                                                <script>document.getElementById('strap${strap.strapId}').checked = true;</script>
+                                            </c:when>
+                                        </c:choose>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
 
-						<!-- Price Range -->
-						<div class="common-filter">
-							<div class="head">Price</div>
-							<div class="price-range-area">
-								<div id="price-range"></div>
-								<div class="value-wrapper d-flex">
-									<div class="price">Price:</div>
-									<span>$</span><div id="lower-value">0</div>
-									<div class="to">to</div>
-									<span>$</span><div id="upper-value">1000</div>
-								</div>
-								<input type="hidden" id="minPriceInput" name="minPrice" value="${param.minPrice != null ? param.minPrice : 0}">
-								<input type="hidden" id="maxPriceInput" name="maxPrice" value="${param.maxPrice != null ? param.maxPrice : 1000}">
-							</div>
-						</div>
-					</div>
-				</form>
-			</div>
+                        <!-- Price Range -->
+                        <div class="common-filter">
+                            <div class="head">Price</div>
+                            <div class="price-range-area">
+                                <div id="price-range"></div>
+                                <div class="value-wrapper d-flex">
+                                    <div class="price">Price:</div>
+                                    <span>$</span>
+                                    <div id="lower-value">0</div>
+                                    <div class="to">to</div>
+                                    <span>$</span>
+                                    <div id="upper-value">1000</div>
+                                </div>
+                                <input type="hidden" id="minPriceInput" name="minPrice"
+                                       value="${param.minPrice != null ? param.minPrice : minPrice}">
+                                <input type="hidden" id="maxPriceInput" name="maxPrice"
+                                       value="${param.maxPrice != null ? param.maxPrice : maxPrice}">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-			<div class="col-xl-9 col-lg-8 col-md-7">
-				<!-- Product List -->
-				<section class="lattest-product-area pb-40 category-list">
-					<div class="row">
-						<c:forEach var="product" items="${products}">
-							<div class="col-md-6 col-lg-4">
-								<div class="card text-center card-product">
-									<div class="card-product__img">
-										<img class="card-img"
-											 src="${product.image}"
-											 alt="${product.name}">
-										<ul class="card-product__imgOverlay">
-											<li><button><i class="ti-search"></i></button></li>
-											<li><button><i class="ti-shopping-cart"></i></button></li>
-											<li><button><i class="ti-heart"></i></button></li>
-										</ul>
-									</div>
-									<div class="card-body">
-										<p>${product.description}</p>
-										<h4 class="card-product__title"><a href="#">${product.name}</a></h4>
-										<p class="card-product__price">$${product.price}</p>
-									</div>
-								</div>
-							</div>
-						</c:forEach>
-					</div>
-				</section>
-			</div>
-		</div>
-	</div>
+            <div class="col-xl-9 col-lg-8 col-md-7">
+                <!-- Spinner -->
+                <div id="loading-spinner" style="display: none; text-align:center; margin:20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Product List -->
+                <section class="lattest-product-area pb-40 category-list">
+                    <div id="product-list" class="row">
+                        <c:forEach var="product" items="${products}">
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card text-center card-product">
+                                    <div class="card-product__img">
+                                        <img class="card-img" src="${product.image}" alt="${product.name}">
+                                        <ul class="card-product__imgOverlay">
+                                            <li>
+                                                <button><i class="ti-search"></i></button>
+                                            </li>
+                                            <li>
+                                                <button><i class="ti-shopping-cart"></i></button>
+                                            </li>
+                                            <li>
+                                                <button><i class="ti-heart"></i></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>${product.description}</p>
+                                        <h4 class="card-product__title"><a href="#">${product.name}</a></h4>
+                                        <p class="card-product__price">$${product.price}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
 </section>
 <!-- ================ category section end ================= -->
 
@@ -124,42 +147,148 @@
 <script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.js"></script>
 <script>
-	$(function () {
-		const slider = document.getElementById('price-range');
-		if (slider) {
-			noUiSlider.create(slider, {
-				start: [
-					${param.minPrice != null ? param.minPrice : 0},
-					${param.maxPrice != null ? param.maxPrice : 1000}
-				],
-				connect: true,
-				range: {
-					'min': 0,
-					'max': 1000
-				}
+	async function applyFilters() {
+		const data = $('#filterForm').serialize();
+		$('#loading-spinner').show();
+
+		const contextPath = '${pageContext.request.contextPath}';
+
+		try {
+			const response = await $.ajax({
+				url: `${pageContext.request.contextPath}/product/filter`,
+				method: 'GET',
+				data: data,
+				dataType: 'json'
 			});
 
-			const lowerValue = document.getElementById('lower-value');
-			const upperValue = document.getElementById('upper-value');
-			const minInput = document.getElementById('minPriceInput');
-			const maxInput = document.getElementById('maxPriceInput');
+			console.log("Response data:", response);
 
-			slider.noUiSlider.on('update', function (values) {
-				let min = Math.round(values[0]);
-				let max = Math.round(values[1]);
-				lowerValue.textContent = min;
-				upperValue.textContent = max;
+			const productList = document.getElementById('product-list');
+			productList.innerHTML = '';
+
+			if (response.length === 0) {
+				const noProductsMessage = document.createElement('div');
+				noProductsMessage.classList.add('col-12');
+				noProductsMessage.innerHTML = '<p class="text-center">No products found.</p>';
+				productList.appendChild(noProductsMessage);
+				return;
+			}
+
+			response.forEach(function (product) {
+				const productCard = document.createElement('div');
+				productCard.classList.add('col-md-6', 'col-lg-4');
+
+				const card = document.createElement('div');
+				card.classList.add('card', 'text-center', 'card-product');
+
+				// Image section
+				const imgContainer = document.createElement('div');
+				imgContainer.classList.add('card-product__img');
+
+				const img = document.createElement('img');
+				img.classList.add('card-img');
+				img.src = `${contextPath}/assests/img/${product.image}`;
+				img.alt = product.name;
+				imgContainer.appendChild(img);
+
+				const overlay = document.createElement('ul');
+				overlay.classList.add('card-product__imgOverlay');
+
+				['ti-search', 'ti-shopping-cart', 'ti-heart'].forEach(icon => {
+					const li = document.createElement('li');
+					const btn = document.createElement('button');
+					const i = document.createElement('i');
+					i.classList.add(icon);
+					btn.appendChild(i);
+					li.appendChild(btn);
+					overlay.appendChild(li);
+				});
+
+				imgContainer.appendChild(overlay);
+				card.appendChild(imgContainer);
+
+				// Body section
+				const body = document.createElement('div');
+				body.classList.add('card-body');
+
+				const desc = document.createElement('p');
+				desc.textContent = product.description;
+
+				const title = document.createElement('h4');
+				title.classList.add('card-product__title');
+				const link = document.createElement('a');
+				link.href = '#';
+				link.textContent = product.name;
+				title.appendChild(link);
+
+                const price = document.createElement('p');
+                price.classList.add('card-product__price');
+                price.textContent = `$${product.price}`;
+
+                console.log("Hiển thị giá:", product.price); // nên là $450
+
+// Gỡ lỗi rõ ràng
+                console.log("product.price raw:", product.price, "| typeof:", typeof product.price);
+
+                if (product.price !== undefined && product.price !== null && product.price !== '') {
+                    // Nếu là số hoặc chuỗi số, hiển thị trực tiếp
+                    const priceValue = product.price;
+                    if (!isNaN(priceValue)) {
+                        price.textContent = '$'+priceValue;
+                    } else {
+                        price.textContent = '$0'; // fallback nếu parse lỗi
+                    }
+                } else {
+                    price.textContent = '$0'; // fallback nếu không có giá
+                }
+
+
+
+
+                // Append elements in logical order
+				body.appendChild(title);
+				body.appendChild(desc);
+                body.appendChild(price);
+				card.appendChild(body);
+				productCard.appendChild(card);
+				productList.appendChild(productCard);
 			});
 
-			slider.noUiSlider.on('change', function (values) {
-				let min = Math.round(values[0]);
-				let max = Math.round(values[1]);
-				minInput.value = min;
-				maxInput.value = max;
-				document.getElementById('filterForm').submit();
-			});
+		} catch (error) {
+			console.error("Error applying filters", error);
+		} finally {
+			$('#loading-spinner').hide();
 		}
-	});
+	}
+
+
+
+	$(function () {
+        const slider = document.getElementById('price-range');
+        if (slider) {
+            noUiSlider.create(slider, {
+                start: [
+                    ${param.minPrice != null ? param.minPrice : minPrice},
+                    ${param.maxPrice != null ? param.maxPrice : maxPrice}
+                ],
+                range: {
+                    'min': ${minPrice},
+                    'max': ${maxPrice}
+                }
+            });
+
+            slider.noUiSlider.on('update', function (values) {
+                $('#lower-value').text(Math.round(values[0]));
+                $('#upper-value').text(Math.round(values[1]));
+            });
+
+            slider.noUiSlider.on('change', function (values) {
+                $('#minPriceInput').val(Math.round(values[0]));
+                $('#maxPriceInput').val(Math.round(values[1]));
+                applyFilters();
+            });
+        }
+    });
 </script>
 </body>
 </html>
