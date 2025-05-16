@@ -36,8 +36,8 @@ public class CartController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		CartService service = new CartService();
-//		long accountId = Long.parseLong(req.getAttribute("accountId").toString());
-		long accountId = 101;
+		dto.AccountDTO accountDTO = (dto.AccountDTO) req.getSession().getAttribute("user");
+		long accountId = accountDTO.getAccountId();
 		CartDTO dto = service.convertToDTO(accountId);
 		Object code = req.getSession().getAttribute("voucher");
 		if (code != null) {

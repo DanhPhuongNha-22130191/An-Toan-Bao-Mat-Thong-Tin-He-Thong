@@ -33,9 +33,8 @@ public class CheckoutController extends HttpServlet {
 		String note = req.getParameter("note");
 		models.OrderDetail orderDetail = new models.OrderDetail(fullName, phoneNumber, email, address, note);
 
-//		long accountId = (Long) req.getSession().getAttribute("accountId");
-		long accountId = 101;
-		Order order = new Order(accountId, 0, "COD", cartDto, orderDetail);
+		dto.AccountDTO accountDTO = (dto.AccountDTO) req.getSession().getAttribute("user");
+		long accountId = accountDTO.getAccountId();		Order order = new Order(accountId, 0, "COD", cartDto, orderDetail);
 		if (cartDto.getVoucher() != null) {
 			order.setVoucherId(cartDto.getVoucherId());
 		}
