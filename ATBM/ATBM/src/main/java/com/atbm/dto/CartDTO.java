@@ -3,6 +3,7 @@ package com.atbm.dto;
 
 
 import com.atbm.models.Order;
+import com.atbm.models.OrderDetail;
 import com.atbm.models.Product;
 import com.atbm.models.Voucher;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class CartDTO {
 	private List<CartItemDTO> items;
 	private Voucher voucher;
-	private models.OrderDetail orderDetail;
+	private OrderDetail orderDetail;
 	private Order order;
 
 	public CartDTO() {
@@ -62,7 +63,7 @@ public class CartDTO {
 		return orderDetail.getFullName();
 	}
 
-	public void setOrderDetail(models.OrderDetail orderDetail) {
+	public void setOrderDetail(OrderDetail orderDetail) {
 		this.orderDetail = orderDetail;
 	}
 

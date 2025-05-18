@@ -3,6 +3,7 @@ package com.atbm.controllers;
 
 import com.atbm.dto.CartDTO;
 import com.atbm.models.Order;
+import com.atbm.models.OrderDetail;
 import com.atbm.services.OrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,7 +32,7 @@ public class CheckoutController extends HttpServlet {
 		String email = req.getParameter("email");
 		String address = req.getParameter("address");
 		String note = req.getParameter("note");
-		models.OrderDetail orderDetail = new models.OrderDetail(fullName, phoneNumber, email, address, note);
+		OrderDetail orderDetail = new OrderDetail(fullName, phoneNumber, email, address, note);
 
 		dto.AccountDTO accountDTO = (dto.AccountDTO) req.getSession().getAttribute("user");
 		long accountId = accountDTO.getAccountId();		Order order = new Order(accountId, 0, "COD", cartDto, orderDetail);

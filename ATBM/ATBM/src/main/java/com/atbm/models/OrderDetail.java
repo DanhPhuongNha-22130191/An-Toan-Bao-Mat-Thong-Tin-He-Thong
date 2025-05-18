@@ -1,4 +1,4 @@
-package models;
+package com.atbm.models;
 
 public class OrderDetail {
 	private long orderDetailId;

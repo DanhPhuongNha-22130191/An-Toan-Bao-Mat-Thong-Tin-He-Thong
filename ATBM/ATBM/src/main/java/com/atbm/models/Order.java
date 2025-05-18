@@ -10,10 +10,10 @@ public class Order {
 	private String paymentMethod;
 	private Long voucherId;
 	private CartDTO cartDTO;
-	private models.OrderDetail orderDetail;
+	private OrderDetail orderDetail;
 
 	public Order(long accountId, double shipping, String paymentMethod,  CartDTO cartDTO,
-			models.OrderDetail orderDetail) {
+			OrderDetail orderDetail) {
 		this.accountId = accountId;
 		this.shipping = shipping;
 		this.paymentMethod = paymentMethod;
@@ -29,11 +29,11 @@ public class Order {
 		this.cartDTO = cartDTO;
 	}
 
-	public models.OrderDetail getOrderDetail() {
+	public OrderDetail getOrderDetail() {
 		return orderDetail;
 	}
 
-	public void setOrderDetail(models.OrderDetail orderDetail) {
+	public void setOrderDetail(OrderDetail orderDetail) {
 		this.orderDetail = orderDetail;
 	}
 

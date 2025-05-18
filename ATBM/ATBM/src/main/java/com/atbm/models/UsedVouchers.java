@@ -1,4 +1,4 @@
-package models;
+package com.atbm.models;
 
 import java.sql.Date;
 
