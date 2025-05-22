@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/product/filter")
 public class CategoryAjaxController extends HttpServlet {
@@ -21,18 +23,30 @@ public class CategoryAjaxController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String brandIdParam = request.getParameter("brandId");
-        String strapIdParam = request.getParameter("strapId");
+        String[] brandIdParams = request.getParameterValues("brandId[]");
+        String[] strapIdParams = request.getParameterValues("strapId[]");
         String minPriceParam = request.getParameter("minPrice");
         String maxPriceParam = request.getParameter("maxPrice");
 
-        Integer brandId = (brandIdParam != null && !brandIdParam.isEmpty()) ? Integer.parseInt(brandIdParam) : null;
-        Integer strapId = (strapIdParam != null && !strapIdParam.isEmpty()) ? Integer.parseInt(strapIdParam) : null;
+        List<Integer> brandIds = brandIdParams != null ?
+                Arrays.stream(brandIdParams)
+                        .filter(param -> !param.isEmpty())
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList()) :
+                null;
+
+        List<Integer> strapIds = strapIdParams != null ?
+                Arrays.stream(strapIdParams)
+                        .filter(param -> !param.isEmpty())
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList()) :
+                null;
+
         Double minPrice = (minPriceParam != null && !minPriceParam.isEmpty()) ? Double.parseDouble(minPriceParam) : null;
         Double maxPrice = (maxPriceParam != null && !maxPriceParam.isEmpty()) ? Double.parseDouble(maxPriceParam) : null;
 
-        List<Product> products = productService.filterProducts(brandId, strapId, minPrice, maxPrice);
-        for(Product product : products) {
+        List<Product> products = productService.filterProducts(brandIds, strapIds, minPrice, maxPrice);
+        for (Product product : products) {
             System.out.println(product);
         }
 

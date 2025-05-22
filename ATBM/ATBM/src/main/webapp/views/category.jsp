@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,8 +13,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
@@ -35,15 +35,11 @@
                                 <ul>
                                     <c:forEach var="brand" items="${brands}">
                                         <li class="filter-list">
-                                            <input class="pixel-radio" type="radio" name="brandId"
+                                            <input class="pixel-checkbox" type="checkbox" name="brandId[]"
                                                    id="brand${brand.brandId}" value="${brand.brandId}"
-                                                   onchange="applyFilters();">
+                                                   onchange="applyFilters();"
+                                                   <c:if test="${fn:contains(paramValues['brandId[]'], brand.brandId)}">checked</c:if>>
                                             <label for="brand${brand.brandId}">${brand.name}</label>
-                                            <c:choose>
-                                                <c:when test="${param.brandId == brand.brandId}">
-                                                    <script>document.getElementById('brand${brand.brandId}').checked = true;</script>
-                                                </c:when>
-                                            </c:choose>
                                         </li>
                                     </c:forEach>
                                 </ul>
@@ -59,15 +55,11 @@
                             <ul>
                                 <c:forEach var="strap" items="${straps}">
                                     <li class="filter-list">
-                                        <input class="pixel-radio" type="radio" name="strapId"
+                                        <input class="pixel-checkbox" type="checkbox" name="strapId[]"
                                                id="strap${strap.strapId}" value="${strap.strapId}"
-                                               onchange="applyFilters();">
+                                               onchange="applyFilters();"
+                                               <c:if test="${fn:contains(paramValues['strapId[]'], strap.strapId)}">checked</c:if>>
                                         <label for="strap${strap.strapId}">${strap.material}</label>
-                                        <c:choose>
-                                            <c:when test="${param.strapId == strap.strapId}">
-                                                <script>document.getElementById('strap${strap.strapId}').checked = true;</script>
-                                            </c:when>
-                                        </c:choose>
                                     </li>
                                 </c:forEach>
                             </ul>
@@ -220,18 +212,8 @@
 
                 const price = document.createElement('p');
                 price.classList.add('card-product__price');
-                price.textContent = `$${product.price}`;
-
-                if (product.price !== undefined && product.price !== null && product.price !== '') {
-                    const priceValue = product.price;
-                    if (!isNaN(priceValue)) {
-                        price.textContent = '$' + priceValue;
-                    } else {
-                        price.textContent = '$0';
-                    }
-                } else {
-                    price.textContent = '$0';
-                }
+                price.textContent = product.price !== undefined && product.price !== null ? `$`+product.price : '$0';
+                // console.log("Product price:", product.price);
 
                 body.appendChild(title);
                 body.appendChild(desc);
@@ -240,7 +222,6 @@
                 productCard.appendChild(card);
                 productList.appendChild(productCard);
             });
-
         } catch (error) {
             console.error("Error applying filters", error);
         } finally {
@@ -273,32 +254,14 @@
                 applyFilters();
             });
         }
-    });
-    // Allow unselecting radio buttons
-    document.querySelectorAll('input[type="radio"]').forEach(function (radio) {
-        radio.addEventListener('mousedown', function (e) {
-            if (this.checked) {
-                this.previousState = true;
-            } else {
-                this.previousState = false;
-            }
-        });
 
-        radio.addEventListener('click', function (e) {
-            if (this.previousState) {
-                this.checked = false;
-                this.previousState = false;
-
-                // Clear the filter and reapply
-                const name = this.name;
-                // Clear the selected value for this filter in form
-                document.querySelectorAll('input[name="' + name + '"]').forEach(input => input.checked = false);
-
-                applyFilters(); // Update products
-            }
+        // Handle checkbox changes
+        document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                applyFilters(); // Update products on any checkbox change
+            });
         });
     });
-
 </script>
 </body>
 </html>
