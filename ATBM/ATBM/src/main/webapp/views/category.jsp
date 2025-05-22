@@ -22,6 +22,9 @@
 
 <body>
 <!-- ================ category section start ================= -->
+<!--================ Start Header Menu Area =================-->
+<jsp:include page="/views/header.jsp" />
+<!--================ End Header Menu Area =================-->
 <section class="section-margin--small mb-5">
     <div class="container">
         <div class="row">
