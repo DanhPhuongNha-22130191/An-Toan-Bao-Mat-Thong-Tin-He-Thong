@@ -40,10 +40,10 @@
 					<div class="collapse navbar-collapse offset"
 						id="navbarSupportedContent">
 						<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-							<li class="nav-item"><a class="nav-link" href="shop/home">Trang
+							<li class="nav-item"><a class="nav-link" href="/ATBM/shop/home">Trang
 									chủ</a></li>
 							<li class="nav-item"><a class="nav-link" href="/ATBM/product/category">Lọc</a></li>
-							<li class="nav-item"><a class="nav-link" href="Blog.jsp">Tool mã hóa</a></li>
+							<li class="nav-item"><a class="nav-link" href="/ATBM/introduce">Tool mã hóa</a></li>
 							<li class="nav-item d-flex align-items-center"><a
 								href="user/cart" class="cart-link"> <i
 									class="ti-shopping-cart"></i> <span class="nav-shop__circle"></span>
