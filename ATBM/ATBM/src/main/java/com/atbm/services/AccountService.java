@@ -1,8 +1,8 @@
 package com.atbm.services;
 
 import com.atbm.dao.AccountDao;
-import dto.AccountDTO;
-import models.Account;
+import com.atbm.dto.AccountDTO;
+import com.atbm.models.Account;
 
 import java.util.List;
 

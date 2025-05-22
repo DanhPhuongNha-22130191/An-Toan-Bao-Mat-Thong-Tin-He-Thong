@@ -86,12 +86,15 @@ CREATE TABLE CartItem (
 );
 
 CREATE TABLE Voucher (
-                         voucherId INT PRIMARY KEY,
-                         code NVARCHAR(50) NOT NULL,
-                         expirationTime DATETIME NOT NULL,
-                         percentDecrease DECIMAL(5, 2) NOT NULL,
-                         name NVARCHAR(100) NOT NULL,
-                         quantity INT NOT NULL
+    voucherId BIGINT PRIMARY KEY AUTO_INCREMENT,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    expirationTime DATE NOT NULL,
+    percentDecrease DOUBLE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    minOrderValue DOUBLE NOT NULL DEFAULT 0,
+    maxUsagePerUser INT NOT NULL DEFAULT 1,
+    isActive BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE [Order] (
@@ -115,6 +118,15 @@ CREATE TABLE OrderDetail (
                              orderNote NTEXT,
                              FOREIGN KEY (orderId) REFERENCES [Order](orderId),
                              FOREIGN KEY (productId) REFERENCES Product(productId)
+);
+
+CREATE TABLE VoucherUsage (
+    usageId BIGINT PRIMARY KEY AUTO_INCREMENT,
+    voucherId BIGINT NOT NULL,
+    accountId BIGINT NOT NULL,
+    usedAt TIMESTAMP NOT NULL,
+    orderId VARCHAR(50),
+    FOREIGN KEY (voucherId) REFERENCES Voucher(voucherId)
 );
 
 -- Insert sample data
@@ -214,3 +226,14 @@ INSERT INTO OrderDetail (orderDetailId, orderId, productId, fullName, phone, ema
                                                                                                             (4, 3, 5, N'Robert Johnson', N'+1-555-246-8135', N'robert.johnson@example.com', N'789 Pine Rd, Chicago, IL 60007', N'Call before delivery'),
                                                                                                             (5, 4, 8, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', NULL),
                                                                                                             (6, 5, 7, N'Susan Wilson', N'+1-555-369-8521', N'susan.wilson@example.com', N'321 Cedar Ln, Miami, FL 33101', N'Leave with the doorman');
+
+UPDATE Voucher 
+SET minOrderValue = 1000000, -- 1 triệu đồng
+    maxUsagePerUser = 1,
+    isActive = 1
+WHERE voucherId IN (1, 2, 3, 4);
+
+INSERT INTO VoucherUsage (voucherId, accountId, usedAt, orderId) VALUES
+(1, 1, '2024-03-15 10:30:00', 'ORD001'),
+(2, 2, '2024-03-16 14:20:00', 'ORD002'),
+(3, 3, '2024-03-17 09:15:00', 'ORD003');
