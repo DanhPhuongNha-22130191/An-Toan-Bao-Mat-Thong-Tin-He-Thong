@@ -140,130 +140,115 @@
 </section>
 <!-- ================ category section end ================= -->
 
-<!-- Scripts -->
 <script src="${pageContext.request.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.js"></script>
 <script>
-	async function applyFilters() {
-		const data = $('#filterForm').serialize();
-		$('#loading-spinner').show();
+    async function applyFilters() {
+        const data = $('#filterForm').serialize();
+        $('#loading-spinner').show();
 
-		const contextPath = '${pageContext.request.contextPath}';
+        const contextPath = '${pageContext.request.contextPath}';
 
-		try {
-			const response = await $.ajax({
-				url: `${pageContext.request.contextPath}/product/filter`,
-				method: 'GET',
-				data: data,
-				dataType: 'json'
-			});
+        try {
+            const response = await $.ajax({
+                url: `${pageContext.request.contextPath}/product/filter`,
+                method: 'GET',
+                data: data,
+                dataType: 'json'
+            });
 
-			console.log("Response data:", response);
+            console.log("Response data:", response);
 
-			const productList = document.getElementById('product-list');
-			productList.innerHTML = '';
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
 
-			if (response.length === 0) {
-				const noProductsMessage = document.createElement('div');
-				noProductsMessage.classList.add('col-12');
-				noProductsMessage.innerHTML = '<p class="text-center">No products found.</p>';
-				productList.appendChild(noProductsMessage);
-				return;
-			}
+            if (response.length === 0) {
+                const noProductsMessage = document.createElement('div');
+                noProductsMessage.classList.add('col-12');
+                noProductsMessage.innerHTML = '<p class="text-center">No products found.</p>';
+                productList.appendChild(noProductsMessage);
+                return;
+            }
 
-			response.forEach(function (product) {
-				const productCard = document.createElement('div');
-				productCard.classList.add('col-md-6', 'col-lg-4');
+            response.forEach(function (product) {
+                const productCard = document.createElement('div');
+                productCard.classList.add('col-md-6', 'col-lg-4');
 
-				const card = document.createElement('div');
-				card.classList.add('card', 'text-center', 'card-product');
+                const card = document.createElement('div');
+                card.classList.add('card', 'text-center', 'card-product');
 
-				// Image section
-				const imgContainer = document.createElement('div');
-				imgContainer.classList.add('card-product__img');
+                const imgContainer = document.createElement('div');
+                imgContainer.classList.add('card-product__img');
 
-				const img = document.createElement('img');
-				img.classList.add('card-img');
-				img.src = `${contextPath}/assests/img/${product.image}`;
-				img.alt = product.name;
-				imgContainer.appendChild(img);
+                const img = document.createElement('img');
+                img.classList.add('card-img');
+                img.src = `${contextPath}/assests/img/${product.image}`;
+                img.alt = product.name;
+                imgContainer.appendChild(img);
 
-				const overlay = document.createElement('ul');
-				overlay.classList.add('card-product__imgOverlay');
+                const overlay = document.createElement('ul');
+                overlay.classList.add('card-product__imgOverlay');
 
-				['ti-search', 'ti-shopping-cart', 'ti-heart'].forEach(icon => {
-					const li = document.createElement('li');
-					const btn = document.createElement('button');
-					const i = document.createElement('i');
-					i.classList.add(icon);
-					btn.appendChild(i);
-					li.appendChild(btn);
-					overlay.appendChild(li);
-				});
+                ['ti-search', 'ti-shopping-cart', 'ti-heart'].forEach(icon => {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    const i = document.createElement('i');
+                    i.classList.add(icon);
+                    btn.appendChild(i);
+                    li.appendChild(btn);
+                    overlay.appendChild(li);
+                });
 
-				imgContainer.appendChild(overlay);
-				card.appendChild(imgContainer);
+                imgContainer.appendChild(overlay);
+                card.appendChild(imgContainer);
 
-				// Body section
-				const body = document.createElement('div');
-				body.classList.add('card-body');
+                const body = document.createElement('div');
+                body.classList.add('card-body');
 
-				const desc = document.createElement('p');
-				desc.textContent = product.description;
+                const desc = document.createElement('p');
+                desc.textContent = product.description;
 
-				const title = document.createElement('h4');
-				title.classList.add('card-product__title');
-				const link = document.createElement('a');
-				link.href = '#';
-				link.textContent = product.name;
-				title.appendChild(link);
+                const title = document.createElement('h4');
+                title.classList.add('card-product__title');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = product.name;
+                title.appendChild(link);
 
                 const price = document.createElement('p');
                 price.classList.add('card-product__price');
                 price.textContent = `$${product.price}`;
 
-                console.log("Hiển thị giá:", product.price); // nên là $450
-
-// Gỡ lỗi rõ ràng
-                console.log("product.price raw:", product.price, "| typeof:", typeof product.price);
-
                 if (product.price !== undefined && product.price !== null && product.price !== '') {
-                    // Nếu là số hoặc chuỗi số, hiển thị trực tiếp
                     const priceValue = product.price;
                     if (!isNaN(priceValue)) {
-                        price.textContent = '$'+priceValue;
+                        price.textContent = '$' + priceValue;
                     } else {
-                        price.textContent = '$0'; // fallback nếu parse lỗi
+                        price.textContent = '$0';
                     }
                 } else {
-                    price.textContent = '$0'; // fallback nếu không có giá
+                    price.textContent = '$0';
                 }
 
-
-
-
-                // Append elements in logical order
-				body.appendChild(title);
-				body.appendChild(desc);
+                body.appendChild(title);
+                body.appendChild(desc);
                 body.appendChild(price);
-				card.appendChild(body);
-				productCard.appendChild(card);
-				productList.appendChild(productCard);
-			});
+                card.appendChild(body);
+                productCard.appendChild(card);
+                productList.appendChild(productCard);
+            });
 
-		} catch (error) {
-			console.error("Error applying filters", error);
-		} finally {
-			$('#loading-spinner').hide();
-		}
-	}
+        } catch (error) {
+            console.error("Error applying filters", error);
+        } finally {
+            $('#loading-spinner').hide();
+        }
+    }
 
-
-
-	$(function () {
+    $(function () {
         const slider = document.getElementById('price-range');
         if (slider) {
             noUiSlider.create(slider, {
@@ -289,6 +274,31 @@
             });
         }
     });
+    // Allow unselecting radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+        radio.addEventListener('mousedown', function (e) {
+            if (this.checked) {
+                this.previousState = true;
+            } else {
+                this.previousState = false;
+            }
+        });
+
+        radio.addEventListener('click', function (e) {
+            if (this.previousState) {
+                this.checked = false;
+                this.previousState = false;
+
+                // Clear the filter and reapply
+                const name = this.name;
+                // Clear the selected value for this filter in form
+                document.querySelectorAll('input[name="' + name + '"]').forEach(input => input.checked = false);
+
+                applyFilters(); // Update products
+            }
+        });
+    });
+
 </script>
 </body>
 </html>
