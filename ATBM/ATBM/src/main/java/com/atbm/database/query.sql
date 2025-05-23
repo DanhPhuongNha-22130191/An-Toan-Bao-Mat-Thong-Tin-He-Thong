@@ -1,10 +1,9 @@
--- Create or use the WatchShop database
+-- Create and use database
 -- CREATE DATABASE WatchShop;
--- GO
 USE WatchShop;
 GO
 
--- Drop tables in reverse order to handle foreign key dependencies
+-- Drop tables (reverse order to avoid FK errors)
 DROP TABLE IF EXISTS OrderDetail;
 DROP TABLE IF EXISTS [Order];
 DROP TABLE IF EXISTS CartItem;
@@ -16,9 +15,9 @@ DROP TABLE IF EXISTS Brand;
 DROP TABLE IF EXISTS Account;
 DROP TABLE IF EXISTS Gender;
 DROP TABLE IF EXISTS Product;
+GO
 
--- Create tables
--- Product table must be created first since it is referenced by other tables
+-- Create Product first
 CREATE TABLE Product (
                          productId INT PRIMARY KEY,
                          name NVARCHAR(100) NOT NULL,
@@ -27,7 +26,7 @@ CREATE TABLE Product (
                          stock INT NOT NULL,
                          image NVARCHAR(255),
                          haveTrending BIT NOT NULL DEFAULT 0,
-                         size DECIMAL(5, 2), -- e.g., 40.00 mm for watch face size
+                         size DECIMAL(5, 2),
                          waterResistance BIT NOT NULL DEFAULT 0
 );
 
@@ -72,73 +71,63 @@ CREATE TABLE Strap (
                        productId INT,
                        color NVARCHAR(50),
                        material NVARCHAR(100),
-                       length DECIMAL(5, 2), -- e.g., 120.00 mm
+                       length DECIMAL(5, 2),
                        FOREIGN KEY (productId) REFERENCES Product(productId)
 );
 
-CREATE TABLE CartItem (
-                          accountId INT,
-                          productId INT,
-                          quantity INT NOT NULL,
-                          PRIMARY KEY (accountId, productId),
-                          FOREIGN KEY (accountId) REFERENCES Account(accountId),
-                          FOREIGN KEY (productId) REFERENCES Product(productId)
-);
-
 CREATE TABLE Voucher (
-    voucherId BIGINT PRIMARY KEY AUTO_INCREMENT,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    expirationTime DATE NOT NULL,
-    percentDecrease DOUBLE NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    quantity INT NOT NULL,
-    minOrderValue DOUBLE NOT NULL DEFAULT 0,
-    maxUsagePerUser INT NOT NULL DEFAULT 1,
-    isActive BOOLEAN NOT NULL DEFAULT true
+                         voucherId BIGINT PRIMARY KEY IDENTITY(1,1),
+                         code NVARCHAR(50) UNIQUE NOT NULL,
+                         expirationTime DATE NOT NULL,
+                         percentDecrease FLOAT NOT NULL,
+                         name NVARCHAR(100) NOT NULL,
+                         quantity INT NOT NULL
 );
 
 CREATE TABLE [Order] (
                          orderId INT PRIMARY KEY,
                          accountId INT,
-                         voucherId INT NULL,
+                         voucherId BIGINT NULL,
                          shipping DECIMAL(10, 2) NOT NULL,
     paymentMethod NVARCHAR(50) NOT NULL,
     FOREIGN KEY (accountId) REFERENCES Account(accountId),
     FOREIGN KEY (voucherId) REFERENCES Voucher(voucherId)
     );
 
+CREATE TABLE CartItem (
+                          cartItemId BIGINT PRIMARY KEY IDENTITY(1,1),
+                          accountId INT,
+                          productId INT,
+                          orderId INT,
+                          quantity INT NOT NULL,
+                          FOREIGN KEY (accountId) REFERENCES Account(accountId),
+                          FOREIGN KEY (productId) REFERENCES Product(productId),
+                          FOREIGN KEY (orderId) REFERENCES [Order](orderId)
+);
+
 CREATE TABLE OrderDetail (
                              orderDetailId INT PRIMARY KEY,
                              orderId INT,
-                             productId INT,
                              fullName NVARCHAR(100) NOT NULL,
                              phone NVARCHAR(20) NOT NULL,
                              email NVARCHAR(100) NOT NULL,
                              address NVARCHAR(255) NOT NULL,
-                             orderNote NTEXT,
-                             FOREIGN KEY (orderId) REFERENCES [Order](orderId),
-                             FOREIGN KEY (productId) REFERENCES Product(productId)
+                             orderNote NVARCHAR(MAX),
+                             FOREIGN KEY (orderId) REFERENCES [Order](orderId)
 );
+GO
 
-CREATE TABLE VoucherUsage (
-    usageId BIGINT PRIMARY KEY AUTO_INCREMENT,
-    voucherId BIGINT NOT NULL,
-    accountId BIGINT NOT NULL,
-    usedAt TIMESTAMP NOT NULL,
-    orderId VARCHAR(50),
-    FOREIGN KEY (voucherId) REFERENCES Voucher(voucherId)
-);
-
--- Insert sample data
+-- Sample Data
 -- Products
 INSERT INTO Product (productId, name, price, description, stock, image, haveTrending, size, waterResistance) VALUES
-                                                                                                                 (1, N'Submariner Date', 9500.00, N'Iconic diving watch with date function', 10, N'submariner.jpg', 1, 40.00, 1),
-                                                                                                                 (2, N'Seamaster Diver', 5500, N'Iconic diving watch with date function', 10, N'submariner.jpg', 1, 40.00, 1),
-                                                                                                                 (3, N'Prospex Turtle', 450.00, N'Affordable diving watch', 20, N'turtle.jpg', 0, 44.00, 1),
-                                                                                                                 (5, N'Vintage Classic', 25000.00, N'Classic vintage dress watch', 5, N'vintage.jpg', 0, 36.00, 0),
-                                                                                                                 (6, N'Nautilus', 60000.00, N'Luxury sports watch', 3, N'nautilus.jpg', 1, 40.00, 1),
-                                                                                                                 (7, N'G-Shock', 150.00, N'Durable sports watch', 50, N'gshock.jpg', 1, 48.00, 1),
-                                                                                                                 (8, N'Datejust', 8500.00, N'Elegant dress watch', 12, N'datejust.jpg', 0, 36.00, 1);
+(1, N'Submariner Date', 9500.00, N'Iconic diving watch with date function', 10, N'submariner.jpg', 1, 40.00, 1),
+(2, N'Seamaster Diver', 5500.00, N'Iconic diving watch with date function', 10, N'submariner.jpg', 1, 40.00, 1),
+(3, N'Prospex Turtle', 450.00, N'Affordable diving watch', 20, N'turtle.jpg', 0, 44.00, 1),
+(5, N'Vintage Classic', 25000.00, N'Classic vintage dress watch', 5, N'vintage.jpg', 0, 36.00, 0),
+(6, N'Nautilus', 60000.00, N'Luxury sports watch', 3, N'nautilus.jpg', 1, 40.00, 1),
+(7, N'G-Shock', 150.00, N'Durable sports watch', 50, N'gshock.jpg', 1, 48.00, 1),
+(8, N'Datejust', 8500.00, N'Elegant dress watch', 12, N'datejust.jpg', 0, 36.00, 1);
+
 -- Brands
 INSERT INTO Brand (brandId, productId, name) VALUES
                                                  (1, 1, N'Rolex'),
@@ -162,8 +151,6 @@ INSERT INTO Account (accountId, username, password, email) VALUES
                                                                (4, N'susan_wilson', N'hashed_password_4', N'susan.wilson@example.com'),
                                                                (5, N'mike_brown', N'hashed_password_5', N'mike.brown@example.com');
 
-
-
 -- Product Specifications
 INSERT INTO ProductSpecification (specId, productId, papers, year, watchFinderWarranty, caseMaterial) VALUES
                                                                                                           (1, 1, N'Original Box & Papers', 2022, N'2 Years', N'904L Stainless Steel'),
@@ -174,7 +161,7 @@ INSERT INTO ProductSpecification (specId, productId, papers, year, watchFinderWa
                                                                                                           (6, 7, N'Original Box & Papers', 2022, N'1 Year', N'Resin'),
                                                                                                           (7, 8, N'Original Box & Papers', 2022, N'2 Years', N'904L Stainless Steel');
 
--- WatchType
+-- Watch Type
 INSERT INTO WatchType (typeId, productId, name) VALUES
                                                     (1, 1, N'Diving'),
                                                     (2, 2, N'Diving'),
@@ -195,20 +182,12 @@ INSERT INTO Strap (strapId, productId, color, material, length) VALUES
                                                                     (6, 7, N'Black', N'Resin', 200.00),
                                                                     (7, 8, N'Silver', N'Stainless Steel', 175.00);
 
--- Cart Items
-INSERT INTO CartItem (accountId, productId, quantity) VALUES
-                                                          (1, 1, 1),
-                                                          (1, 3, 2),
-                                                          (2, 2, 1),
-                                                          (3, 5, 1),
-                                                          (4, 7, 3);
-
 -- Vouchers
-INSERT INTO Voucher (voucherId, code, expirationTime, percentDecrease, name, quantity) VALUES
-                                                                                           (1, N'WELCOME10', '2025-12-31 23:59:59', 10.00, N'Welcome Discount', 1000),
-                                                                                           (2, N'SUMMER25', '2025-08-31 23:59:59', 25.00, N'Summer Sale', 500),
-                                                                                           (3, N'VIP15', '2025-12-31 23:59:59', 15.00, N'VIP Discount', 200),
-                                                                                           (4, N'FLASH50', '2025-06-01 23:59:59', 50.00, N'Flash Sale', 50);
+INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity) VALUES
+                                                                                (N'WELCOME10', '2025-12-31', 10.00, N'Welcome Discount', 1000),
+                                                                                (N'SUMMER25', '2025-08-31', 25.00, N'Summer Sale', 500),
+                                                                                (N'VIP15', '2025-12-31', 15.00, N'VIP Discount', 200),
+                                                                                (N'FLASH50', '2025-06-01', 50.00, N'Flash Sale', 50);
 
 -- Orders
 INSERT INTO [Order] (orderId, accountId, voucherId, shipping, paymentMethod) VALUES
@@ -218,22 +197,17 @@ INSERT INTO [Order] (orderId, accountId, voucherId, shipping, paymentMethod) VAL
     (4, 1, NULL, 15.00, N'Credit Card'),
     (5, 4, 3, 20.00, N'Credit Card');
 
+-- Cart Items
+INSERT INTO CartItem ( accountId, productId, orderId, quantity) VALUES
+                                                                    (1, 1, null, 1),
+                                                                    (1, 3, null, 1),
+                                                                    (2, 2, 1, 1),
+                                                                    (3, 5, 1, 1),
+                                                                    (4, 7, 3, 1);
+
 -- Order Details
-INSERT INTO OrderDetail (orderDetailId, orderId, productId, fullName, phone, email, address, orderNote) VALUES
-                                                                                                            (1, 1, 1, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', N'Please gift wrap'),
-                                                                                                            (2, 1, 3, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', NULL),
-                                                                                                            (3, 2, 2, N'Jane Smith', N'+1-555-987-6543', N'jane.smith@example.com', N'456 Oak Ave, Los Angeles, CA 90001', NULL),
-                                                                                                            (4, 3, 5, N'Robert Johnson', N'+1-555-246-8135', N'robert.johnson@example.com', N'789 Pine Rd, Chicago, IL 60007', N'Call before delivery'),
-                                                                                                            (5, 4, 8, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', NULL),
-                                                                                                            (6, 5, 7, N'Susan Wilson', N'+1-555-369-8521', N'susan.wilson@example.com', N'321 Cedar Ln, Miami, FL 33101', N'Leave with the doorman');
-
-UPDATE Voucher 
-SET minOrderValue = 1000000, -- 1 triệu đồng
-    maxUsagePerUser = 1,
-    isActive = 1
-WHERE voucherId IN (1, 2, 3, 4);
-
-INSERT INTO VoucherUsage (voucherId, accountId, usedAt, orderId) VALUES
-(1, 1, '2024-03-15 10:30:00', 'ORD001'),
-(2, 2, '2024-03-16 14:20:00', 'ORD002'),
-(3, 3, '2024-03-17 09:15:00', 'ORD003');
+INSERT INTO OrderDetail (orderDetailId, orderId, fullName, phone, email, address, orderNote) VALUES
+                                                                                                 (1, 1, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', N'Please gift wrap'),
+                                                                                                 (2, 3, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main St, New York, NY 10001', NULL),
+                                                                                                 (3, 2, N'Jane Smith', N'+1-555-987-6543', N'jane.smith@example.com', N'456 Oak Ave, Los Angeles, CA 90001', NULL),
+                                                                                                 (4, 5, N'Robert Johnson', N'+1-555-246-8135', N'robert.johnson@example.com', N'789 Pine Rd, Chicago, IL 60007', N'Call before delivery');

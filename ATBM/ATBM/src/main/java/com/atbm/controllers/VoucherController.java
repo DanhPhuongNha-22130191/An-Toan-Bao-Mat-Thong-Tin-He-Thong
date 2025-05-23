@@ -24,7 +24,7 @@ public class VoucherController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getPathInfo();
         try {
-            if (action == null || action.equals("/")) {
+            if (action.equals("/apply")) {
                 applyVoucher(req, resp);
             } else if (action.equals("/remove")) {
                 removeVoucher(req, resp);
@@ -45,7 +45,6 @@ public class VoucherController extends HttpServlet {
                 throw new IllegalArgumentException("Vui lòng nhập mã voucher");
             }
 
-
             CartDTO cartDTO = (CartDTO) req.getSession().getAttribute("cartDTO");
             if (cartDTO == null || cartDTO.getItems().isEmpty()) {
                 throw new IllegalStateException("Giỏ hàng trống, không thể áp dụng voucher");
@@ -54,13 +53,6 @@ public class VoucherController extends HttpServlet {
             var voucher = voucherService.canApplyVoucher(code);
             if (voucher == null) {
                 throw new IllegalStateException("Không thể áp dụng voucher");
-            }
-
-            double orderValue = cartDTO.getSubTotal();
-            if (orderValue < voucher.getMinOrderValue()) {
-                throw new IllegalStateException(
-                        String.format("Đơn hàng phải có giá trị tối thiểu %,.0f VNĐ", voucher.getMinOrderValue())
-                );
             }
 
             cartDTO.setVoucher(voucher);

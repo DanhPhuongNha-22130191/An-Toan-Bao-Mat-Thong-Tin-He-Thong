@@ -1,7 +1,6 @@
 package com.atbm.models;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 
 public class Voucher {
     private long voucherId;
@@ -10,20 +9,18 @@ public class Voucher {
     private double percentDecrease;
     private String name;
     private int quantity;
-    private double minOrderValue;
 
     public Voucher() {
     }
 
     public Voucher(long voucherId, String code, Date expirationTime, double percentDecrease, String name,
-                   int quantity, double minOrderValue) {
+                   int quantity) {
         this.voucherId = voucherId;
         this.code = code;
         this.expirationTime = expirationTime;
         this.percentDecrease = percentDecrease;
         this.name = name;
         this.quantity = quantity;
-        this.minOrderValue = minOrderValue;
     }
 
     public Voucher(String code, Date expirationTime, double percentDecrease, String name,
@@ -83,13 +80,7 @@ public class Voucher {
         this.quantity = quantity;
     }
 
-    public double getMinOrderValue() {
-        return minOrderValue;
-    }
 
-    public void setMinOrderValue(double minOrderValue) {
-        this.minOrderValue = minOrderValue;
-    }
 
 
     public boolean isValid() {
@@ -98,7 +89,6 @@ public class Voucher {
         return
                 now.before(expirationTime) &&
                         quantity > 0 &&
-                        minOrderValue >= 0 &&
                         percentDecrease > 0 && percentDecrease <= 100;
     }
 
@@ -110,9 +100,6 @@ public class Voucher {
         return quantity > 0;
     }
 
-    public boolean isApplicable(double orderValue) {
-        return isValid() && orderValue >= minOrderValue;
-    }
 }
 
 

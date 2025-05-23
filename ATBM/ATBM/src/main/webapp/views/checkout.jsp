@@ -244,6 +244,7 @@
     </style>
 </head>
 <body>
+<jsp:include page="/views/header.jsp" />
 <!-- Phần thông báo -->
 <div id="notification" class="notification">
     <span id="notification-message"></span>
@@ -251,16 +252,10 @@
 
 <!-- ================ start banner area ================= -->
 <section class="blog-banner-area" id="category">
-    <div class="container h-100">
+    <div class="container h-50">
         <div class="blog-banner">
             <div class="text-center">
                 <h1>Product Checkout</h1>
-                <nav aria-label="breadcrumb" class="banner-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
-                    </ol>
-                </nav>
             </div>
         </div>
     </div>
@@ -317,6 +312,28 @@
                 <div class="col-lg-4">
                     <div class="order-summary">
                         <h4>Đơn hàng của bạn</h4>
+                        <!-- Bảng hiển thị chi tiết sản phẩm -->
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Tổng</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="item" items="${cartDTO.items}">
+                                <tr>
+                                    <td>${item.productName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.productPrice}</td>
+                                    <td>${item.totalPrice}</td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                        <!-- Phần tổng quan đơn hàng -->
                         <div class="summary-row">
                             <span>Tạm tính:</span>
                             <span>${cartDTO.subTotal}</span>

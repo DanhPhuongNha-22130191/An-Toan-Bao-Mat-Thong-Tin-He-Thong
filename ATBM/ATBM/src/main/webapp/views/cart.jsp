@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,29 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Aroma Shop - Cart</title>
-    <link rel="icon"
-          href="${pageContext.request.contextPath}/assests/img/Fevicon.png"
-          type="image/png">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
+    <link rel="icon" href="${pageContext.request.contextPath}/assests/img/Fevicon.png" type="image/png">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/main.css">
     <style>
+        /* CSS styles giữ nguyên như trong query */
         .cart-item {
             position: relative;
             padding: 15px;
@@ -43,12 +33,6 @@
             top: 15px;
             color: #ff4444;
             cursor: pointer;
-        }
-
-        .cart-item .stock-warning {
-            color: #ff4444;
-            font-size: 0.9em;
-            margin-top: 5px;
         }
 
         .cart-item .quantity-control {
@@ -117,40 +101,6 @@
             cursor: pointer;
         }
 
-        .voucher-section .voucher-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: #e8f0f2;
-            border-radius: 4px;
-            display: none;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 50px 0;
-        }
-
-        .empty-cart i {
-            font-size: 48px;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .empty-cart p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .empty-cart a {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #384aeb;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        /* Style cho thông báo */
         .notification {
             position: fixed;
             top: 20px;
@@ -200,6 +150,7 @@
     </style>
 </head>
 <body>
+<jsp:include page="header.jsp"/>
 <!--================Cart Area =================-->
 <section class="cart_area">
     <div class="container">
@@ -211,7 +162,6 @@
 
             <!-- Phần chính của giỏ hàng -->
             <c:choose>
-                <!-- Hiển thị khi giỏ hàng trống -->
                 <c:when test="${empty cartDTO.items}">
                     <div class="empty-cart">
                         <i class="fas fa-shopping-cart"></i>
@@ -220,11 +170,10 @@
                         <a href="${pageContext.request.contextPath}/products">Tiếp tục mua sắm</a>
                     </div>
                 </c:when>
-                <!-- Hiển thị khi có sản phẩm trong giỏ hàng -->
                 <c:otherwise>
                     <!-- Form cập nhật giỏ hàng -->
-                    <form id="updateCartForm" action="${pageContext.request.contextPath}/user/cart/update"
-                          method="POST">
+                    <form id="updateCartForm" method="post"
+                          action="${pageContext.request.contextPath}/user/cart/update">
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -237,10 +186,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <!-- Danh sách sản phẩm trong giỏ hàng -->
                                 <c:forEach var="item" items="${cartDTO.items}">
                                     <tr class="cart-item" data-product-id="${item.productId}">
-                                        <!-- Thông tin sản phẩm -->
                                         <td>
                                             <div class="media">
                                                 <div class="d-flex">
@@ -253,36 +200,33 @@
                                             </div>
                                         </td>
                                         <td><h5>${item.productPrice}</h5></td>
-
-                                        <!-- Điều chỉnh số lượng -->
                                         <td>
                                             <div class="quantity-control">
                                                 <button type="button" onclick="decreaseQuantity(${item.productId})">-
                                                 </button>
-                                                <input type="number" name="cartItem-quantity" value="${item.quantity}"
-                                                       min="1" max="${item.availableStock}"
-                                                       data-product-id="${item.productId}">
+                                                <label>
+                                                    <input type="number" name="quantity-${item.productId}"
+                                                           value="${item.quantity}" min="1" max="10000"
+                                                           data-product-id="${item.productId}">
+                                                </label>
+                                                <input type="hidden" name="productId-quantity"
+                                                       id="hidden-${item.productId}"
+                                                       value="${item.productId}-${item.quantity}">
                                                 <button type="button" onclick="increaseQuantity(${item.productId})">+
                                                 </button>
                                             </div>
                                         </td>
                                         <td><h5>${item.totalPrice}</h5></td>
-
-                                        <!-- Nút xóa sản phẩm -->
                                         <td>
-                                            <form action="${pageContext.request.contextPath}/user/cart/remove"
-                                                  method="POST" style="display: inline;">
-                                                <input type="hidden" name="productId" value="${item.productId}">
-                                                <button type="submit" class="remove-item">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="remove-item"
+                                                    onclick="removeCartItem(${item.productId})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
                             </table>
-                            <!-- Nút cập nhật giỏ hàng -->
                             <div class="text-right mb-3">
                                 <button type="submit" class="btn btn-primary">Cập nhật giỏ hàng</button>
                             </div>
@@ -295,19 +239,20 @@
                         <div class="col-lg-8">
                             <div class="voucher-section">
                                 <h4>Mã giảm giá</h4>
-                                <form action="${pageContext.request.contextPath}/user/voucher" method="POST"
-                                      class="voucher-input">
-                                    <input type="text" name="voucher-code" placeholder="Nhập mã giảm giá">
-                                    <button type="submit">Áp dụng</button>
-                                </form>
-                                <!-- Thông tin voucher đã áp dụng -->
+                                <div class="voucher-input">
+                                    <form action="${pageContext.request.contextPath}/user/voucher/apply" method="post">
+                                        <input type="text" id="voucherCode" name="voucher-code"
+                                               placeholder="Nhập mã giảm giá">
+                                        <button type="submit">Áp dụng</button>
+                                    </form>
+                                </div>
                                 <c:if test="${not empty cartDTO.voucher}">
-                                    <div class="voucher-info">
-                                        <p>Mã giảm giá: ${cartDTO.voucher.voucherCode}</p>
-                                        <p>Giảm giá: ${cartDTO.voucher.percentDecrease}</p>
+                                    <div class="voucher-info" id="voucherInfo">
                                         <form action="${pageContext.request.contextPath}/user/voucher/remove"
-                                              method="POST" style="display: inline;">
-                                            <button type="submit">Xóa mã</button>
+                                              method="post" id="removeVoucherForm">
+                                            <p>Mã giảm giá: ${cartDTO.voucher.voucherCode}</p>
+                                            <p>Giảm giá: ${cartDTO.voucher.percentDecrease}</p>
+                                            <button type="button" onclick="removeVoucher()">Xóa mã</button>
                                         </form>
                                     </div>
                                 </c:if>
@@ -334,7 +279,6 @@
                                     <span>Tổng cộng:</span>
                                     <span>${cartDTO.totalPrice}</span>
                                 </div>
-                                <!-- Nút điều hướng -->
                                 <div class="checkout_btn_inner d-flex align-items-center mt-4">
                                     <a class="gray_btn" href="${pageContext.request.contextPath}/products">Tiếp tục mua
                                         sắm</a>
@@ -353,39 +297,27 @@
 
 <jsp:include page="footer.jsp"/>
 
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/skrollr.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
-<script
-        src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/skrollr.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
+<script src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
 <script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
 <script type="text/javascript">
-    // Hàm hiển thị thông báo
+    /**
+     * Hiển thị thông báo với màu sắc và nội dung tương ứng
+     */
     function showNotification(message, type = 'success') {
         const notification = document.getElementById('notification');
         const messageElement = document.getElementById('notification-message');
 
-        // Xóa các class cũ
         notification.classList.remove('success', 'error', 'warning');
-        // Thêm class mới
         notification.classList.add(type);
-
-        // Set nội dung thông báo
         messageElement.textContent = message;
-
-        // Hiển thị thông báo
         notification.style.display = 'block';
 
-        // Tự động ẩn sau 3 giây
         setTimeout(() => {
             notification.style.animation = 'fadeOut 0.5s ease-out';
             setTimeout(() => {
@@ -395,87 +327,86 @@
         }, 3000);
     }
 
-    // Giảm số lượng
+    /**
+     * Cập nhật số lượng dựa trên delta (+1 hoặc -1)
+     */
+    function updateQuantity(productId, delta) {
+        const input = document.querySelector('input[name="quantity-' + productId + '"]');
+        if (!input) return;
+
+        let currentValue = parseInt(input.value);
+        const min = parseInt(input.getAttribute('min')) || 1;
+        const max = parseInt(input.getAttribute('max')) || 999;
+
+        if (isNaN(currentValue)) currentValue = min;
+
+        input.value = Math.max(min, Math.min(max, currentValue + delta));
+        hiddenInput = document.getElementById('hidden-' + productId);
+        hiddenInput.value = productId + '-' + input.value;
+    }
+
+    /**
+     * Giảm số lượng
+     */
     function decreaseQuantity(productId) {
-        const input = document.querySelector(`input[data-product-id="${productId}"]`);
-        const currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-            input.value = currentValue - 1;
-        }
+        updateQuantity(productId, -1);
     }
 
-    // Tăng số lượng
+    /**
+     * Tăng số lượng
+     */
     function increaseQuantity(productId) {
-        const input = document.querySelector(`input[data-product-id="${productId}"]`);
-        const currentValue = parseInt(input.value);
-        const maxValue = parseInt(input.getAttribute('max'));
-        if (currentValue < maxValue) {
-            input.value = currentValue + 1;
-        }
+        updateQuantity(productId, 1);
     }
 
-
-    // Xử lý form xóa sản phẩm
-    document.querySelectorAll('form[action*="/cart/remove"]').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                this.submit();
-            }
-        });
-    });
-
-    // Xử lý form voucher
-    document.querySelector('form[action*="/voucher"]').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const voucherInput = this.querySelector('input[name="voucher-code"]');
-        if (!voucherInput.value.trim()) {
-            showNotification('Vui lòng nhập mã giảm giá', 'warning');
+    /**
+     * Xử lý xóa sản phẩm khỏi giỏ hàng bằng fetch API
+     */
+    function removeCartItem(productId) {
+        if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
             return;
         }
-        this.submit();
-    });
 
-    // Xử lý form xóa voucher
-    document.querySelector('form[action*="/voucher/remove"]').addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (confirm('Bạn có chắc muốn xóa mã giảm giá này?')) {
-            this.submit();
+        fetch('${pageContext.request.contextPath}/user/cart/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'productId=' + productId
+        })
+            .then(response => {
+                window.location.reload();
+            })
+            .catch(error => {
+                showNotification('Có lỗi xảy ra khi xóa sản phẩm', 'error');
+                console.error('Error:', error);
+            });
+    }
+
+    function removeVoucher() {
+        if (!confirm('Bạn có chắc muốn xóa mã giảm giá này?')) {
+            return;
         }
-    });
+        const removeVoucherForm = document.getElementById("removeVoucherForm");
+        if (removeVoucherForm) {
+            removeVoucherForm.submit();
+        }
+    }
 
-    // Hiển thị thông báo từ server
-    <c:if test="${not empty message}">
-    // Phân loại thông báo dựa vào nội dung
+    /**
+     * Hiển thị thông báo từ phía server nếu có
+     */
+        <c:if test="${not empty message}">
     const message = '${message}';
-    const lowerMessage = message.toLowerCase();
-
-    if (lowerMessage.includes('lỗi') || lowerMessage.includes('thất bại') ||
-        lowerMessage.includes('không hợp lệ') || lowerMessage.includes('không tồn tại')) {
+    const lower = message.toLowerCase();
+    if (lower.includes('lỗi') || lower.includes('thất bại') || lower.includes('không hợp lệ')) {
         showNotification(message, 'error');
-    } else if (lowerMessage.includes('cảnh báo') || lowerMessage.includes('chỉ còn') ||
-        lowerMessage.includes('vui lòng')) {
+    } else if (lower.includes('cảnh báo') || lower.includes('vui lòng') || lower.includes('chỉ còn')) {
         showNotification(message, 'warning');
-    } else if (lowerMessage.includes('thành công') || lowerMessage.includes('đã') ||
-        lowerMessage.includes('đã xóa') || lowerMessage.includes('đã cập nhật')) {
-        showNotification(message, 'success');
     } else {
-        // Mặc định hiển thị dạng success
         showNotification(message, 'success');
     }
     </c:if>
-
-    // Xử lý lỗi khi nhập số lượng không hợp lệ
-    document.querySelectorAll('input[name="cartItem-quantity"]').forEach(input => {
-        input.addEventListener('change', function () {
-            const quantity = parseInt(this.value);
-
-            if (isNaN(quantity) || quantity < 1) {
-                showNotification('Số lượng sản phẩm không hợp lệ', 'error');
-                this.value = 1;
-            }
-        });
-    });
 </script>
 </body>
 </html>

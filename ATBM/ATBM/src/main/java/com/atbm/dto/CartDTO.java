@@ -1,5 +1,6 @@
 package com.atbm.dto;
 
+import com.atbm.models.CartItem;
 import com.atbm.models.OrderDetail;
 import com.atbm.models.Product;
 import com.atbm.models.Voucher;
@@ -17,7 +18,7 @@ public class CartDTO {
         items = new LinkedList<>();
     }
 
-    public void add(Product product, long cartItemId, int quantity) {
+    public CartItem add(Product product, long cartItemId, int quantity) {
         // Kiểm tra tồn kho
         if (product.getStock() < quantity) {
             throw new IllegalStateException("Số lượng sản phẩm trong kho không đủ");
@@ -48,9 +49,10 @@ public class CartDTO {
             );
             items.add(newItem);
         }
+        return new CartItem(cartItemId, product.getProductId(), quantity);
     }
 
-    public void updateQuantity(long productId, int quantity) {
+    public CartItem updateQuantity(long productId, int quantity) {
         CartItemDTO item = items.stream()
                 .filter(i -> i.getProductId() == productId)
                 .findFirst()
@@ -61,6 +63,7 @@ public class CartDTO {
         } else {
             item.setQuantity(quantity);
         }
+        return new CartItem(item.getCartItemId(), item.getProductId(), item.getQuantity());
     }
 
     public CartItemDTO removeItem(long productId) {
@@ -178,17 +181,6 @@ public class CartDTO {
             }
         }
 
-        // Kiểm tra voucher nếu có
-        if (voucher != null) {
-            double subtotal = getSubTotal();
-            if (subtotal < voucher.getMinOrderValue()) {
-                throw new IllegalStateException(
-                        String.format("Đơn hàng phải có giá trị tối thiểu %,.0f VNĐ",
-                                voucher.getMinOrderValue())
-                );
-            }
-        }
-
     }
 
     public double getDiscount() {
@@ -277,10 +269,6 @@ public class CartDTO {
 
         public double getDiscountedPrice(double discountPercentage) {
             return productPrice * (1 - discountPercentage / 100);
-        }
-
-        public boolean hasPriceChanged(double currentPrice) {
-            return Math.abs(productPrice - currentPrice) > 0.01;
         }
 
     }

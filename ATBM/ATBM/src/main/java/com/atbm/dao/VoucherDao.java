@@ -13,15 +13,14 @@ public class VoucherDao implements IDao<Voucher, Long> {
 
     @Override
     public boolean insert(Voucher entity) {
-        String query = "INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity, minOrderValue, maxUsagePerUser, isActive) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity, maxUsagePerUser, isActive) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
         return ExecuteSQLUtil.executeUpdate(query,
                 entity.getCode(),
                 entity.getExpirationTime(),
                 entity.getPercentDecrease(),
                 entity.getName(),
-                entity.getQuantity(),
-                entity.getMinOrderValue());
+                entity.getQuantity());
     }
 
     @Override
@@ -62,7 +61,7 @@ public class VoucherDao implements IDao<Voucher, Long> {
     @Override
     public boolean update(Voucher entity) {
         String query = "UPDATE Voucher SET code = ?, expirationTime = ?, percentDecrease = ?, " +
-                "name = ?, quantity = ?, minOrderValue = ? " +
+                "name = ?, quantity = ?" +
                 "WHERE voucherId = ?";
         return ExecuteSQLUtil.executeUpdate(query,
                 entity.getCode(),
@@ -70,7 +69,6 @@ public class VoucherDao implements IDao<Voucher, Long> {
                 entity.getPercentDecrease(),
                 entity.getName(),
                 entity.getQuantity(),
-                entity.getMinOrderValue(),
                 entity.getVoucherId());
     }
 
@@ -106,7 +104,6 @@ public class VoucherDao implements IDao<Voucher, Long> {
         voucher.setPercentDecrease(rs.getDouble("percentDecrease"));
         voucher.setName(rs.getString("name"));
         voucher.setQuantity(rs.getInt("quantity"));
-        voucher.setMinOrderValue(rs.getDouble("minOrderValue"));
         return voucher;
     }
 

@@ -71,7 +71,7 @@ public class CartController extends HttpServlet {
     }
 
     private void handleUpdateCart(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String[] productQuantities = req.getParameterValues("cartItem-quantity");
+        String[] productQuantities = req.getParameterValues("productId-quantity");
         CartDTO cartDTO = getOrCreateCart(req);
         StringBuilder errorMessage = new StringBuilder();
 
@@ -82,7 +82,7 @@ public class CartController extends HttpServlet {
                     try {
                         long productId = Long.parseLong(parts[0]);
                         int quantity = Integer.parseInt(parts[1]);
-                        cartDTO.updateQuantity(productId, quantity);
+                        cartService.update(cartDTO.updateQuantity(productId, quantity));
                     } catch (Exception e) {
                         errorMessage.append("Lỗi cập nhật sản phẩm ").append(item).append(": ").append(e.getMessage()).append("<br>");
                     }
@@ -108,7 +108,7 @@ public class CartController extends HttpServlet {
             }
 
             CartDTO cartDTO = getOrCreateCart(req);
-            cartDTO.add(product, 0, quantity);
+            cartService.insert(cartDTO.add(product, 0, quantity));
             req.setAttribute("cartDTO", cartDTO);
             message = "Thêm vào giỏ hàng thành công";
         } catch (Exception e) {
