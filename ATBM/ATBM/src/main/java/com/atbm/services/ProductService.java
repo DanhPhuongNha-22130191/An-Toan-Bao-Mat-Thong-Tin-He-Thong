@@ -55,8 +55,8 @@ public class ProductService implements services.IService<Product, Long> {
 	public List<Product> getByBrandId(int brandId) {
 		return productDao.getProductsByBrandId(brandId);
 	}
-	public List<Product> filterProducts(Integer brandId, Integer strapId, Double minPrice, Double maxPrice) {
-		return productDao.filterProducts(brandId, strapId, minPrice, maxPrice);
+	public List<Product> filterProducts(List<Integer> brandIds, List<Integer> strapIds, Double minPrice, Double maxPrice) {
+		return productDao.filterProducts(brandIds, strapIds, minPrice, maxPrice);
 	}
 	public Double getMinProductPrice() {
 		return productDao.getMinPrice();
@@ -66,12 +66,6 @@ public class ProductService implements services.IService<Product, Long> {
 		return productDao.getMaxPrice();
 	}
 
-	public static void main(String[] args) {
-		ProductService service = new ProductService();
-		List<Product> filteredProducts = service.filterProducts(1, 1, service.getMinProductPrice(), service.getMaxProductPrice());
-		for (Product p : filteredProducts) {
-			System.out.println(p);
-		}
-	}
+
 
 }
