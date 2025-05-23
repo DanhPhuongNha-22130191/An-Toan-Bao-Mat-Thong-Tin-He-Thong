@@ -5,6 +5,7 @@ import com.atbm.dto.CartDTO;
 import com.atbm.models.CartItem;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
+import com.atbm.utils.ExecuteSQLUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -80,4 +81,7 @@ public class OrderService implements services.IService<Order, Long> {
     }
 
 
+    public void sign(Long orderId, String signature) {
+       dao.sign(orderId,signature);
+    }
 }

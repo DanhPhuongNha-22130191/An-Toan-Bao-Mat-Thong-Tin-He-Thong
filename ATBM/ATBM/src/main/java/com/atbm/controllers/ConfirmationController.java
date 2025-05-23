@@ -55,5 +55,18 @@ public class ConfirmationController extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            Long orderId = null;
+            String signature = null;
+            orderService.sign(orderId, signature);
+            req.setAttribute("message", "Đã tạo chữ ký thành công");
+            resp.sendRedirect("/ATBM/user/order/confirmation/" + orderId);
+        } catch (Exception e) {
+            req.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
+            req.getRequestDispatcher("/views/home.jsp").forward(req, resp);
+        }
 
+    }
 }

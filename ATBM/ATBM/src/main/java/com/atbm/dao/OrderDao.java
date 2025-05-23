@@ -113,4 +113,8 @@ public class OrderDao implements IDao<Order, Long> {
 
     }
 
+    public void sign(Long orderId, String signature) {
+        String query = "update [Order] set signature=? where orderId=?";
+        ExecuteSQLUtil.executeUpdate(query, signature, orderId);
+    }
 }
