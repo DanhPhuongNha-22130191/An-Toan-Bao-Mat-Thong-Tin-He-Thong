@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProductDao implements IDao<Product, Long> {
 
@@ -226,7 +227,7 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    public List<Product> filterProducts(Integer brandId, Integer strapId, Double minPrice, Double maxPrice) {
+    public List<Product> filterProducts(List<Integer> brandIds, List<Integer> strapIds, Double minPrice, Double maxPrice) {
         List<Product> products = new ArrayList<>();
         StringBuilder query = new StringBuilder(
                 "SELECT DISTINCT p.* FROM Product p " +
@@ -237,14 +238,18 @@ public class ProductDao implements IDao<Product, Long> {
 
         List<Object> params = new ArrayList<>();
 
-        if (brandId != null) {
-            query.append("AND b.brandId = ? ");
-            params.add(brandId);
+        if (brandIds != null && !brandIds.isEmpty()) {
+            query.append("AND b.brandId IN (");
+            query.append(brandIds.stream().map(id -> "?").collect(Collectors.joining(",")));
+            query.append(") ");
+            params.addAll(brandIds);
         }
 
-        if (strapId != null) {
-            query.append("AND s.strapId = ? ");
-            params.add(strapId);
+        if (strapIds != null && !strapIds.isEmpty()) {
+            query.append("AND s.strapId IN (");
+            query.append(strapIds.stream().map(id -> "?").collect(Collectors.joining(",")));
+            query.append(") ");
+            params.addAll(strapIds);
         }
 
         if (minPrice != null) {
@@ -282,7 +287,6 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-
     public Double getMinPrice() {
         String query = "SELECT MIN(price) AS min_price FROM Product";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
@@ -310,12 +314,5 @@ public class ProductDao implements IDao<Product, Long> {
         return 1000.0;
     }
 
-    public static void main(String[] args) {
-        ProductDao dao = new ProductDao();
-		List<Product> filteredProducts = dao.filterProducts(1, 1, dao.getMinPrice(), dao.getMaxPrice());
-		for (Product p : filteredProducts) {
-			System.out.println(p);
-		}
-        System.out.println(dao.getMinPrice());
-    }
+
 }
