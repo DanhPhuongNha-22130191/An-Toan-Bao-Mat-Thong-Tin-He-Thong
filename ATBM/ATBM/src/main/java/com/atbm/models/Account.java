@@ -1,4 +1,4 @@
-package models;
+package com.atbm.models;
 
 public class Account {
 	private long accountId;

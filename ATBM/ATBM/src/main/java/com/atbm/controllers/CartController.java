@@ -2,6 +2,7 @@
 package com.atbm.controllers;
 
 
+import com.atbm.dto.AccountDTO;
 import com.atbm.dto.CartDTO;
 import com.atbm.services.CartService;
 import com.atbm.services.VoucherService;
@@ -36,7 +37,7 @@ public class CartController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		CartService service = new CartService();
-		dto.AccountDTO accountDTO = (dto.AccountDTO) req.getSession().getAttribute("user");
+		AccountDTO accountDTO = (AccountDTO) req.getSession().getAttribute("user");
 		long accountId = accountDTO.getAccountId();
 		CartDTO dto = service.convertToDTO(accountId);
 		Object code = req.getSession().getAttribute("voucher");

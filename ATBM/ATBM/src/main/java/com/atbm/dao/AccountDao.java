@@ -1,7 +1,7 @@
 package com.atbm.dao;
 
 import com.atbm.utils.ExecuteSQLUtil;
-import models.Account;
+import com.atbm.models.Account;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

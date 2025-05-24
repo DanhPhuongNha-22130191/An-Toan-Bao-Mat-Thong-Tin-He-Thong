@@ -4,6 +4,7 @@ import com.atbm.dto.ProductDTO;
 import com.atbm.models.Product;
 import com.atbm.services.ProductService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@WebServlet("/product")
 public class ProductController extends HttpServlet {
 	private ProductService productService = new ProductService();
 
@@ -80,7 +82,7 @@ public class ProductController extends HttpServlet {
 		if (referer != null) {
 			resp.sendRedirect(referer);
 		} else {
-			resp.sendRedirect("ProductController?action=shop");
+			resp.sendRedirect(req.getContextPath() + "/product?action=shop");
 		}
 	}
 

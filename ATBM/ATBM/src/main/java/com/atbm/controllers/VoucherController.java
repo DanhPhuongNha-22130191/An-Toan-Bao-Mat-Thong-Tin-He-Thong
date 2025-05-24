@@ -2,6 +2,7 @@
 package com.atbm.controllers;
 
 
+import com.atbm.dto.AccountDTO;
 import com.atbm.services.VoucherService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +21,7 @@ public class VoucherController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         String code = req.getParameter("voucher-code");
-        dto.AccountDTO accountDTO = (dto.AccountDTO) req.getSession().getAttribute("user");
+        AccountDTO accountDTO = (AccountDTO) req.getSession().getAttribute("user");
         long accountId = accountDTO.getAccountId();
         VoucherService service = new VoucherService();
         if (service.applyVoucher(code, accountId)) {
