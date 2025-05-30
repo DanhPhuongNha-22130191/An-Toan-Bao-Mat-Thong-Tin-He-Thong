@@ -378,10 +378,10 @@
                         <div class="info-row">
                             <div class="info-label">Trạng thái:</div>
                             <div class="info-value">
-                                <span class="badge badge-${order.status == 'PENDING' ? 'warning' :
-                                                order.status == 'CONFIRMED' ? 'info' :
-                                                order.status == 'SHIPPING' ? 'primary' :
-                                                order.status == 'DELIVERED' ? 'success' : 'danger'}">
+                                <span class="badge badge-${order.status == 'ĐANG XỬ LÝ' ? 'warning' :
+                                                order.status == 'ĐÃ XÁC NHẬN' ? 'info' :
+                                                order.status == 'ĐANG VẬN CHUYỂN' ? 'primary' :
+                                                order.status == 'ĐÃ GIAO' ? 'success' : 'danger'}">
                                     ${order.status}
                                 </span>
                             </div>
@@ -475,7 +475,7 @@
                             <span>Phí vận chuyển:</span>
                             <span>${order.shipping}</span>
                         </div>
-                        <c:if test="${not empty order.voucher}">
+                        <c:if test="${not empty voucher}">
                             <div class="summary-row">
                                 <span>Giảm giá (${voucher.code}):</span>
                                 <span>-${cartDTO.discount}</span>

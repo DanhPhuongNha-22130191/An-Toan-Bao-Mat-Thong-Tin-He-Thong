@@ -4,6 +4,7 @@ package com.atbm.models;
 import com.atbm.dto.CartDTO;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -123,11 +124,11 @@ public class Order {
     }
 
     public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+        this.orderDate = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(orderDate.getTime()),
+                ZoneId.systemDefault()
+        );
     }
-
 
     public boolean isPaid() {
         return "PAID".equals(status);

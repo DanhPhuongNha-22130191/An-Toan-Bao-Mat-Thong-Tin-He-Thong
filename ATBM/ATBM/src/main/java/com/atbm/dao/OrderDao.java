@@ -40,8 +40,8 @@ public class OrderDao implements IDao<Order, Long> {
         Order order = null;
         try {
             if (resultSet.next()) {
-                order = new Order(resultSet.getLong(1), resultSet.getLong(2), resultSet.getDouble(3),
-                        resultSet.getString(4), resultSet.getLong(5));
+                order = new Order(resultSet.getLong("orderId"), resultSet.getLong("accountId"), resultSet.getDouble("shipping"),
+                        resultSet.getString("paymentMethod"), resultSet.getLong("voucherId"));
                 order.setOrderDate(resultSet.getDate("orderDate"));
                 order.setStatus(resultSet.getString("status"));
                 order.setOrderDetail(getDetailById(order.getOrderId()));
@@ -53,18 +53,18 @@ public class OrderDao implements IDao<Order, Long> {
     }
 
     public OrderDetail getDetailById(long orderId) throws SQLException {
-        String query = "select * from OrderDetails where orderId=?";
+        String query = "select * from OrderDetail where orderId=?";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, orderId);
         OrderDetail orderDetail = null;
         if (rs.next()) {
             orderDetail = new OrderDetail();
-            orderDetail.setOrderDetailId(rs.getLong("order_detail_id"));
-            orderDetail.setOrderId(rs.getLong("order_id"));
-            orderDetail.setFullName(rs.getString("full_name"));
+            orderDetail.setOrderDetailId(rs.getLong("orderDetailId"));
+            orderDetail.setOrderId(rs.getLong("orderId"));
+            orderDetail.setFullName(rs.getString("fullName"));
             orderDetail.setPhone(rs.getString("phone"));
             orderDetail.setEmail(rs.getString("email"));
             orderDetail.setAddress(rs.getString("address"));
-            orderDetail.setOrderNote(rs.getString("order_note"));
+            orderDetail.setOrderNote(rs.getString("orderNote"));
         }
         return orderDetail;
 

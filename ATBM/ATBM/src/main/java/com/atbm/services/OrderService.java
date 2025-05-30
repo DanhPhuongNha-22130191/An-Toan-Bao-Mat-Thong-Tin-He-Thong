@@ -93,4 +93,11 @@ public class OrderService implements services.IService<Order, Long> {
     public OrderSecurity getSecurity(Long orderId) throws SQLException {
         return dao.getSecuriy(orderId);
     }
+
+    public Long createOrder(Order order) {
+        if (insert(order)) {
+            return dao.getIdOrder(order.getAccountId());
+        }
+        return null;
+    }
 }

@@ -21,7 +21,6 @@ public class ConfirmationController extends HttpServlet {
     private CartService cartService;
     private VoucherService voucherService;
     private AccountService accountService;
-    private Long accountId;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
@@ -38,54 +37,34 @@ public class ConfirmationController extends HttpServlet {
             Long orderId = null;
             try {
                 orderId = Long.parseLong(req.getPathInfo().substring(1));
-            } catch (NumberFormatException e) {
-                req.setAttribute("message", "Không tìm thấy đơn hàng");
-                req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
+            } catch (Exception e) {
+                req.setAttribute("message", "Không tìm thấy đơn hàng!");
+                req.getRequestDispatcher("/views/home.jsp").forward(req, resp);
+                return;
             }
             Order order = orderService.getById(orderId);
-            OrderSecurity orderSecurity= orderService.getSecurity(orderId);
-            accountId = order.getAccountId();
+            if (order == null) {
+                req.setAttribute("message", "Đơn hàng không tồn tại!");
+                req.getRequestDispatcher("/views/home.jsp").forward(req, resp);
+                return;
+            }
+            OrderSecurity orderSecurity = orderService.getSecurity(orderId);
             order.setCartDTO(cartService.convertToDTO(orderId));
-            order.getCartDTO().setVoucher(voucherService.getById(order.getVoucherId()));
+            if(order.getCartDTO() != null && order.getVoucherId() != null)
+                order.getCartDTO().setVoucher(voucherService.getById(order.getVoucherId()));
 
-            // Lấy thông tin chi tiết đơn hàng
             req.setAttribute("order", order);
             req.setAttribute("orderSecurity", orderSecurity);
             req.setAttribute("orderDetail", order.getOrderDetail());
-            req.setAttribute("voucher", order.getCartDTO().getVoucher());
+            req.setAttribute("voucher", (order.getCartDTO() != null) ? order.getCartDTO().getVoucher() : null);
             req.setAttribute("cartDTO", order.getCartDTO());
             req.setAttribute("dateFormatter", DATE_FORMATTER);
             req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
 
         } catch (Exception e) {
-            req.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
+            e.printStackTrace();
+            req.setAttribute("message", "Có lỗi xảy ra: " + e.toString());
             req.getRequestDispatcher("/views/home.jsp").forward(req, resp);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            Long orderId = null;
-            String signature = null;
-            try {
-                orderId = Long.parseLong(req.getParameter("orderId"));
-                signature = req.getParameter("signature");
-                if (signature == null) {
-                    throw new NumberFormatException();
-                }
-            } catch (NumberFormatException e) {
-                req.setAttribute("message", "Không tìm thấy đơn hàng");
-                req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
-            }
-            String publicKey = accountService.getPublicKeyIsActive(accountId);
-            orderService.sign(orderId, signature, publicKey);
-            req.setAttribute("message", "Đã tạo chữ ký thành công");
-            resp.sendRedirect("/ATBM/user/order/confirmation/" + orderId);
-        } catch (Exception e) {
-            req.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
-            req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
-        }
-
     }
 }
