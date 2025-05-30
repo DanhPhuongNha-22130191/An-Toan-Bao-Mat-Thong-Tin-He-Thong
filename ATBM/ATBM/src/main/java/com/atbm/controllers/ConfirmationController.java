@@ -1,6 +1,8 @@
 package com.atbm.controllers;
 
 import com.atbm.models.Order;
+import com.atbm.models.OrderSecurity;
+import com.atbm.services.AccountService;
 import com.atbm.services.CartService;
 import com.atbm.services.OrderService;
 import com.atbm.services.VoucherService;
@@ -18,10 +20,13 @@ public class ConfirmationController extends HttpServlet {
     private OrderService orderService;
     private CartService cartService;
     private VoucherService voucherService;
+    private AccountService accountService;
+    private Long accountId;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
     public void init() throws ServletException {
+        accountService = new AccountService();
         orderService = new OrderService();
         cartService = new CartService();
         voucherService = new VoucherService();
@@ -38,11 +43,14 @@ public class ConfirmationController extends HttpServlet {
                 req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
             }
             Order order = orderService.getById(orderId);
+            OrderSecurity orderSecurity= orderService.getSecurity(orderId);
+            accountId = order.getAccountId();
             order.setCartDTO(cartService.convertToDTO(orderId));
             order.getCartDTO().setVoucher(voucherService.getById(order.getVoucherId()));
 
             // Lấy thông tin chi tiết đơn hàng
             req.setAttribute("order", order);
+            req.setAttribute("orderSecurity", orderSecurity);
             req.setAttribute("orderDetail", order.getOrderDetail());
             req.setAttribute("voucher", order.getCartDTO().getVoucher());
             req.setAttribute("cartDTO", order.getCartDTO());
@@ -60,12 +68,23 @@ public class ConfirmationController extends HttpServlet {
         try {
             Long orderId = null;
             String signature = null;
-            orderService.sign(orderId, signature);
+            try {
+                orderId = Long.parseLong(req.getParameter("orderId"));
+                signature = req.getParameter("signature");
+                if (signature == null) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                req.setAttribute("message", "Không tìm thấy đơn hàng");
+                req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
+            }
+            String publicKey = accountService.getPublicKeyIsActive(accountId);
+            orderService.sign(orderId, signature, publicKey);
             req.setAttribute("message", "Đã tạo chữ ký thành công");
             resp.sendRedirect("/ATBM/user/order/confirmation/" + orderId);
         } catch (Exception e) {
             req.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
-            req.getRequestDispatcher("/views/home.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/confirmation.jsp").forward(req, resp);
         }
 
     }

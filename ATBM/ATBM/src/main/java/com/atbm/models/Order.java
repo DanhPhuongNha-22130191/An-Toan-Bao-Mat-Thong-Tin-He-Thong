@@ -3,7 +3,9 @@ package com.atbm.models;
 
 import com.atbm.dto.CartDTO;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Order {
     private long orderId;
@@ -11,12 +13,11 @@ public class Order {
     private double shipping;
     private String paymentMethod;
     private Long voucherId;
-    private String signature;
-    private String publicKey;
     private CartDTO cartDTO;
     private OrderDetail orderDetail;
-    private String hash;
-
+    private OrderSecurity orderSecurity;
+    private String status;
+    private LocalDateTime orderDate;
 
     public Order(long accountId, double shipping, String paymentMethod, CartDTO cartDTO,
                  OrderDetail orderDetail) {
@@ -27,28 +28,12 @@ public class Order {
         this.orderDetail = orderDetail;
     }
 
-    public String getHash() {
-        return hash;
+    public OrderSecurity getOrderSecurity() {
+        return orderSecurity;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public String getPublicKey() {
-        return publicKey;
-    }
-
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
+    public void setOrderSecurity(OrderSecurity orderSecurity) {
+        this.orderSecurity = orderSecurity;
     }
 
     public CartDTO getCartDTO() {
@@ -124,8 +109,6 @@ public class Order {
     public Order() {
     }
 
-    private String status;
-    private LocalDateTime orderDate;
 
     public String getStatus() {
         return status;
@@ -139,8 +122,10 @@ public class Order {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
 

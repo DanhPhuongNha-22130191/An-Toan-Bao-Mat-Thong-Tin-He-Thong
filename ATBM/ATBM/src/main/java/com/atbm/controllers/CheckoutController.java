@@ -4,6 +4,8 @@ import com.atbm.dto.AccountDTO;
 import com.atbm.dto.CartDTO;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
+import com.atbm.models.OrderSecurity;
+import com.atbm.services.AccountService;
 import com.atbm.services.OrderService;
 import com.atbm.services.VoucherService;
 import jakarta.servlet.ServletException;
@@ -14,16 +16,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 @WebServlet("/user/checkout/*")
 public class CheckoutController extends HttpServlet {
     private OrderService orderService;
     private VoucherService voucherService;
+    private AccountService accountService;
 
     @Override
     public void init() throws ServletException {
         orderService = new OrderService();
         voucherService = new VoucherService();
+        accountService = new AccountService();
     }
 
     @Override
@@ -106,6 +113,7 @@ public class CheckoutController extends HttpServlet {
             String address = req.getParameter("address");
             String note = req.getParameter("note");
             String paymentMethod = req.getParameter("paymentMethod");
+            String signature = req.getParameter("signature");
 
             validateOrderInfo(fullName, phoneNumber, email, address, paymentMethod);
 
@@ -115,8 +123,9 @@ public class CheckoutController extends HttpServlet {
 
             // Tạo đơn hàng
             OrderDetail orderDetail = new OrderDetail(fullName, phoneNumber, email, address, note);
+            OrderSecurity orderSecurity = new OrderSecurity(signature, accountService.getPublicKeyIsActive(accountDTO.getAccountId()));
             Order order = new Order(accountDTO.getAccountId(), cartDTO.getShipping(), paymentMethod, cartDTO, orderDetail);
-
+            order.setOrderSecurity(orderSecurity);
             if (cartDTO.getVoucher() != null) {
                 var voucher = voucherService.getById(cartDTO.getVoucherId());
                 if (voucherService.isVoucherValid(voucher.getCode(), accountDTO.getAccountId())) {
@@ -127,8 +136,8 @@ public class CheckoutController extends HttpServlet {
 
             // Xử lý thanh toán
             if ("COD".equals(paymentMethod)) {
-                processCODOrder(order, session, req, resp);
                 voucherService.insert(cartDTO.getVoucher());
+                processCODOrder(order, session, req, resp);
             } else {
                 throw new IllegalStateException("Phương thức thanh toán không được hỗ trợ");
             }
@@ -143,10 +152,12 @@ public class CheckoutController extends HttpServlet {
     }
 
     private void processCODOrder(Order order, HttpSession session, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (orderService.insert(order)) {
+        order.setStatus("Đang giao hàng");
+        order.setOrderDate(new Date(Instant.now().toEpochMilli()));
+        Long orderId = orderService.getIdOrder(order.getAccountId());
+        if (orderId != null) {
             session.removeAttribute("cartDTO");
-            req.setAttribute("message", "Đặt hàng thành công");
-            req.getRequestDispatcher("/views/order/confirmation.jsp").forward(req, resp);
+            resp.sendRedirect("user/order/confirmation/" + orderId);
         } else {
             throw new IllegalStateException("Không thể tạo đơn hàng, vui lòng thử lại sau");
         }

@@ -5,8 +5,8 @@ import com.atbm.dto.CartDTO;
 import com.atbm.models.CartItem;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
-import com.atbm.utils.ExecuteSQLUtil;
-
+import com.atbm.models.OrderSecurity;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class OrderService implements services.IService<Order, Long> {
         if (dao.insert(entity)) {
             long id = getIdOrder(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
-                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id));
+                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
@@ -33,6 +33,10 @@ public class OrderService implements services.IService<Order, Long> {
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
         return dao.insertOrderDetail(detail, orderId);
+    }
+
+    private boolean insertOrerSecurity(OrderSecurity security, long orderId) {
+        return dao.sign(orderId, security.getSignature(), security.getPublicKey());
     }
 
     private void updateProduct(long productId, int quantity) {
@@ -60,6 +64,7 @@ public class OrderService implements services.IService<Order, Long> {
         return cartItems;
 
     }
+
     @Override
     public Order getById(Long id) {
         return dao.getById(id);
@@ -81,7 +86,11 @@ public class OrderService implements services.IService<Order, Long> {
     }
 
 
-    public void sign(Long orderId, String signature) {
-       dao.sign(orderId,signature);
+    public void sign(Long orderId, String signature, String publicKey) {
+        dao.sign(orderId, signature, publicKey);
+    }
+
+    public OrderSecurity getSecurity(Long orderId) throws SQLException {
+        return dao.getSecuriy(orderId);
     }
 }

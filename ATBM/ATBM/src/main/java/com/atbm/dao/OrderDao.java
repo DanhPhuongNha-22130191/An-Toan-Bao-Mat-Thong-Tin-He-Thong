@@ -3,6 +3,7 @@ package com.atbm.dao;
 import com.atbm.models.CartItem;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
+import com.atbm.models.OrderSecurity;
 import com.atbm.utils.ExecuteSQLUtil;
 
 import java.sql.ResultSet;
@@ -14,9 +15,9 @@ public class OrderDao implements IDao<Order, Long> {
 
     @Override
     public boolean insert(Order entity) {
-        String query = "insert into [Order] (accountId,shipping,paymentMethod,voucherId) values(?,?,?,?)";
+        String query = "insert into [Order] (accountId,shipping,paymentMethod,voucherId,status,orderDate) values(?,?,?,?,?,?)";
         return ExecuteSQLUtil.executeUpdate(query, entity.getAccountId(), entity.getShipping(),
-                entity.getPaymentMethod(), entity.getVoucherId());
+                entity.getPaymentMethod(), entity.getVoucherId(),entity.getStatus(),entity.getOrderDate());
     }
 
     public long getIdOrder(long accountId) {
@@ -41,6 +42,8 @@ public class OrderDao implements IDao<Order, Long> {
             if (resultSet.next()) {
                 order = new Order(resultSet.getLong(1), resultSet.getLong(2), resultSet.getDouble(3),
                         resultSet.getString(4), resultSet.getLong(5));
+                order.setOrderDate(resultSet.getDate("orderDate"));
+                order.setStatus(resultSet.getString("status"));
                 order.setOrderDetail(getDetailById(order.getOrderId()));
             }
         } catch (SQLException e) {
@@ -113,8 +116,22 @@ public class OrderDao implements IDao<Order, Long> {
 
     }
 
-    public void sign(Long orderId, String signature) {
-        String query = "update [Order] set signature=? where orderId=?";
-        ExecuteSQLUtil.executeUpdate(query, signature, orderId);
+    public boolean sign(Long orderId, String signature,String publicKey) {
+        String query = "insert into OrderSecurity (orderId,signature,publicKey) values (?,?,?)";
+        return ExecuteSQLUtil.executeUpdate(query,orderId, signature ,publicKey);
     }
+
+    public OrderSecurity getSecuriy(Long orderId) throws SQLException {
+        String query = "select * from OrderSecurity where orderId=?";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, orderId);
+        OrderSecurity orderSecurity = null;
+        if(resultSet.next()){
+            orderSecurity = new OrderSecurity();
+            orderSecurity.setOrderId(orderId);
+            orderSecurity.setSignature(resultSet.getString(2));
+            orderSecurity.setSignature(resultSet.getString(3));
+        }
+        return orderSecurity;
+    }
+
 }

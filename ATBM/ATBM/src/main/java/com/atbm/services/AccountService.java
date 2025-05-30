@@ -97,6 +97,8 @@ public class AccountService implements services.IService<Account, Long> {
         return accountDao.getAccountByEmail(email);
     }
 
-	
 
+    public String getPublicKeyIsActive(Long accountId) {
+        return accountDao.getPublicKeyIsActive(accountId);
+    }
 }

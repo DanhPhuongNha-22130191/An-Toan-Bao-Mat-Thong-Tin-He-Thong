@@ -15,6 +15,7 @@ public class VoucherService implements services.IService<Voucher, Long> {
 
     @Override
     public boolean insert(Voucher entity) {
+        if (entity == null) return false;
         return dao.insert(entity);
     }
 
