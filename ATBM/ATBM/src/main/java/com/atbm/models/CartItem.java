@@ -1,5 +1,5 @@
 
-package models;
+package com.atbm.models;
 
 /**
  * @author minhhien Thể hiện sản phẩm trong giỏ hàng của người dùng

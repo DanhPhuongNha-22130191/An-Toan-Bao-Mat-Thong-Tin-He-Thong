@@ -1,8 +1,9 @@
 package com.atbm.controllers;
 
+import com.atbm.dto.AccountDTO;
 import com.atbm.mail.EmailUtil;
+import com.atbm.models.Account;
 import com.atbm.services.AccountService;
-import dto.AccountDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -51,7 +52,7 @@ public class AccountController extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        models.Account account = accountService.login(username, password);
+        Account account = accountService.login(username, password);
         if (account != null) {
             AccountDTO accountDTO = new AccountDTO(account.getAccountId(), account.getUsername(), account.getEmail());
             HttpSession session = req.getSession();
@@ -127,9 +128,9 @@ public class AccountController extends HttpServlet {
     }
     private void forgotPassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
-        
+
         // Kiểm tra xem email có tồn tại trong hệ thống không
-        models.Account account = accountService.getAccountByEmail(email);
+        Account account = accountService.getAccountByEmail(email);
         
         if (account != null) {
             // Tạo mật khẩu mới ngẫu nhiên

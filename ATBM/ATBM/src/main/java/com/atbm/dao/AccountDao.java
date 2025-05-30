@@ -1,7 +1,7 @@
 package com.atbm.dao;
 
+import com.atbm.models.Account;
 import com.atbm.utils.ExecuteSQLUtil;
-import models.Account;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,10 +38,10 @@ public class AccountDao implements IDao<Account, Long> {
         try {
             if (rs != null && rs.next()) {
                 return new Account(
-                    rs.getLong("accountId"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("email")
+                        rs.getLong("accountId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email")
                 );
             }
         } catch (SQLException e) {
@@ -57,10 +57,10 @@ public class AccountDao implements IDao<Account, Long> {
         try {
             if (rs != null && rs.next()) {
                 return new Account(
-                    rs.getLong("accountId"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("email")
+                        rs.getLong("accountId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email")
                 );
             }
         } catch (SQLException e) {
@@ -78,10 +78,10 @@ public class AccountDao implements IDao<Account, Long> {
         try {
             while (rs != null && rs.next()) {
                 accounts.add(new Account(
-                    rs.getLong("accountId"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("email")
+                        rs.getLong("accountId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email")
                 ));
             }
         } catch (SQLException e) {
@@ -108,10 +108,10 @@ public class AccountDao implements IDao<Account, Long> {
         try {
             if (rs != null && rs.next()) {
                 return new Account(
-                    rs.getLong("accountId"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("email")
+                        rs.getLong("accountId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email")
                 );
             }
         } catch (SQLException e) {
@@ -124,4 +124,7 @@ public class AccountDao implements IDao<Account, Long> {
         new AccountDao().getAll();
     }
 
+    public String getPublicKeyIsActive(Long accountId) {
+        return "";
+    }
 }
