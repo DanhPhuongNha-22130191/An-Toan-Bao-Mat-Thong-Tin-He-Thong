@@ -2,30 +2,35 @@ package com.atbm.dao;
 
 import com.atbm.models.Account;
 import com.atbm.utils.ExecuteSQLUtil;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AccountDao implements IDao<Account, Long> {
+
+    // Thêm tài khoản mới
     @Override
     public boolean insert(Account account) {
-        String query = "INSERT INTO Account (username, password, email, apiKey) VALUES (?, ?, ?, ?)";
-        return ExecuteSQLUtil.executeUpdate(query, account.getUsername(), account.getPassword(), account.getEmail(), account.getApiKey());
+        String query = "INSERT INTO Account (username, password, email) VALUES (?, ?, ?)";
+        return ExecuteSQLUtil.executeUpdate(query, account.getUsername(), account.getPassword(), account.getEmail());
     }
 
-    @Override
+    // Cập nhật thông tin tài khoản theo ID
     public boolean update(Account account) {
-        String query = "UPDATE Account SET username = ?, password = ?, email = ?, apiKey = ? WHERE accountId = ?";
-        return ExecuteSQLUtil.executeUpdate(query, account.getUsername(), account.getPassword(), account.getEmail(), account.getApiKey(), account.getAccountId());
+        String query = "UPDATE Account SET username = ?, password = ?, email = ? WHERE accountId = ?";
+        return ExecuteSQLUtil.executeUpdate(query, account.getUsername(), account.getPassword(), account.getEmail(), account.getAccountId());
     }
 
+    // Xóa tài khoản theo ID
     @Override
     public boolean delete(Long id) {
         String query = "DELETE FROM Account WHERE accountId = ?";
         return ExecuteSQLUtil.executeUpdate(query, id);
     }
 
+    // Lấy tài khoản theo ID
     @Override
     public Account getById(Long id) {
         String query = "SELECT * FROM Account WHERE accountId = ?";
@@ -46,6 +51,26 @@ public class AccountDao implements IDao<Account, Long> {
         return null;
     }
 
+    // Lấy tài khoản theo username
+    public Account getByUsername(String username) {
+        String query = "SELECT * FROM Account WHERE username = ?";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, username);
+        try {
+            if (rs != null && rs.next()) {
+                return new Account(
+                    rs.getLong("accountId"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("email")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Lấy tất cả tài khoản
     @Override
     public List<Account> getAll() {
         List<Account> accounts = new ArrayList<>();
@@ -114,5 +139,13 @@ public class AccountDao implements IDao<Account, Long> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        new AccountDao().getAll();
+    }
+
+    public String getPublicKeyIsActive(Long accountId) {
+        return "";
     }
 }

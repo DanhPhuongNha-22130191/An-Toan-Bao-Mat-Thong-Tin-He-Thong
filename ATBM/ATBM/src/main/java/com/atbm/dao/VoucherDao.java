@@ -1,4 +1,3 @@
-
 package com.atbm.dao;
 
 import com.atbm.models.Voucher;
@@ -12,90 +11,114 @@ import java.util.List;
 
 public class VoucherDao implements IDao<Voucher, Long> {
 
-	@Override
-	public boolean insert(Voucher entity) {
-		String query = "insert into Voucher (code,expirationTime,percentDescrease,name,quantity) values (?,?,?,?,?)";
-		return ExecuteSQLUtil.executeUpdate(query, entity.getCode(), entity.getExpirationTime(),
-				entity.getPercentDescrease(), entity.getName(), entity.getQuantity());
-	}
+    @Override
+    public boolean insert(Voucher entity) {
+        String query = "INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity, maxUsagePerUser, isActive) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return ExecuteSQLUtil.executeUpdate(query,
+                entity.getCode(),
+                entity.getExpirationTime(),
+                entity.getPercentDecrease(),
+                entity.getName(),
+                entity.getQuantity());
+    }
 
-	@Override
-	public Voucher getById(Long id) {
-		String query = "select * from Voucher where voucherId=?";
-		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, id);
-		Voucher voucher = null;
-		try {
-			if (resultSet.next()) {
-				voucher = new Voucher(resultSet.getLong(1), resultSet.getString(2), resultSet.getDate(3),
-						resultSet.getDouble(4), resultSet.getString(5), resultSet.getInt(6));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return voucher;
-	}
+    @Override
+    public Voucher getById(Long id) {
+        String query = "SELECT * FROM Voucher WHERE voucherId = ?";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, id);
+        try {
+            if (rs.next()) {
+                return extractVoucher(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	@Override
-	public List<Voucher> getAll() {
-		String query = "select * from Voucher";
-		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, new Object[0]);
-		List<Voucher> listVoucher = new LinkedList<Voucher>();
-		try {
-			while (resultSet.next()) {
-				Voucher voucher = new Voucher(resultSet.getLong(1), resultSet.getString(2), resultSet.getDate(3),
-						resultSet.getDouble(4), resultSet.getString(5), resultSet.getInt(6));
-				listVoucher.add(voucher);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			listVoucher = null;
-		}
-		return listVoucher;
-	}
+    @Override
+    public List<Voucher> getAll() {
+        String query = "SELECT * FROM Voucher";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        List<Voucher> vouchers = new LinkedList<>();
+        try {
+            while (rs.next()) {
+                vouchers.add(extractVoucher(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return vouchers;
+    }
 
-	@Override
-	public boolean delete(Long id) {
-		String query = "delete from Voucher where voucherId=?";
-		return ExecuteSQLUtil.executeUpdate(query, id);
-	}
+    @Override
+    public boolean delete(Long id) {
+        String query = "DELETE FROM Voucher WHERE voucherId = ?";
+        return ExecuteSQLUtil.executeUpdate(query, id);
+    }
 
-	@Override
-	public boolean update(Voucher entity) {
-		String query = "UPDATE Voucher SET code = ?, expirationTime = ?, percentDescrease = ?, name = ?, quantity = ? WHERE voucherId = ?";
-		return ExecuteSQLUtil.executeUpdate(query, entity.getCode(), entity.getExpirationTime(),
-				entity.getPercentDescrease(), entity.getName(), entity.getQuantity(),entity.getVoucherId());
-	}
+    @Override
+    public boolean update(Voucher entity) {
+        String query = "UPDATE Voucher SET code = ?, expirationTime = ?, percentDecrease = ?, " +
+                "name = ?, quantity = ?" +
+                "WHERE voucherId = ?";
+        return ExecuteSQLUtil.executeUpdate(query,
+                entity.getCode(),
+                entity.getExpirationTime(),
+                entity.getPercentDecrease(),
+                entity.getName(),
+                entity.getQuantity(),
+                entity.getVoucherId());
+    }
 
-	public boolean voucherIsUsed(long accountId, String code) {
-		String query = "select * from UsedVouchers where accountId=? and code=?";
-		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId, code);
-		try {
-			return resultSet.next();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+    public Voucher getByCode(String code) throws SQLException {
+        String query = "SELECT * FROM Voucher WHERE code = ?";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, code);
+        if (rs != null && rs.next())
+            return extractVoucher(rs);
+        return null;
+    }
 
-	public boolean usingVoucher(long accountId, String code, Date currentDate) {
-		String query = "insert into UsedVouchers (accountId,code,usedAt) values (?,?,?)";
-		return ExecuteSQLUtil.executeUpdate(query, accountId, code, currentDate);
-	}
+    public List<Voucher> getActiveVouchers() throws SQLException {
+        String query = "SELECT * FROM Voucher WHERE isActive = true AND expirationTime > CURRENT_DATE";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        List<Voucher> vouchers = new LinkedList<>();
+        if (rs != null)
+            while (rs.next()) {
+                vouchers.add(extractVoucher(rs));
+            }
+        return vouchers;
+    }
 
-	public Voucher getByCode(String code) {
-		String query = "select * from Voucher where code=?";
-		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, code);
-		Voucher voucher = null;
-		try {
-			if (resultSet.next()) {
-				voucher = new Voucher(resultSet.getLong(1), resultSet.getString(2), resultSet.getDate(3),
-						resultSet.getDouble(4), resultSet.getString(5), resultSet.getInt(6));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return voucher;
-	}
+    public boolean decreaseQuantity(long voucherId) {
+        String query = "UPDATE Voucher SET quantity = quantity - 1 WHERE voucherId = ? AND quantity > 0";
+        return ExecuteSQLUtil.executeUpdate(query, voucherId);
+    }
+
+    private Voucher extractVoucher(ResultSet rs) throws SQLException {
+        Voucher voucher = new Voucher();
+        voucher.setVoucherId(rs.getLong("voucherId"));
+        voucher.setCode(rs.getString("code"));
+        voucher.setExpirationTime(rs.getDate("expirationTime"));
+        voucher.setPercentDecrease(rs.getDouble("percentDecrease"));
+        voucher.setName(rs.getString("name"));
+        voucher.setQuantity(rs.getInt("quantity"));
+        return voucher;
+    }
+
+    public boolean voucherIsUsed(long accountId, String code) throws SQLException {
+        String query = "select * from UsedVouchers where accountId=? and code=?";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId, code);
+        if (resultSet != null)
+            return resultSet.next();
+        else return false;
+    }
+
+    public boolean usingVoucher(long accountId, String code, Date currentDate) {
+        String query = "insert into UsedVouchers (accountId,code,usedAt) values (?,?,?)";
+        return ExecuteSQLUtil.executeUpdate(query, accountId, code, currentDate);
+    }
 
 }
 

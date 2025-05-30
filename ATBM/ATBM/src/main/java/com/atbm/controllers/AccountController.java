@@ -1,6 +1,8 @@
 package com.atbm.controllers;
 
+import com.atbm.dto.AccountDTO;
 import com.atbm.mail.EmailUtil;
+import com.atbm.models.Account;
 import com.atbm.models.Account;
 import com.atbm.models.Order;
 import com.atbm.services.AccountService;
@@ -34,6 +36,7 @@ public class AccountController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+        this.doGet(req, resp);
         if ("register".equals(action)) {
             register(req, resp);
         } else if ("login".equals(action)) {
@@ -113,6 +116,8 @@ public class AccountController extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         Account account = accountService.login(username, password);
+
+        Account account = accountService.login(username, password);
         if (account != null) {
             AccountDTO accountDTO = new AccountDTO(account.getAccountId(), account.getUsername(), account.getEmail(), account.getApiKey());
             HttpSession session = req.getSession();
@@ -177,6 +182,10 @@ public class AccountController extends HttpServlet {
     private void forgotPassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         Account account = accountService.getAccountByEmail(email);
+
+        // Kiểm tra xem email có tồn tại trong hệ thống không
+        Account account = accountService.getAccountByEmail(email);
+
         if (account != null) {
             String newPassword = generateRandomPassword();
             boolean updated = accountService.updatePassword(account.getAccountId(), newPassword);
