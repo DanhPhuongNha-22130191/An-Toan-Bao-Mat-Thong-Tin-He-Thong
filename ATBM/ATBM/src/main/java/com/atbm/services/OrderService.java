@@ -9,22 +9,44 @@ import models.CartItem;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderService implements services.IService<Order, Long> {
+public class OrderService implements IService<Order, Long> {
 	private OrderDao dao;
+	private OrderSecurityService securityService;
 
 	public OrderService() {
 		dao = new OrderDao();
+		securityService = new OrderSecurityService();
 	}
 
 	@Override
 	public boolean insert(Order entity) {
+		// Tính totalAmount từ CartDTO
+		double totalAmount = calculateTotalAmount(entity.getCartDTO());
+		entity.setTotalAmount(totalAmount);
+
 		if (dao.insert(entity)) {
 			long id = getIdOrder(entity.getAccountId());
-			return insertOrderDetail(entity.getOrderDetail(), id)
+			entity.setOrderId(id); // Cập nhật orderId
+			boolean success = insertOrderDetail(entity.getOrderDetail(), id)
 					&& insertOrderItems(getListCartItem(entity.getCartDTO(), id));
+			if (success) {
+				securityService.saveOrderHash(entity); // Lưu hash
+			}
+			return success;
 		}
 		return false;
 	}
+
+	private double calculateTotalAmount(CartDTO cartDTO) {
+		double total = 0.0;
+		if (cartDTO != null && cartDTO.getItems() != null) {
+			for (CartDTO.CartItemDTO item : cartDTO.getItems()) {
+				total += item.getPrice() * item.getQuantity(); // Giả định CartItemDTO có price
+			}
+		}
+		return total;
+	}
+
 	public long getIdOrder(long accountId) {
 		return dao.getIdOrder(accountId);
 	}
@@ -49,14 +71,13 @@ public class OrderService implements services.IService<Order, Long> {
 
 	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
 		CartService cartService = new CartService();
-		List<CartItem> cartItems = new LinkedList<CartItem>();
+		List<CartItem> cartItems = new LinkedList<>();
 		for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
 			CartItem item = cartService.convertToModel(dto);
 			item.setOrderId(orderId);
 			cartItems.add(item);
 		}
 		return cartItems;
-
 	}
 
 	@Override
@@ -79,4 +100,7 @@ public class OrderService implements services.IService<Order, Long> {
 		return dao.update(entity);
 	}
 
+	public List<Order> getOrdersByAccountId(long accountId) {
+		return dao.getOrdersByAccountId(accountId);
+	}
 }

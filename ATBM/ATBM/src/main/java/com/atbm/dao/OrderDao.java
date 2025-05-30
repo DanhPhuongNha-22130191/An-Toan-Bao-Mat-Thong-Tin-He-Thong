@@ -94,4 +94,25 @@ public class OrderDao implements IDao<Order, Long> {
 
 	}
 
+	public List<Order> getOrdersByAccountId(long accountId) {
+		String query = "SELECT * FROM Orders WHERE accountId = ?";
+		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
+		List<Order> orders = new LinkedList<>();
+		try {
+			while (resultSet.next()) {
+				Order order = new Order();
+				order.setOrderId(resultSet.getLong("orderId"));
+				order.setAccountId(resultSet.getLong("accountId"));
+				order.setShipping(resultSet.getDouble("shipping"));
+				order.setPaymentMethod(resultSet.getString("paymentMethod"));
+				order.setVoucherId(resultSet.getLong("voucherId"));
+				order.setOrderDate(resultSet.getDate("orderDate"));
+				order.setTotalAmount(resultSet.getDouble("totalAmount"));
+				orders.add(order);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return orders;
+	}
 }

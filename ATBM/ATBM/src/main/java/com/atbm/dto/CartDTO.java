@@ -110,6 +110,7 @@ public class CartDTO {
 		private String ProductImg;
 		private double ProductPrice;
 		private int quantity;
+		private double price;
 
 		public CartItemDTO() {
 		}
@@ -176,7 +177,9 @@ public class CartDTO {
 			this.quantity = quantity;
 		}
 
-	}
+		public double getPrice() { return price; }
+		public void setPrice(double price) { this.price = price; }
+    }
 }
 
 
