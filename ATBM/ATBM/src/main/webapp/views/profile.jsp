@@ -91,28 +91,29 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach var="orderWithStatus" items="${ordersWithStatus}">
+                    <c:forEach var="order" items="${orders}">
                         <tr>
                             <td>
-                                        <span class="order-link" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
-                                              onclick="showOrderDetails('${orderWithStatus.order.orderId}', '${orderWithStatus.order.orderDate}',
-                                                      '${orderWithStatus.order.totalAmount}', '${orderWithStatus.isTampered}')">
-                                                ${orderWithStatus.order.orderId}
-                                        </span>
+                                <span class="order-link" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
+                                      onclick="showOrderDetails('${order.orderId}', '${order.orderDate}',
+                                              '${order.totalAmount}', '${requestScope['order_' + order.orderId + '_isTampered']}',
+                                              '${requestScope['order_' + order.orderId + '_hash']}')">
+                                        ${order.orderId}
+                                </span>
                             </td>
-                            <td>${orderWithStatus.order.orderDate}</td>
-                            <td>${orderWithStatus.order.totalAmount}đ</td>
+                            <td>${order.orderDate}</td>
+                            <td>${order.totalAmount}đ</td>
                             <td>
-                                <c:if test="${orderWithStatus.isTampered}">
+                                <c:if test="${requestScope['order_' + order.orderId + '_isTampered']}">
                                     <span class="badge bg-danger">Đã bị thay đổi</span>
                                 </c:if>
-                                <c:if test="${!orderWithStatus.isTampered}">
+                                <c:if test="${!requestScope['order_' + order.orderId + '_isTampered']}">
                                     <span class="badge bg-success">An toàn</span>
                                 </c:if>
                             </td>
                             <td>
-                                <c:if test="${orderWithStatus.isTampered}">
-                                    <button class="btn btn-warning btn-sm" onclick="reportOrder('${orderWithStatus.order.orderId}')">
+                                <c:if test="${requestScope['order_' + order.orderId + '_isTampered']}">
+                                    <button class="btn btn-warning btn-sm" onclick="reportOrder('${order.orderId}')">
                                         Báo cáo
                                     </button>
                                 </c:if>
@@ -138,20 +139,26 @@
                     <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
                 </form>
                 <hr>
-                <h4 class="text-primary">Quản lý API Key</h4>
+                <h4 class="text-primary">Quản lý Public Key</h4>
                 <div class="mb-3">
-                    <label class="form-label">API Key hiện tại:</label>
+                    <label class="form-label">Public Key hiện tại:</label>
                     <div class="input-group">
-                        <c:if test="${not empty user.apiKey}">
-                            <input type="text" class="form-control" id="apiKeyInput" value="${user.apiKey}" readonly>
-                            <button class="btn btn-outline-secondary" type="button" onclick="copyApiKey()">
+                        <c:if test="${not empty user.publicKeyActive}">
+                            <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
                                 <i class="bi bi-clipboard"></i> Sao chép
                             </button>
-                            <button class="btn btn-danger mt-2" onclick="revokeApiKey()">Thu hồi API Key</button>
+                            <form action="${pageContext.request.contextPath}/user/account" method="post" class="mt-2">
+                                <input type="hidden" name="action" value="revokePublicKey">
+                                <button type="submit" class="btn btn-danger">Thu hồi Public Key</button>
+                            </form>
                         </c:if>
-                        <c:if test="${empty user.apiKey}">
-                            <p>Chưa có API Key.</p>
-                            <button class="btn btn-primary" onclick="generateApiKey()">Tạo API Key mới</button>
+                        <c:if test="${empty user.publicKeyActive}">
+                            <p>Chưa có Public Key.</p>
+                            <form action="${pageContext.request.contextPath}/user/account" method="post">
+                                <input type="hidden" name="action" value="generatePublicKey">
+                                <button type="submit" class="btn btn-primary">Tạo Public Key mới</button>
+                            </form>
                         </c:if>
                     </div>
                 </div>
@@ -173,6 +180,7 @@
                 <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
                 <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
                 <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
+                <p><strong>Mã Hash:</strong> <span id="modalOrderHash"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -200,36 +208,26 @@
         window.history.back();
     }
 
-    function generateApiKey() {
-        window.location.href = "${pageContext.request.contextPath}/user/account?action=generateApiKey";
-    }
-
-    function revokeApiKey() {
-        if (confirm("Bạn có chắc muốn thu hồi API Key? Hành động này không thể hoàn tác.")) {
-            window.location.href = "${pageContext.request.contextPath}/user/account?action=revokeApiKey";
-        }
-    }
-
-    function copyApiKey() {
-        let apiKeyInput = document.getElementById("apiKeyInput");
-        apiKeyInput.select();
+    function copyPublicKey() {
+        let publicKeyInput = document.getElementById("publicKeyInput");
+        publicKeyInput.select();
         document.execCommand("copy");
-        alert("API Key đã được sao chép vào clipboard!");
+        alert("Public Key đã được sao chép vào clipboard!");
     }
 
-    function showOrderDetails(orderId, orderDate, totalAmount, isTampered) {
+    function showOrderDetails(orderId, orderDate, totalAmount, isTampered, orderHash) {
         document.getElementById("modalOrderId").innerText = orderId;
         document.getElementById("modalOrderDate").innerText = orderDate;
         document.getElementById("modalTotalAmount").innerText = totalAmount;
-        document.getElementById("modalStatus").innerHTML = isTampered ?
+        document.getElementById("modalStatus").innerHTML = isTampered === 'true' ?
             '<span class="badge bg-danger">Đã bị thay đổi</span>' :
             '<span class="badge bg-success">An toàn</span>';
+        document.getElementById("modalOrderHash").innerText = orderHash;
     }
 
     function reportOrder(orderId) {
         if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
             alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
-            // Có thể thêm logic gửi yêu cầu báo cáo đến server nếu cần
         }
     }
 </script>

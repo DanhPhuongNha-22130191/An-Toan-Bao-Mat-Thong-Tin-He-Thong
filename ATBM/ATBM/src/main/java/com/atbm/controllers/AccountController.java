@@ -3,13 +3,12 @@ package com.atbm.controllers;
 import com.atbm.dto.AccountDTO;
 import com.atbm.mail.EmailUtil;
 import com.atbm.models.Account;
-import com.atbm.models.Account;
 import com.atbm.models.Order;
+import com.atbm.models.OrderDetail;
 import com.atbm.services.AccountService;
-import com.atbm.dto.AccountDTO;
-import com.atbm.dto.OrderWithStatus;
-import com.atbm.services.OrderService;
 import com.atbm.services.OrderSecurityService;
+import com.atbm.services.OrderService;
+import com.atbm.utils.SignatureUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,45 +21,86 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 @WebServlet("/user/account")
 public class AccountController extends HttpServlet {
-    private AccountService accountService = new AccountService();
-    private OrderService orderService = new OrderService();
-    private OrderSecurityService orderSecurityService = new OrderSecurityService();
+    private static final Logger LOGGER = Logger.getLogger(AccountController.class.getName());
+    private AccountService accountService;
+    private OrderService orderService;
+    private OrderSecurityService orderSecurityService;
     private static final String RECAPTCHA_SECRET_KEY = "6LcooTwrAAAAADsuwNgS3T4IsD9Cu1jmmSbJ5p1Y";
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            LOGGER.info("Khởi tạo AccountService...");
+            accountService = new AccountService();
+            LOGGER.info("Khởi tạo OrderService...");
+            orderService = new OrderService();
+            LOGGER.info("Khởi tạo OrderSecurityService...");
+            orderSecurityService = new OrderSecurityService();
+            LOGGER.info("AccountController khởi tạo thành công");
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi khởi tạo AccountController: " + e.getMessage());
+            throw new ServletException("Không thể khởi tạo AccountController", e);
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        this.doGet(req, resp);
-        if ("register".equals(action)) {
-            register(req, resp);
-        } else if ("login".equals(action)) {
-            login(req, resp);
-        } else if ("updateProfile".equals(action)) {
-            updateProfile(req, resp);
-        } else if ("changePassword".equals(action)) {
-            changePassword(req, resp);
-        } else if ("forgotPassword".equals(action)) {
-            forgotPassword(req, resp);
-        } else if ("generateApiKey".equals(action)) {
-            generateApiKey(req, resp);
-        } else if ("revokeApiKey".equals(action)) {
-            revokeApiKey(req, resp);
+        LOGGER.info("Xử lý hành động POST: " + action);
+        try {
+            switch (action != null ? action : "") {
+                case "register":
+                    register(req, resp);
+                    break;
+                case "login":
+                    login(req, resp);
+                    break;
+                case "updateProfile":
+                    updateProfile(req, resp);
+                    break;
+                case "changePassword":
+                    changePassword(req, resp);
+                    break;
+                case "forgotPassword":
+                    forgotPassword(req, resp);
+                    break;
+                case "generatePublicKey":
+                    generatePublicKey(req, resp);
+                    break;
+                case "revokePublicKey":
+                    revokePublicKey(req, resp);
+                    break;
+                default:
+                    req.setAttribute("error", "Hành động không hợp lệ.");
+                    req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi xử lý hành động POST " + action + ": " + e.getMessage());
+            throw new ServletException("Lỗi xử lý yêu cầu", e);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        if ("logout".equals(action)) {
-            logout(req, resp);
-        } else if ("profile".equals(action)) {
-            showProfile(req, resp);
+        LOGGER.info("Xử lý hành động GET: " + action);
+        try {
+            if ("logout".equals(action)) {
+                logout(req, resp);
+            } else if ("profile".equals(action)) {
+                showProfile(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi xử lý hành động GET " + action + ": " + e.getMessage());
+            throw new ServletException("Lỗi xử lý yêu cầu", e);
         }
     }
 
@@ -76,11 +116,20 @@ public class AccountController extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         String email = req.getParameter("email");
-        boolean success = accountService.register(username, password, email);
-        if (success) {
-            resp.sendRedirect(req.getContextPath() + "/views/login.jsp?success=registered");
-        } else {
-            req.setAttribute("error", "Tên tài khoản đã tồn tại.");
+        try {
+            LOGGER.info("Đang đăng ký người dùng: " + username);
+            boolean success = accountService.register(username, password, email);
+            if (success) {
+                LOGGER.info("Đăng ký thành công cho người dùng: " + username);
+                resp.sendRedirect(req.getContextPath() + "/views/login.jsp?success=registered");
+            } else {
+                LOGGER.warning("Đăng ký thất bại: Tên tài khoản đã tồn tại - " + username);
+                req.setAttribute("error", "Tên tài khoản đã tồn tại.");
+                req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi đăng ký người dùng " + username + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi đăng ký tài khoản.");
             req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
         }
     }
@@ -92,22 +141,21 @@ public class AccountController extends HttpServlet {
             conn.setRequestMethod("POST");
             String postParams = "secret=" + RECAPTCHA_SECRET_KEY + "&response=" + recaptchaResponse;
             conn.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-            wr.writeBytes(postParams);
-            wr.flush();
-            wr.close();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            try (DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
+                wr.writeBytes(postParams);
             }
-            in.close();
 
-            return response.toString().contains("\"success\": true");
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                LOGGER.info("Phản hồi Recaptcha: " + response);
+                return response.toString().contains("\"success\": true");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warning("Xác minh Recaptcha thất bại: " + e.getMessage());
             return false;
         }
     }
@@ -115,16 +163,34 @@ public class AccountController extends HttpServlet {
     private void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        Account account = accountService.login(username, password);
 
-        Account account = accountService.login(username, password);
-        if (account != null) {
-            AccountDTO accountDTO = new AccountDTO(account.getAccountId(), account.getUsername(), account.getEmail(), account.getApiKey());
-            HttpSession session = req.getSession();
-            session.setAttribute("user", accountDTO);
-            resp.sendRedirect("/product?action=shop");
-        } else {
-            req.setAttribute("error", "Sai tài khoản hoặc mật khẩu.");
+        if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            return;
+        }
+
+        try {
+            Account account = accountService.login(username.trim(), password.trim());
+            if (account != null) {
+                AccountDTO accountDTO = new AccountDTO(
+                        account.getAccountId(),
+                        account.getUsername(),
+                        account.getEmail(),
+                        account.getPublicKeyActive()
+                );
+                HttpSession session = req.getSession();
+                session.setAttribute("user", accountDTO);
+                LOGGER.info("Đăng nhập thành công cho người dùng: " + username);
+                resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+            } else {
+                LOGGER.info("Đăng nhập thất bại cho người dùng: " + username);
+                req.setAttribute("error", "Sai tài khoản hoặc mật khẩu.");
+                req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi đăng nhập cho người dùng " + username + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi đăng nhập.");
             req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
         }
     }
@@ -132,23 +198,31 @@ public class AccountController extends HttpServlet {
     private void updateProfile(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         AccountDTO user = (AccountDTO) session.getAttribute("user");
-        if (user != null) {
-            String newUsername = req.getParameter("username");
-            String newEmail = req.getParameter("email");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            return;
+        }
+
+        String newUsername = req.getParameter("username");
+        String newEmail = req.getParameter("email");
+        try {
             if (newUsername.equals(user.getUsername()) && newEmail.equals(user.getEmail())) {
                 req.setAttribute("message", "Không có thay đổi nào để cập nhật.");
-                req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
-                return;
-            }
-            user.setUsername(newUsername);
-            user.setEmail(newEmail);
-            boolean updated = accountService.updateProfile(user);
-            if (updated) {
-                session.setAttribute("user", user);
-                req.setAttribute("message", "Cập nhật thông tin thành công!");
             } else {
-                req.setAttribute("error", "Lỗi cập nhật thông tin.");
+                user.setUsername(newUsername);
+                user.setEmail(newEmail);
+                boolean updated = accountService.updateProfile(user);
+                if (updated) {
+                    session.setAttribute("user", user);
+                    req.setAttribute("message", "Cập nhật thông tin thành công!");
+                } else {
+                    req.setAttribute("error", "Lỗi cập nhật thông tin.");
+                }
             }
+            req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi cập nhật hồ sơ cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi cập nhật hồ sơ.");
             req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
         }
     }
@@ -156,53 +230,69 @@ public class AccountController extends HttpServlet {
     private void changePassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         AccountDTO user = (AccountDTO) session.getAttribute("user");
-        if (user != null) {
-            String oldPassword = req.getParameter("oldPassword");
-            String newPassword = req.getParameter("newPassword");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            return;
+        }
+
+        String oldPassword = req.getParameter("oldPassword");
+        String newPassword = req.getParameter("newPassword");
+        try {
             if (!accountService.checkPassword(user.getAccountId(), oldPassword)) {
                 req.setAttribute("error", "Mật khẩu cũ không đúng!");
-                req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
-                return;
-            }
-            if (oldPassword.equals(newPassword)) {
+            } else if (oldPassword.equals(newPassword)) {
                 req.setAttribute("error", "Mật khẩu mới không được giống mật khẩu cũ.");
-                req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
-                return;
-            }
-            boolean updated = accountService.updatePassword(user.getAccountId(), newPassword);
-            if (updated) {
-                req.setAttribute("message", "Mật khẩu đã được cập nhật thành công.");
             } else {
-                req.setAttribute("error", "Lỗi khi cập nhật mật khẩu.");
+                boolean updated = accountService.updatePassword(user.getAccountId(), newPassword);
+                if (updated) {
+                    req.setAttribute("message", "Mật khẩu đã được cập nhật thành công.");
+                } else {
+                    req.setAttribute("error", "Lỗi khi cập nhật mật khẩu.");
+                }
             }
+            req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi đổi mật khẩu cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi đổi mật khẩu.");
             req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
         }
     }
 
     private void forgotPassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
-        Account account = accountService.getAccountByEmail(email);
-
-        // Kiểm tra xem email có tồn tại trong hệ thống không
-        Account account = accountService.getAccountByEmail(email);
-
-        if (account != null) {
-            String newPassword = generateRandomPassword();
-            boolean updated = accountService.updatePassword(account.getAccountId(), newPassword);
-            if (updated) {
-                boolean emailSent = EmailUtil.sendEmail(email, "Khôi phục mật khẩu", "Mật khẩu mới của bạn là: " + newPassword);
-                if (emailSent) {
-                    req.setAttribute("message", "Mật khẩu mới đã được gửi đến email của bạn.");
+        try {
+            Account account = accountService.getAccountByEmail(email);
+            if (account != null) {
+                String newPassword = generateRandomPassword();
+                LOGGER.info("Mật khẩu mới được tạo cho email " + email + ": " + newPassword);
+                boolean updated = accountService.updatePassword(account.getAccountId(), newPassword);
+                if (updated) {
+                    String emailContent = "Chào bạn,\n\n" +
+                            "Mật khẩu mới của bạn là: " + newPassword + "\n" +
+                            "Vui lòng sử dụng mật khẩu này để đăng nhập và đổi mật khẩu sớm nhất có thể.\n\n" +
+                            "Trân trọng,\nWatchShop";
+                    boolean emailSent = EmailUtil.sendEmail(email, "Khôi phục mật khẩu", emailContent);
+                    if (emailSent) {
+                        LOGGER.info("Email khôi phục mật khẩu đã gửi thành công đến: " + email);
+                        req.setAttribute("message", "Mật khẩu mới đã được gửi đến email của bạn.");
+                    } else {
+                        LOGGER.warning("Gửi email khôi phục mật khẩu thất bại cho: " + email);
+                        req.setAttribute("error", "Gửi email thất bại. Vui lòng thử lại sau.");
+                    }
                 } else {
-                    req.setAttribute("error", "Gửi email thất bại. Vui lòng thử lại sau.");
+                    LOGGER.warning("Không thể cập nhật mật khẩu cho email: " + email);
+                    req.setAttribute("error", "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
                 }
             } else {
-                req.setAttribute("error", "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
+                LOGGER.info("Email không tồn tại trong hệ thống: " + email);
+                req.setAttribute("error", "Email không tồn tại trong hệ thống.");
             }
-        } else {
-            req.setAttribute("error", "Email không tồn tại trong hệ thống.");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi khôi phục mật khẩu cho email " + email + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi khôi phục mật khẩu.");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
         }
-        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
     }
 
     private String generateRandomPassword() {
@@ -215,6 +305,52 @@ public class AccountController extends HttpServlet {
         return password.toString();
     }
 
+    private void generatePublicKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        AccountDTO user = (AccountDTO) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            return;
+        }
+
+        try {
+            String publicKey = accountService.generatePublicKey(user.getAccountId());
+            if (publicKey != null) {
+                user.setPublicKeyActive(publicKey);
+                session.setAttribute("user", user);
+                req.setAttribute("message", "Public Key mới đã được tạo thành công.");
+            } else {
+                req.setAttribute("error", "Lỗi khi tạo Public Key.");
+            }
+            showProfile(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi tạo public key cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi tạo Public Key.");
+            showProfile(req, resp);
+        }
+    }
+
+    private void revokePublicKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        AccountDTO user = (AccountDTO) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            return;
+        }
+
+        try {
+            accountService.revokePublicKey(user.getAccountId());
+            user.setPublicKeyActive(null);
+            session.setAttribute("user", user);
+            req.setAttribute("message", "Public Key đã được thu hồi.");
+            showProfile(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi thu hồi public key cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi thu hồi Public Key.");
+            showProfile(req, resp);
+        }
+    }
+
     private void logout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession();
         session.invalidate();
@@ -224,41 +360,49 @@ public class AccountController extends HttpServlet {
     private void showProfile(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         AccountDTO user = (AccountDTO) session.getAttribute("user");
-        if (user != null) {
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            return;
+        }
+
+        try {
             List<Order> orders = orderService.getOrdersByAccountId(user.getAccountId());
-            List<OrderWithStatus> ordersWithStatus = new ArrayList<>();
             for (Order order : orders) {
                 boolean isTampered = orderSecurityService.isOrderTampered(order);
-                ordersWithStatus.add(new OrderWithStatus(order, isTampered));
+                String orderHash = generateOrderHash(order);
+                req.setAttribute("order_" + order.getOrderId() + "_isTampered", isTampered);
+                req.setAttribute("order_" + order.getOrderId() + "_hash", orderHash);
             }
-            req.setAttribute("ordersWithStatus", ordersWithStatus);
+            req.setAttribute("orders", orders);
             req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
-        } else {
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi hiển thị hồ sơ cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            req.setAttribute("error", "Lỗi khi tải trang hồ sơ.");
             resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
         }
     }
 
-    private void generateApiKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        AccountDTO user = (AccountDTO) session.getAttribute("user");
-        if (user != null) {
-            String apiKey = accountService.generateApiKey(user.getAccountId());
-            user.setApiKey(apiKey);
-            session.setAttribute("user", user);
-            req.setAttribute("message", "API Key mới đã được tạo thành công.");
-            showProfile(req, resp);
-        }
-    }
-
-    private void revokeApiKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        AccountDTO user = (AccountDTO) session.getAttribute("user");
-        if (user != null) {
-            accountService.revokeApiKey(user.getAccountId());
-            user.setApiKey(null);
-            session.setAttribute("user", user);
-            req.setAttribute("message", "API Key đã được thu hồi.");
-            showProfile(req, resp);
+    private String generateOrderHash(Order order) {
+        try {
+            OrderDetail detail = order.getOrderDetail();
+            if (detail == null) {
+                LOGGER.warning("Chi tiết đơn hàng null cho đơn hàng ID: " + order.getOrderId());
+                return "Lỗi tạo hash";
+            }
+            StringBuilder data = new StringBuilder();
+            data.append(order.getOrderId())
+                    .append(order.getOrderDate().toString())
+                    .append(order.getPaymentMethod())
+                    .append(detail.getFullName())
+                    .append(detail.getPhone())
+                    .append(detail.getEmail())
+                    .append(detail.getAddress())
+                    .append(order.getCartDTO().getItems().toString())
+                    .append(order.getVoucherId() != null ? order.getVoucherId() : "none");
+            return SignatureUtil.hash(data.toString());
+        } catch (Exception e) {
+            LOGGER.warning("Lỗi khi tạo hash đơn hàng cho ID: " + order.getOrderId() + ": " + e.getMessage());
+            return "Lỗi tạo hash";
         }
     }
 }

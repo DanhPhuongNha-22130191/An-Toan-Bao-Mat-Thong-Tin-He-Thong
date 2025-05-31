@@ -10,18 +10,13 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderService implements services.IService<Order, Long> {
-    private OrderDao dao;
 public class OrderService implements IService<Order, Long> {
 	private OrderDao dao;
-	private OrderSecurityService securityService;
+//	private OrderSecurityService securityService;
 
-    public OrderService() {
-        dao = new OrderDao();
-    }
 	public OrderService() {
 		dao = new OrderDao();
-		securityService = new OrderSecurityService();
+//		securityService = new OrderSecurityService();
 	}
 
     @Override
@@ -34,37 +29,6 @@ public class OrderService implements IService<Order, Long> {
         return false;
     }
 
-    public long getIdOrder(long accountId) {
-        return dao.getIdOrder(accountId);
-    }
-	@Override
-	public boolean insert(Order entity) {
-		// Tính totalAmount từ CartDTO
-		double totalAmount = calculateTotalAmount(entity.getCartDTO());
-		entity.setTotalAmount(totalAmount);
-
-		if (dao.insert(entity)) {
-			long id = getIdOrder(entity.getAccountId());
-			entity.setOrderId(id); // Cập nhật orderId
-			boolean success = insertOrderDetail(entity.getOrderDetail(), id)
-					&& insertOrderItems(getListCartItem(entity.getCartDTO(), id));
-			if (success) {
-				securityService.saveOrderHash(entity); // Lưu hash
-			}
-			return success;
-		}
-		return false;
-	}
-
-	private double calculateTotalAmount(CartDTO cartDTO) {
-		double total = 0.0;
-		if (cartDTO != null && cartDTO.getItems() != null) {
-			for (CartDTO.CartItemDTO item : cartDTO.getItems()) {
-				total += item.getPrice() * item.getQuantity(); // Giả định CartItemDTO có price
-			}
-		}
-		return total;
-	}
 
 	public long getIdOrder(long accountId) {
 		return dao.getIdOrder(accountId);
@@ -92,17 +56,6 @@ public class OrderService implements IService<Order, Long> {
         return true;
     }
 
-    public List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
-        CartService cartService = new CartService();
-        List<CartItem> cartItems = new LinkedList<CartItem>();
-        for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
-            CartItem item = cartService.convertToModel(dto);
-            item.setOrderId(orderId);
-            cartItems.add(item);
-        }
-        return cartItems;
-
-    }
 	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
 		CartService cartService = new CartService();
 		List<CartItem> cartItems = new LinkedList<>();

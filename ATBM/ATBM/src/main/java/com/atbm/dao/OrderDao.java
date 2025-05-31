@@ -147,7 +147,6 @@ public class OrderDao implements IDao<Order, Long> {
 				order.setPaymentMethod(resultSet.getString("paymentMethod"));
 				order.setVoucherId(resultSet.getLong("voucherId"));
 				order.setOrderDate(resultSet.getDate("orderDate"));
-				order.setTotalAmount(resultSet.getDouble("totalAmount"));
 				orders.add(order);
 			}
 		} catch (SQLException e) {
