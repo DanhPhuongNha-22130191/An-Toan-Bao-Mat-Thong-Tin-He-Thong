@@ -25,7 +25,7 @@
 			border-radius: 10px;
 			z-index: 1000;
 			display: none;
-			height: 250px;
+			/*height: 250px;*/
 		}
 
 		.modal h4 {
@@ -68,6 +68,7 @@
 			cursor: pointer;
 		}
 	</style>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 <section class="login_box_area section-margin">
@@ -103,6 +104,9 @@
 							<input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
 						</div>
 						<div class="col-md-12 form-group">
+							<div class="g-recaptcha" data-sitekey="6LcooTwrAAAAAEudofsBFa634LNkfxLdH3804Pqa"></div>
+						</div>
+						<div class="col-md-12 form-group">
 							<button type="submit" class="button button-login w-100">Đăng nhập</button>
 						</div>
 						<div class="col-md-12 form-group text-center">
@@ -123,6 +127,7 @@
 	<form id="forgotPasswordForm" action="${pageContext.request.contextPath}/user/account" method="post">
 		<input type="hidden" name="action" value="forgotPassword">
 		<input type="email" name="email" placeholder="Nhập email của bạn" required class="form-control">
+		<div class="col-md-12 form-group"><div class="g-recaptcha" data-sitekey="6LcooTwrAAAAAEudofsBFa634LNkfxLdH3804Pqa"></div></div>
 		<button type="submit" class="button-reset">Gửi</button>
 	</form>
 	<p id="forgotPasswordMessage" style="color: green; display: none;">✅ Yêu cầu đã được gửi!</p>

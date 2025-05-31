@@ -161,6 +161,14 @@ public class AccountController extends HttpServlet {
     }
 
     private void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String recaptchaResponse = req.getParameter("g-recaptcha-response");
+        boolean isRecaptchaValid = verifyRecaptcha(recaptchaResponse);
+        if (!isRecaptchaValid) {
+            req.setAttribute("error", "Vui lòng xác nhận bạn không phải là robot.");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            return;
+        }
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
@@ -259,6 +267,14 @@ public class AccountController extends HttpServlet {
     }
 
     private void forgotPassword(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String recaptchaResponse = req.getParameter("g-recaptcha-response");
+        boolean isRecaptchaValid = verifyRecaptcha(recaptchaResponse);
+        if (!isRecaptchaValid) {
+            req.setAttribute("error", "Vui lòng xác nhận bạn không phải là robot.");
+            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            return;
+        }
+
         String email = req.getParameter("email");
         try {
             Account account = accountService.getAccountByEmail(email);
