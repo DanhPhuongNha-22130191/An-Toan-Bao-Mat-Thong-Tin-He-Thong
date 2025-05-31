@@ -7,7 +7,7 @@ import com.atbm.models.Product;
 
 import java.util.List;
 
-public class CartService implements services.IService<CartItem, Long> {
+public class CartService implements IService<CartItem, Long> {
     private CartDao dao;
 
     public CartService() {

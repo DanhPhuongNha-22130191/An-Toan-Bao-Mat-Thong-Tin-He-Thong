@@ -8,7 +8,7 @@ import com.atbm.models.Product;
 
 import java.util.List;
 
-public class ProductService implements services.IService<Product, Long> {
+public class ProductService implements IService<Product, Long> {
 	private ProductDao productDao = new ProductDao();
 
 	@Override
