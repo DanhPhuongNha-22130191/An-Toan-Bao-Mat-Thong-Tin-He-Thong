@@ -41,7 +41,7 @@
                                             <input class="pixel-checkbox" type="checkbox" name="brandId[]"
                                                    id="brand${brand.brandId}" value="${brand.brandId}"
                                                    onchange="applyFilters();"
-                                                   <c:if test="${fn:contains(paramValues['brandId[]'], brand.brandId)}">checked</c:if>>
+                                                   <c:if test="${fn:contains(paramValues['brandId'], brand.brandId)}">checked</c:if>>
                                             <label for="brand${brand.brandId}">${brand.name}</label>
                                         </li>
                                     </c:forEach>
@@ -61,7 +61,8 @@
                                         <input class="pixel-checkbox" type="checkbox" name="strapId[]"
                                                id="strap${strap.strapId}" value="${strap.strapId}"
                                                onchange="applyFilters();"
-                                               <c:if test="${fn:contains(paramValues['strapId[]'], strap.strapId)}">checked</c:if>>
+                                               <c:if test="${fn:contains(paramValues['strapId'], strap.strapId)}">checked</c:if>
+                                        >
                                         <label for="strap${strap.strapId}">${strap.material}</label>
                                     </li>
                                 </c:forEach>

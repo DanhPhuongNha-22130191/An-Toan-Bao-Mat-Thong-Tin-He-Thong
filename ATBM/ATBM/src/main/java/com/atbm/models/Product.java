@@ -10,11 +10,13 @@ public class Product {
     private boolean haveTrending;
     private double size; // Kích thước mặt đồng hồ
     private boolean waterResistance; // Chống nước
+    private long brandId;
+    private long strapId;
 
-	public Product(Long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance) {
-	}
+    public Product() {
+    }
 
-	public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance) {
+    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -24,6 +26,8 @@ public class Product {
         this.haveTrending = haveTrending;
         this.size = size;
         this.waterResistance = waterResistance;
+        this.brandId = brandId;
+        this.strapId = strapId;
     }
 
     public long getProductId() {
@@ -62,6 +66,14 @@ public class Product {
         return waterResistance;
     }
 
+    public long getBrandId() {
+        return brandId;
+    }
+
+    public long getStrapId() {
+        return strapId;
+    }
+
     public void setProductId(long productId) {
         this.productId = productId;
     }
@@ -98,6 +110,14 @@ public class Product {
         this.waterResistance = waterResistance;
     }
 
+    public void setBrandId(long brandId) {
+        this.brandId = brandId;
+    }
+
+    public void setStrapId(long strapId) {
+        this.strapId = strapId;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -110,6 +130,8 @@ public class Product {
                 ", haveTrending=" + haveTrending +
                 ", size=" + size +
                 ", waterResistance=" + waterResistance +
+                ", brandId=" + brandId +
+                ", strapId=" + strapId +
                 '}';
     }
 }
