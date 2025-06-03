@@ -28,17 +28,17 @@ public class CategoryAjaxController extends HttpServlet {
         String minPriceParam = request.getParameter("minPrice");
         String maxPriceParam = request.getParameter("maxPrice");
 
-        List<Integer> brandIds = brandIdParams != null ?
+        List<Long> brandIds = brandIdParams != null ?
                 Arrays.stream(brandIdParams)
                         .filter(param -> !param.isEmpty())
-                        .map(Integer::parseInt)
+                        .map(Long::parseLong)
                         .collect(Collectors.toList()) :
                 null;
 
-        List<Integer> strapIds = strapIdParams != null ?
+        List<Long> strapIds = strapIdParams != null ?
                 Arrays.stream(strapIdParams)
                         .filter(param -> !param.isEmpty())
-                        .map(Integer::parseInt)
+                        .map(Long::parseLong)
                         .collect(Collectors.toList()) :
                 null;
 
@@ -46,9 +46,6 @@ public class CategoryAjaxController extends HttpServlet {
         Double maxPrice = (maxPriceParam != null && !maxPriceParam.isEmpty()) ? Double.parseDouble(maxPriceParam) : null;
 
         List<Product> products = productService.filterProducts(brandIds, strapIds, minPrice, maxPrice);
-        for (Product product : products) {
-            System.out.println(product);
-        }
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

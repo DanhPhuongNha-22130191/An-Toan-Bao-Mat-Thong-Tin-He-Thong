@@ -156,8 +156,34 @@
                     </tr>
                     </thead>
                     <tbody id="productTableBody">
-                    <!-- Table rows will be populated by JavaScript -->
+                    <c:forEach var="p" items="${product}">
+                        <tr>
+                            <td>
+                                <img src="${p.image}" alt="${p.name}" style="width: 60px; height: auto;">
+                            </td>
+                            <td>${p.productId}</td>
+                            <td>${p.name}</td>
+
+                            <td>$${p.price}</td>
+                            <td>${p.size}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${p.size > 0}">
+                                        <span class="status active">Đang bán</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="status inactive">Hết hàng</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning">Sửa</button>
+                                <button class="btn btn-sm btn-danger">Xóa</button>
+                            </td>
+                        </tr>
+                    </c:forEach>
                     </tbody>
+
                 </table>
             </div>
         </div>
@@ -249,6 +275,6 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/assests/js/productAdmin.js"></script>
+<script src="${pageContext.request.contextPath}/assests/js/productAdminn.js"></script>
 </body>
 </html>

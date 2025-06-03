@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderService implements services.IService<Order, Long> {
+public class OrderService implements IService<Order, Long> {
     private OrderDao dao;
 
     public OrderService() {

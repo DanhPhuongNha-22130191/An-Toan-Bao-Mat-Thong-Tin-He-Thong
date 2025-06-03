@@ -6,7 +6,7 @@ import com.atbm.models.Account;
 
 import java.util.List;
 
-public class AccountService implements services.IService<Account, Long> {
+public class AccountService implements IService<Account, Long> {
     private AccountDao accountDao = new AccountDao();
 
     @Override

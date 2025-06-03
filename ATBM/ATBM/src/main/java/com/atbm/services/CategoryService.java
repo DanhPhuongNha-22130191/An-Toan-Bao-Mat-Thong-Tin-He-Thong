@@ -6,7 +6,7 @@ import models.Category;
 
 import java.util.List;
 
-public class CategoryService implements services.IService<Category, Long> {
+public class CategoryService implements IService<Category, Long> {
     private CategoryDao categoryDao = new CategoryDao();
 
     @Override
