@@ -9,7 +9,7 @@ public class DBConnection {
     static Connection connection;
     private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=WatchShop;encrypt=true;trustServerCertificate=true";
     private static final String DB_USER = "sa";
-    private static final String DB_PASSWORD = "123456789";
+    private static final String DB_PASSWORD = "1";
 
     public static Connection getConnection() {
         try {

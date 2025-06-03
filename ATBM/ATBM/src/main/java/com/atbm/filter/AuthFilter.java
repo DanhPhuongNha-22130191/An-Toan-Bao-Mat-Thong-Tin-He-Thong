@@ -18,8 +18,7 @@ public class AuthFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         HttpSession session = req.getSession();
-        long userId = 1;
-        Account account = new AccountService().getById(userId);
+        Account account = new AccountService().getAccountByEmail("john.doe@example.com");
         AccountDTO dto = new AccountDTO(account.getAccountId(), account.getUsername(), account.getPassword());
         session.setAttribute("user", dto);
         if (session == null || session.getAttribute("user") == null) {

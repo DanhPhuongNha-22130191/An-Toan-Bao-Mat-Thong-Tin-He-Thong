@@ -231,16 +231,6 @@
             color: #333;
         }
 
-        .hash-display {
-            background: #fff;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 10px;
-            word-break: break-all;
-            position: relative;
-        }
-
         .copy-btn {
             position: absolute;
             right: 10px;
@@ -249,10 +239,69 @@
             border: none;
             color: #384aeb;
             cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 4px;
         }
 
         .copy-btn:hover {
             color: #2a3aeb;
+            background-color: rgba(56, 74, 235, 0.1);
+        }
+
+        .copy-btn.copied {
+            color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+            animation: pulse 0.5s ease;
+        }
+
+        .copy-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .copy-btn.copied i {
+            transform: scale(1.2);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .hash-display {
+            background: #fff;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+            word-break: break-all;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hash-display.copied {
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+
+        #hash-value {
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            margin-top: 5px;
+        }
+
+        #hash-value.copied {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
         }
 
         .signature-status {
@@ -395,19 +444,19 @@
                         <h4>Thông tin giao hàng</h4>
                         <div class="info-row">
                             <div class="info-label">Người nhận:</div>
-                            <div class="info-value">${orderDetail.fullName}</div>
+                            <div class="info-value" id="full-name">${orderDetail.fullName}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Địa chỉ:</div>
-                            <div class="info-value">${orderDetail.address}</div>
+                            <div class="info-value" id="address">${orderDetail.address}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Số điện thoại:</div>
-                            <div class="info-value">${orderDetail.phone}</div>
+                            <div class="info-value" id="phone-number">${orderDetail.phone}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Email:</div>
-                            <div class="info-value">${orderDetail.email}</div>
+                            <div class="info-value" id="email">${orderDetail.email}</div>
                         </div>
                         <c:if test="${not empty orderDetail.orderNote}">
                             <div class="info-row">
@@ -453,7 +502,9 @@
                                         <div id="hash-value">Đang tạo mã hash...</div>
                                     </div>
                                     <div>Nhập chữ ký để xác nhận:</div>
-                                    <form class="signature-form" action="/user/order/confirmation/" method="post">
+                                    <form class="signature-form"
+                                          action="${pageContext.servletContext.contextPath}/user/order/confirmation"
+                                          method="post">
                                         <input type="hidden" name="orderId" value="${order.orderId}">
                                         <input type="text" name="signature" class="signature-input"
                                                placeholder="Nhập chữ ký số..." required/>
@@ -490,7 +541,7 @@
                         <a href="#" class="print-btn" onclick="window.print()">
                             <i class="fas fa-print"></i> In đơn hàng
                         </a>
-                        <a href="${pageContext.request.contextPath}/products" class="continue-btn">
+                        <a href="${pageContext.request.contextPath}/product/category" class="continue-btn">
                             Tiếp tục mua sắm
                         </a>
                     </div>
@@ -502,96 +553,166 @@
 
 <jsp:include page="footer.jsp"/>
 
-<script src="${pageContext.request.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/skrollr.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
-<script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/skrollr.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/mail-script.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/js/main.js"></script>
 <script>
-    // Function to generate hash from order details
-    async function generateOrderHash() {
-        const orderData = {
-            orderId: '${order.orderId}',
-            orderDate: '${order.orderDate.format(dateFormatter)}',
-            totalAmount: '${cartDTO.totalPrice}',
-            items: [
-                <c:forEach var="item" items="${cartDTO.items}" varStatus="status">
-                {
-                    productId: '${item.productId}',
-                    quantity: ${item.quantity},
-                    price: '${item.productPrice}'
-                }${!status.last ? ',' : ''}
-                </c:forEach>
-            ],
-            customerInfo: {
-                name: '${orderDetail.fullName}',
-                email: '${orderDetail.email}',
-                phone: '${orderDetail.phone}',
-                address: '${orderDetail.address}'
+    document.addEventListener("DOMContentLoaded", () => {
+        // Function to generate hash from order details
+        const productInfo = '${cartDTO != null ? cartDTO.productInfo : ""}';
+
+        async function generateOrderHash() {
+            try {
+                const paymentMethod = "COD";
+                const name = document.getElementById('full-name').textContent.trim();
+                const phone = document.getElementById('phone-number').textContent.trim();
+                const email = document.getElementById('email').textContent.trim();
+                const address = document.getElementById('address').textContent.trim();
+                
+                if (!name || !phone || !email || !address) {
+                    throw new Error('Thiếu thông tin đơn hàng');
+                }
+
+                const orderString = paymentMethod + name + phone + email + address + productInfo;
+                const encoder = new TextEncoder();
+                const data = encoder.encode(orderString);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (error) {
+                console.error('Error generating hash:', error);
+                throw error;
             }
-        };
-        const orderString = JSON.stringify(orderData);
-        const encoder = new TextEncoder();
-        const data = encoder.encode(orderString);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex;
-    }
-
-    async function updateHashDisplay() {
-        try {
-            const hash = await generateOrderHash();
-            document.getElementById('hash-value').textContent = hash;
-        } catch (error) {
-            console.error('Error generating hash:', error);
-            showNotification('Lỗi khi tạo mã hash', 'error');
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', updateHashDisplay);
+        async function updateHashDisplay() {
+            try {
+                const hashValueDiv = document.getElementById('hash-value');
+                if (!hashValueDiv) return;
 
-    function copyHash() {
-        const hash = document.getElementById('hash-value').textContent;
-        navigator.clipboard.writeText(hash).then(() => {
-            showNotification('Đã sao chép mã hash!', 'success');
-        }).catch(err => {
-            console.error('Lỗi khi sao chép:', err);
-            showNotification('Lỗi khi sao chép mã hash', 'error');
-        });
-    }
+                hashValueDiv.textContent = "Đang tạo hash...";
+                const hash = await generateOrderHash();
+                hashValueDiv.textContent = hash;
+            } catch (error) {
+                console.error('Error updating hash display:', error);
+                const hashValueDiv = document.getElementById('hash-value');
+                if (hashValueDiv) {
+                    hashValueDiv.textContent = "Lỗi tạo hash";
+                }
+                showNotification('Lỗi khi tạo mã hash', 'error');
+            }
+        }
 
-    function showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        const messageElement = document.getElementById('notification-message');
-        notification.classList.remove('success', 'error', 'warning');
-        notification.classList.add(type);
-        messageElement.textContent = message;
-        notification.style.display = 'block';
-        setTimeout(() => {
-            notification.style.animation = 'fadeOut 0.5s ease-out';
+        // Gọi updateHashDisplay khi trang load
+        updateHashDisplay();
+
+        // Định nghĩa hàm copyHash
+        window.copyHash = function() {
+            const hashValueDiv = document.getElementById('hash-value');
+            const copyBtn = document.querySelector('.copy-btn');
+            const hashDisplay = document.querySelector('.hash-display');
+            
+            if (!hashValueDiv) {
+                showNotification("Không tìm thấy mã hash!", "error");
+                return;
+            }
+
+            const hash = hashValueDiv.textContent.trim();
+            if (!hash || hash === "Đang tạo hash..." || hash === "Lỗi tạo hash") {
+                showNotification("Không thể sao chép hash!", "warning");
+                return;
+            }
+
+            // Thêm hiệu ứng trước khi copy
+            if (copyBtn) {
+                copyBtn.classList.add('copied');
+                copyBtn.querySelector('i').classList.remove('fa-copy');
+                copyBtn.querySelector('i').classList.add('fa-check');
+            }
+            if (hashDisplay) {
+                hashDisplay.classList.add('copied');
+            }
+            if (hashValueDiv) {
+                hashValueDiv.classList.add('copied');
+            }
+
+            navigator.clipboard.writeText(hash)
+                .then(() => {
+                    showNotification('Đã sao chép mã hash!', 'success');
+                    
+                    // Giữ hiệu ứng trong 2 giây
+                    setTimeout(() => {
+                        if (copyBtn) {
+                            copyBtn.classList.remove('copied');
+                            copyBtn.querySelector('i').classList.remove('fa-check');
+                            copyBtn.querySelector('i').classList.add('fa-copy');
+                        }
+                        if (hashDisplay) {
+                            hashDisplay.classList.remove('copied');
+                        }
+                        if (hashValueDiv) {
+                            hashValueDiv.classList.remove('copied');
+                        }
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Lỗi khi sao chép:', err);
+                    showNotification('Lỗi khi sao chép mã hash', 'error');
+                    
+                    // Xóa hiệu ứng nếu có lỗi
+                    if (copyBtn) {
+                        copyBtn.classList.remove('copied');
+                        copyBtn.querySelector('i').classList.remove('fa-check');
+                        copyBtn.querySelector('i').classList.add('fa-copy');
+                    }
+                    if (hashDisplay) {
+                        hashDisplay.classList.remove('copied');
+                    }
+                    if (hashValueDiv) {
+                        hashValueDiv.classList.remove('copied');
+                    }
+                });
+        };
+
+        // Định nghĩa hàm showNotification
+        window.showNotification = function(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            if (!notification || !messageElement) return;
+
+            notification.classList.remove('success', 'error', 'warning');
+            notification.classList.add(type);
+            messageElement.textContent = message;
+            notification.style.display = 'block';
+            
             setTimeout(() => {
-                notification.style.display = 'none';
-                notification.style.animation = 'slideIn 0.5s ease-out';
-            }, 500);
-        }, 3000);
-    }
+                notification.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.animation = 'slideIn 0.5s ease-out';
+                }, 500);
+            }, 3000);
+        };
+    });
 
+    // Xử lý message từ server
     <c:if test="${not empty message}">
-    const message = '${message}';
-    const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes('lỗi') || lowerMessage.includes('thất bại') ||
-        lowerMessage.includes('không hợp lệ') || lowerMessage.includes('không tồn tại')) {
-        showNotification(message, 'error');
-    } else if (lowerMessage.includes('cảnh báo') || lowerMessage.includes('chỉ còn') ||
-        lowerMessage.includes('vui lòng')) {
-        showNotification(message, 'warning');
-    } else {
-        showNotification(message, 'success');
-    }
+        const message = '${message}';
+        const lowerMessage = message.toLowerCase();
+        if (lowerMessage.includes('lỗi') || lowerMessage.includes('thất bại') ||
+            lowerMessage.includes('không hợp lệ') || lowerMessage.includes('không tồn tại')) {
+            window.showNotification(message, 'error');
+        } else if (lowerMessage.includes('cảnh báo') || lowerMessage.includes('chỉ còn') ||
+            lowerMessage.includes('vui lòng')) {
+            window.showNotification(message, 'warning');
+        } else {
+            window.showNotification(message, 'success');
+        }
     </c:if>
 </script>
 </body>

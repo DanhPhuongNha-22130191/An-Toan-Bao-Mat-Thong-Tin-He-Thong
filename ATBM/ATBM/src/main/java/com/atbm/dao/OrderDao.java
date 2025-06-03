@@ -20,7 +20,7 @@ public class OrderDao implements IDao<Order, Long> {
                 entity.getPaymentMethod(), entity.getVoucherId(),entity.getStatus(),entity.getOrderDate());
     }
 
-    public long getIdOrder(long accountId) {
+    public long getOrderId(long accountId) {
         String query = "select orderId from [Order] where accountId=?";
         ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
         long newOrderId = 0;
@@ -128,10 +128,30 @@ public class OrderDao implements IDao<Order, Long> {
         if(resultSet.next()){
             orderSecurity = new OrderSecurity();
             orderSecurity.setOrderId(orderId);
-            orderSecurity.setSignature(resultSet.getString(2));
-            orderSecurity.setSignature(resultSet.getString(3));
+            orderSecurity.setSignature(resultSet.getString("signature"));
+            orderSecurity.setPublicKey(resultSet.getString("publicKey"));
         }
         return orderSecurity;
     }
 
+    public List<Order> getAllById(long accountId) {
+        String query = "select * from [Order] where accountId=? order by orderId desc";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query,accountId);
+        List<Order> listOrder = new LinkedList<>();
+        try {
+            while (resultSet.next()) {
+                Order order = new Order(resultSet.getLong(1), resultSet.getLong(2), resultSet.getDouble(3),
+                        resultSet.getString(4), resultSet.getLong(5));
+                order.setOrderDate(resultSet.getDate("orderDate"));
+                order.setStatus(resultSet.getString("status"));
+                order.setOrderDetail(getDetailById(order.getOrderId()));
+                order.setOrderSecurity(getSecuriy(order.getOrderId()));
+                listOrder.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            listOrder = null;
+        }
+        return listOrder;
+    }
 }

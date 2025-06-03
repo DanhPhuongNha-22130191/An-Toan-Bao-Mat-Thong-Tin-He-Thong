@@ -6,7 +6,7 @@ import com.atbm.models.Voucher;
 import java.sql.SQLException;
 import java.util.List;
 
-public class VoucherService implements services.IService<Voucher, Long> {
+public class VoucherService implements IService<Voucher, Long> {
     private final VoucherDao dao;
 
     public VoucherService() {

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderService implements services.IService<Order, Long> {
+public class OrderService implements IService<Order, Long> {
     private OrderDao dao;
 
     public OrderService() {
@@ -20,15 +20,15 @@ public class OrderService implements services.IService<Order, Long> {
     @Override
     public boolean insert(Order entity) {
         if (dao.insert(entity)) {
-            long id = getIdOrder(entity.getAccountId());
+            long id = getOrderId(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
                     && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
 
-    public long getIdOrder(long accountId) {
-        return dao.getIdOrder(accountId);
+    public long getOrderId(long accountId) {
+        return dao.getOrderId(accountId);
     }
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
@@ -74,6 +74,9 @@ public class OrderService implements services.IService<Order, Long> {
     public List<Order> getAll() {
         return dao.getAll();
     }
+    public List<Order> getAllByAccountId(long accountId) {
+        return dao.getAllById(accountId);
+    }
 
     @Override
     public boolean delete(Long id) {
@@ -96,7 +99,7 @@ public class OrderService implements services.IService<Order, Long> {
 
     public Long createOrder(Order order) {
         if (insert(order)) {
-            return dao.getIdOrder(order.getAccountId());
+            return dao.getOrderId(order.getAccountId());
         }
         return null;
     }

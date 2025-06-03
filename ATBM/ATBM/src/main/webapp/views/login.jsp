@@ -95,7 +95,7 @@
 						<p style="color: green;">Đăng ký thành công! Vui lòng đăng nhập.</p>
 					</c:if>
 
-					<form class="row login_form" action="${pageContext.request.contextPath}/user/account" method="post">
+					<form class="row login_form" action="${pageContext.servletContext.contextPath}/user/account" method="post">
 						<input type="hidden" name="action" value="login">
 						<div class="col-md-12 form-group">
 							<input type="text" class="form-control" name="username" placeholder="Tên đăng nhập" required>

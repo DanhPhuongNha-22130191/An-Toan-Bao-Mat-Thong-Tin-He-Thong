@@ -18,6 +18,15 @@ public class CartDTO {
         items = new LinkedList<>();
     }
 
+    public String getProductInfo() {
+        StringBuilder builder = new StringBuilder();
+        for (CartItemDTO item : items) {
+            builder.append(item.getProductName()).append(" - ").append(item.getQuantity()).append(" - ");
+        }
+        builder.append(voucher == null ? "none" : voucher.getCode());
+        return builder.toString();
+    }
+
     public CartItem add(Product product, long cartItemId, int quantity) {
         // Kiểm tra tồn kho
         if (product.getStock() < quantity) {
