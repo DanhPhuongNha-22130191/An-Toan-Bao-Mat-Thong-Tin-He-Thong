@@ -38,11 +38,13 @@
             border-radius: 4px;
             background: #f8f9fa;
         }
+
         .signature-section h5 {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 14px;
         }
+
         .hash-display {
             background: #fff;
             padding: 12px 14px 10px 14px;
@@ -52,6 +54,7 @@
             word-break: break-all;
             position: relative;
         }
+
         .copy-btn {
             position: absolute;
             right: 10px;
@@ -62,9 +65,11 @@
             cursor: pointer;
             font-size: 1em;
         }
+
         .copy-btn:hover {
             color: #2a3aeb;
         }
+
         .signature-input {
             width: 100%;
             padding: 8px 12px;
@@ -76,10 +81,12 @@
             margin-bottom: 8px;
             transition: border-color 0.2s;
         }
+
         .signature-input:focus {
             border-color: #384aeb;
             outline: none;
         }
+
         .signature-status {
             margin-top: 10px;
             padding: 5px 12px;
@@ -89,26 +96,31 @@
             color: #856404;
             font-size: 0.98em;
         }
+
         .signed {
             background: #d4edda !important;
             color: #155724 !important;
         }
+
         .order-summary {
             background: #f8f9fa;
             padding: 20px 22px;
             border-radius: 5px;
             margin-bottom: 18px;
         }
+
         .order-summary h4 {
             font-size: 1.12rem;
             margin-bottom: 16px;
             font-weight: 600;
         }
+
         .summary-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
+
         .total-row {
             font-weight: bold;
             border-top: 1px solid #ddd;
@@ -116,15 +128,18 @@
             margin-top: 10px;
             font-size: 1.07em;
         }
+
         .form-group label {
             font-weight: 500;
         }
+
         .payment-methods {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
+
         .payment-method {
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -133,13 +148,16 @@
             transition: all 0.3s;
             background: #fff;
         }
+
         .payment-method.selected {
             border-color: #384aeb;
             background: #f8f9ff;
         }
+
         .payment-method h5 {
             margin-bottom: 4px;
         }
+
         .btn.btn-primary {
             background: #384aeb;
             border-color: #384aeb;
@@ -147,19 +165,23 @@
             font-size: 1.1em;
             border-radius: 25px;
         }
+
         .btn.btn-primary:hover {
             background: #2632a7;
             border-color: #2632a7;
         }
+
         @media (max-width: 991px) {
             .row {
                 flex-direction: column;
             }
+
             .col-lg-6, .col-lg-4 {
                 width: 100% !important;
                 max-width: 100%;
             }
         }
+
         /* notification style giữ nguyên */
         .notification {
             position: fixed;
@@ -172,18 +194,40 @@
             z-index: 1000;
             display: none;
             animation: slideIn 0.5s ease-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        .notification.success { background-color: #28a745; }
-        .notification.error { background-color: #dc3545; }
-        .notification.warning { background-color: #ffc107; color: #000; }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
+
         @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -213,14 +257,17 @@
             <div class="row">
                 <div class="col-lg-6 col-md-12">
                     <h3 style="margin-bottom:22px;">Thông tin giao hàng</h3>
-                    <form id="checkout-form" action="${pageContext.request.contextPath}/user/checkout" method="post" autocomplete="off">
+                    <form id="checkout-form" action="${pageContext.request.contextPath}/user/checkout" method="post"
+                          autocomplete="off">
                         <div class="form-group mb-2">
                             <label for="full-name">Họ và tên</label>
-                            <input type="text" class="form-control form-control-sm" id="full-name" name="full-name" required>
+                            <input type="text" class="form-control form-control-sm" id="full-name" name="full-name"
+                                   required>
                         </div>
                         <div class="form-group mb-2">
                             <label for="phone-number">Số điện thoại</label>
-                            <input type="text" class="form-control form-control-sm" id="phone-number" name="phone-number"
+                            <input type="text" class="form-control form-control-sm" id="phone-number"
+                                   name="phone-number"
                                    required pattern="^[0-9]{10}$"
                                    title="Số điện thoại phải có đúng 10 chữ số">
                         </div>
@@ -230,7 +277,8 @@
                         </div>
                         <div class="form-group mb-2">
                             <label for="address">Địa chỉ</label>
-                            <input type="text" class="form-control form-control-sm" id="address" name="address" required>
+                            <input type="text" class="form-control form-control-sm" id="address" name="address"
+                                   required>
                         </div>
                         <div class="form-group mb-2">
                             <label for="note">Ghi chú</label>
@@ -252,10 +300,15 @@
                             <div class="hash-display" style="margin-bottom: 8px;">
                                 <div>Mã hash đơn hàng:</div>
                                 <div id="hash-value" style="font-size:0.97em;">Chưa tạo hash</div>
-                                <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;"><i class="fas fa-copy"></i></button>
+                                <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;"><i
+                                        class="fas fa-copy"></i></button>
                             </div>
-                            <button type="button" id="generateHashBtn" class="btn btn-outline-primary btn-sm" style="margin-bottom:10px;">Tạo hash</button>
-                            <div id="hash-warning" class="text-danger" style="font-size: 0.96em; display:none;">Vui lòng nhập đầy đủ thông tin để tạo hash!</div>
+                            <button type="button" id="generateHashBtn" class="btn btn-outline-primary btn-sm"
+                                    style="margin-bottom:10px;">Tạo hash
+                            </button>
+                            <div id="hash-warning" class="text-danger" style="font-size: 0.96em; display:none;">Vui lòng
+                                nhập đầy đủ thông tin để tạo hash!
+                            </div>
 
                             <!-- Chỗ nhập chữ ký điện tử: chỉ hiện khi đã có hash -->
                             <div id="signature-area" style="margin-top:10px; display:none;">
@@ -341,32 +394,15 @@
     }
 
     // Generate hash từ thông tin đơn hàng và user
+    let productInfo =`${cartDTO.productInfo}` ;
     async function generateOrderHash() {
+        const paymentMethod = "COD";
         const name = document.getElementById('full-name').value.trim();
         const phone = document.getElementById('phone-number').value.trim();
         const email = document.getElementById('email').value.trim();
         const address = document.getElementById('address').value.trim();
-        const note = document.getElementById('note').value.trim();
-        const items = [
-                <c:forEach var="item" items="${cartDTO.items}" varStatus="status">{
-                productId: '${item.productId}',
-                productName: '${item.productName}',
-                quantity: ${item.quantity},
-                price: '${item.productPrice}',
-                total: '${item.totalPrice}'
-            }${!status.last ? ',' : ''}</c:forEach>
-        ];
-        const orderData = {
-            customer: { name, phone, email, address, note },
-            items: items,
-            summary: {
-                subTotal: '${cartDTO.subTotal}',
-                shipping: '${cartDTO.shipping}',
-                discount: '${cartDTO.discount}',
-                totalPrice: '${cartDTO.totalPrice}'
-            }
-        };
-        const orderString = JSON.stringify(orderData);
+        const orderString = paymentMethod
+            + name + phone + email + address + productInfo;
         const encoder = new TextEncoder();
         const data = encoder.encode(orderString);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);

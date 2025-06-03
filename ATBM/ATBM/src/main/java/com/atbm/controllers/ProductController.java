@@ -82,7 +82,7 @@ public class ProductController extends HttpServlet {
 			if (product != null) {
 				req.setAttribute("product", mapToDTO(product));
 				LOGGER.info("Hiển thị chi tiết sản phẩm ID: " + productId);
-				req.getRequestDispatcher("/WEB-INF/views/productdetails.jsp").forward(req, resp);
+				req.getRequestDispatcher("/views/productdetails.jsp").forward(req, resp);
 			} else {
 				LOGGER.warning("Không tìm thấy sản phẩm với ID: " + productId);
 				resp.sendRedirect(req.getContextPath() + "/product?action=shop&error=notfound");

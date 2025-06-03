@@ -11,28 +11,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OrderService implements IService<Order, Long> {
-	private OrderDao dao;
-//	private OrderSecurityService securityService;
+    private OrderDao dao;
 
-	public OrderService() {
-		dao = new OrderDao();
-//		securityService = new OrderSecurityService();
-	}
+    public OrderService() {
+        dao = new OrderDao();
+    }
 
     @Override
     public boolean insert(Order entity) {
         if (dao.insert(entity)) {
-            long id = getIdOrder(entity.getAccountId());
+            long id = getOrderId(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
                     && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
 
-
-	public long getIdOrder(long accountId) {
-		return dao.getIdOrder(accountId);
-	}
+    public long getOrderId(long accountId) {
+        return dao.getOrderId(accountId);
+    }
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
         return dao.insertOrderDetail(detail, orderId);
@@ -56,16 +53,17 @@ public class OrderService implements IService<Order, Long> {
         return true;
     }
 
-	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
-		CartService cartService = new CartService();
-		List<CartItem> cartItems = new LinkedList<>();
-		for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
-			CartItem item = cartService.convertToModel(dto);
-			item.setOrderId(orderId);
-			cartItems.add(item);
-		}
-		return cartItems;
-	}
+    public List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
+        CartService cartService = new CartService();
+        List<CartItem> cartItems = new LinkedList<CartItem>();
+        for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
+            CartItem item = cartService.convertToModel(dto);
+            item.setOrderId(orderId);
+            cartItems.add(item);
+        }
+        return cartItems;
+
+    }
 
     @Override
     public Order getById(Long id) {
@@ -75,6 +73,9 @@ public class OrderService implements IService<Order, Long> {
     @Override
     public List<Order> getAll() {
         return dao.getAll();
+    }
+    public List<Order> getAllByAccountId(long accountId) {
+        return dao.getAllById(accountId);
     }
 
     @Override
@@ -98,11 +99,8 @@ public class OrderService implements IService<Order, Long> {
 
     public Long createOrder(Order order) {
         if (insert(order)) {
-            return dao.getIdOrder(order.getAccountId());
+            return dao.getOrderId(order.getAccountId());
         }
         return null;
     }
-	public List<Order> getOrdersByAccountId(long accountId) {
-		return dao.getOrdersByAccountId(accountId);
-	}
 }

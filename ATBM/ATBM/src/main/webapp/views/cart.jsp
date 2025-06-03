@@ -7,18 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Aroma Shop - Cart</title>
-    <link rel="icon" href="${pageContext.request.contextPath}/assests/img/Fevicon.png" type="image/png">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
+    <link rel="icon" href="${pageContext.servletContext.contextPath}/assests/img/Fevicon.png" type="image/png">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/linericon/style.css">
     <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/main.css">
+          href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/nice-select.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/css/style.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/css/main.css">
     <style>
         /* CSS styles giữ nguyên như trong query */
         .cart-item {
@@ -167,13 +167,13 @@
                         <i class="fas fa-shopping-cart"></i>
                         <h2>Giỏ hàng trống</h2>
                         <p>Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                        <a href="${pageContext.request.contextPath}/products">Tiếp tục mua sắm</a>
+                        <a href="${pageContext.servletContext.contextPath}/product/category">Tiếp tục mua sắm</a>
                     </div>
                 </c:when>
                 <c:otherwise>
                     <!-- Form cập nhật giỏ hàng -->
                     <form id="updateCartForm" method="post"
-                          action="${pageContext.request.contextPath}/user/cart/update">
+                          action="${pageContext.servletContext.contextPath}/user/cart/update">
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -191,7 +191,7 @@
                                         <td>
                                             <div class="media">
                                                 <div class="d-flex">
-                                                    <img src="${pageContext.request.contextPath}/assests/img/${item.productImg}"
+                                                    <img src="${pageContext.servletContext.contextPath}/assests/img/${item.productImg}"
                                                          alt="${item.productName}" style="width: 100px;">
                                                 </div>
                                                 <div class="media-body">
@@ -240,7 +240,7 @@
                             <div class="voucher-section">
                                 <h4>Mã giảm giá</h4>
                                 <div class="voucher-input">
-                                    <form action="${pageContext.request.contextPath}/user/voucher/apply" method="post">
+                                    <form action="${pageContext.servletContext.contextPath}/user/voucher/apply" method="post">
                                         <input type="text" id="voucherCode" name="voucher-code"
                                                placeholder="Nhập mã giảm giá">
                                         <button type="submit">Áp dụng</button>
@@ -248,7 +248,7 @@
                                 </div>
                                 <c:if test="${not empty cartDTO.voucher}">
                                     <div class="voucher-info" id="voucherInfo">
-                                        <form action="${pageContext.request.contextPath}/user/voucher/remove"
+                                        <form action="${pageContext.servletContext.contextPath}/user/voucher/remove"
                                               method="post" id="removeVoucherForm">
                                             <p>Mã giảm giá: ${cartDTO.voucher.voucherCode}</p>
                                             <p>Giảm giá: ${cartDTO.voucher.percentDecrease}</p>
@@ -280,9 +280,9 @@
                                     <span>${cartDTO.totalPrice}</span>
                                 </div>
                                 <div class="checkout_btn_inner d-flex align-items-center mt-4">
-                                    <a class="gray_btn" href="${pageContext.request.contextPath}/products">Tiếp tục mua
+                                    <a class="gray_btn" href="${pageContext.servletContext.contextPath}/product/category">Tiếp tục mua
                                         sắm</a>
-                                    <a class="primary-btn ml-2" href="${pageContext.request.contextPath}/user/checkout">Thanh
+                                    <a class="primary-btn ml-2" href="${pageContext.servletContext.contextPath}/user/checkout">Thanh
                                         toán</a>
                                 </div>
                             </div>
@@ -297,14 +297,14 @@
 
 <jsp:include page="footer.jsp"/>
 
-<script src="${pageContext.request.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/skrollr.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
-<script src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
-<script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/skrollr.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/vendors/mail-script.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assests/js/main.js"></script>
 <script type="text/javascript">
     /**
      * Hiển thị thông báo với màu sắc và nội dung tương ứng
@@ -367,7 +367,7 @@
             return;
         }
 
-        fetch('${pageContext.request.contextPath}/user/cart/remove', {
+        fetch('${pageContext.servletContext.contextPath}/user/cart/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

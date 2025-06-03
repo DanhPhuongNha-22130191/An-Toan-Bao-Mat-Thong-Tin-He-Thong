@@ -6,17 +6,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Aroma Shop - Header</title>
-	<link rel="icon" href="img/Fevicon.png" type="image/png">
+	<link rel="icon" href="${pageContext.servletContext.contextPath}/img/Fevicon.png" type="image/png">
 
-	<link rel="stylesheet" href="assets/vendors/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="assets/vendors/fontawesome/css/all.min.css">
-	<link rel="stylesheet" href="assets/vendors/themify-icons/themify-icons.css">
-	<link rel="stylesheet" href="assets/vendors/linericon/style.css">
-	<link rel="stylesheet" href="assets/vendors/owl-carousel/owl.theme.default.min.css">
-	<link rel="stylesheet" href="assets/vendors/owl-carousel/owl.carousel.min.css">
-	<link rel="stylesheet" href="assets/vendors/nice-select/nice-select.css">
-	<link rel="stylesheet" href="assets/vendors/nouislider/nouislider.min.css">
-	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/themify-icons/themify-icons.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/linericon/style.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/owl-carousel/owl.theme.default.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/owl-carousel/owl.carousel.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/nice-select/nice-select.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/vendors/nouislider/nouislider.min.css">
+	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/css/style.css">
 </head>
 <body>
 <!--================ Start Header Menu Area =================-->
@@ -24,7 +24,7 @@
 	<div class="main_menu">
 		<nav class="navbar navbar-expand-lg navbar-light">
 			<div class="container">
-				<a class="navbar-brand logo_h" href="shop/home"><img src="img/logo.png" alt=""></a>
+				<a class="navbar-brand logo_h" href="${pageContext.servletContext.contextPath}/shop/home"><img src="img/logo.png" alt=""></a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse"
 						data-target="#navbarSupportedContent"
 						aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -33,23 +33,23 @@
 				</button>
 				<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 					<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-						<li class="nav-item"><a class="nav-link" href="shop/home">Trang chủ</a></li>
-						<li class="nav-item"><a class="nav-link" href="product/category">Lọc</a></li>
-						<li class="nav-item"><a class="nav-link" href="Blog.jsp">Tool mã hóa</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.servletContext.contextPath}/shop/home">Trang chủ</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.servletContext.contextPath}/product/category">Lọc</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.servletContext.contextPath}/views/introduce.jsp">Tool mã hóa</a></li>
 						<li class="nav-item d-flex align-items-center">
-							<a href="user/cart" class="cart-link">
+							<a href="${pageContext.servletContext.contextPath}/user/cart" class="cart-link">
 								<i class="ti-shopping-cart"></i> <span class="nav-shop__circle"></span>
 							</a>
 						</li>
 						<c:choose>
 							<c:when test="${empty sessionScope.user}">
 								<li class="nav-item">
-									<a class="nav-link" href="views/login.jsp">
+									<a class="nav-link" href="${pageContext.servletContext.contextPath}/views/login.jsp">
 										<i class="ti-lock"></i> Đăng nhập
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="views/register.jsp">
+									<a class="nav-link" href="${pageContext.servletContext.contextPath}/views/register.jsp">
 										<i class="ti-user"></i> Đăng ký
 									</a>
 								</li>
@@ -60,8 +60,8 @@
 										<i class="ti-user"></i> ${sessionScope.user.username}
 									</a>
 									<ul class="dropdown-menu">
-										<li class="nav-item"><a class="nav-link" href="views/profile.jsp">Xem thông tin</a></li>
-										<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/user/account?action=logout">Đăng xuất</a></li>
+										<li class="nav-item"><a class="nav-link" href="${pageContext.servletContext.contextPath}/views/profile.jsp">Xem thông tin</a></li>
+										<li class="nav-item"><a class="nav-link" href="${pageContext.servletContext.contextPath}/user/account?action=logout">Đăng xuất</a></li>
 									</ul>
 								</li>
 							</c:otherwise>

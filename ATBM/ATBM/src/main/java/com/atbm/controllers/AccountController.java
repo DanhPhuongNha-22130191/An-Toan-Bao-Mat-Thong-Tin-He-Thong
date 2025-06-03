@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -382,7 +383,7 @@ public class AccountController extends HttpServlet {
         }
 
         try {
-            List<Order> orders = orderService.getOrdersByAccountId(user.getAccountId());
+            List<Order> orders = orderService.getAllByAccountId(user.getAccountId());
             for (Order order : orders) {
                 boolean isTampered = orderSecurityService.isOrderTampered(order);
                 String orderHash = generateOrderHash(order);
@@ -406,15 +407,12 @@ public class AccountController extends HttpServlet {
                 return "Lỗi tạo hash";
             }
             StringBuilder data = new StringBuilder();
-            data.append(order.getOrderId())
-                    .append(order.getOrderDate().toString())
-                    .append(order.getPaymentMethod())
+            data.append(order.getPaymentMethod())
                     .append(detail.getFullName())
                     .append(detail.getPhone())
                     .append(detail.getEmail())
                     .append(detail.getAddress())
-                    .append(order.getCartDTO().getItems().toString())
-                    .append(order.getVoucherId() != null ? order.getVoucherId() : "none");
+                    .append(order.getCartDTO().getProductInfo());
             return SignatureUtil.hash(data.toString());
         } catch (Exception e) {
             LOGGER.warning("Lỗi khi tạo hash đơn hàng cho ID: " + order.getOrderId() + ": " + e.getMessage());
