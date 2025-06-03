@@ -1,7 +1,7 @@
 package com.atbm.controllers;
 
-import com.atbm.dto.Brand;
-import com.atbm.dto.Strap;
+import com.atbm.models.Brand;
+import com.atbm.models.Strap;
 import com.atbm.models.Product;
 import com.atbm.services.ProductService;
 
