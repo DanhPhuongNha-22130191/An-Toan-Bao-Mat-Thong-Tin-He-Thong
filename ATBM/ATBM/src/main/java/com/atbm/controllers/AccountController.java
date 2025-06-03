@@ -10,22 +10,27 @@ import com.atbm.services.OrderSecurityService;
 import com.atbm.services.OrderService;
 import com.atbm.utils.SignatureUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
 @WebServlet("/user/account")
+@MultipartConfig
 public class AccountController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AccountController.class.getName());
     private AccountService accountService;
@@ -70,11 +75,11 @@ public class AccountController extends HttpServlet {
                 case "forgotPassword":
                     forgotPassword(req, resp);
                     break;
-                case "generatePublicKey":
-                    generatePublicKey(req, resp);
-                    break;
                 case "revokePublicKey":
                     revokePublicKey(req, resp);
+                    break;
+                case "uploadPublicKey":
+                    uploadPublicKey(req, resp);
                     break;
                 default:
                     req.setAttribute("error", "Hành động không hợp lệ.");
@@ -321,7 +326,7 @@ public class AccountController extends HttpServlet {
         return password.toString();
     }
 
-    private void generatePublicKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void uploadPublicKey(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         AccountDTO user = (AccountDTO) session.getAttribute("user");
         if (user == null) {
@@ -329,20 +334,50 @@ public class AccountController extends HttpServlet {
             return;
         }
 
-        try {
-            String publicKey = accountService.generatePublicKey(user.getAccountId());
-            if (publicKey != null) {
+        String publicKeyText = req.getParameter("publicKeyText");
+        Part filePart = req.getPart("publicKeyFile");
+        String publicKey = null;
+
+        if (filePart != null && filePart.getSize() > 0) {
+            publicKey = extractPublicKeyFromFile(filePart);
+        } else if (publicKeyText != null && !publicKeyText.trim().isEmpty()) {
+            publicKey = publicKeyText.trim();
+        }
+
+        if (publicKey != null) {
+            try {
                 user.setPublicKeyActive(publicKey);
-                session.setAttribute("user", user);
-                req.setAttribute("message", "Public Key mới đã được tạo thành công.");
-            } else {
-                req.setAttribute("error", "Lỗi khi tạo Public Key.");
+                boolean updated = accountService.updateProfile(user);
+                if (updated) {
+                    session.setAttribute("user", user);
+                    req.setAttribute("message", "Public Key đã được cập nhật thành công.");
+                } else {
+                    req.setAttribute("error", "Lỗi khi cập nhật Public Key.");
+                }
+            } catch (Exception e) {
+                LOGGER.severe("Lỗi khi cập nhật public key: " + e.getMessage());
+                req.setAttribute("error", "Lỗi khi cập nhật Public Key.");
             }
-            showProfile(req, resp);
+        } else {
+            req.setAttribute("error", "Vui lòng tải lên file hoặc nhập Public Key.");
+        }
+        showProfile(req, resp);
+    }
+
+    private String extractPublicKeyFromFile(Part filePart) {
+        try {
+            String fileContent = new String(filePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            String[] lines = fileContent.split("\n");
+            StringBuilder keyBuilder = new StringBuilder();
+            for (String line : lines) {
+                if (!line.startsWith("-----")) {
+                    keyBuilder.append(line.trim());
+                }
+            }
+            return keyBuilder.toString();
         } catch (Exception e) {
-            LOGGER.severe("Lỗi khi tạo public key cho người dùng " + user.getUsername() + ": " + e.getMessage());
-            req.setAttribute("error", "Lỗi khi tạo Public Key.");
-            showProfile(req, resp);
+            LOGGER.severe("Lỗi khi trích xuất public key từ file: " + e.getMessage());
+            return null;
         }
     }
 

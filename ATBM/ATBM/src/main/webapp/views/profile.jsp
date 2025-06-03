@@ -155,13 +155,22 @@
                         </c:if>
                         <c:if test="${empty user.publicKeyActive}">
                             <p>Chưa có Public Key.</p>
-                            <form action="${pageContext.request.contextPath}/user/account" method="post">
-                                <input type="hidden" name="action" value="generatePublicKey">
-                                <button type="submit" class="btn btn-primary">Tạo Public Key mới</button>
-                            </form>
                         </c:if>
                     </div>
                 </div>
+                <h5>Tải lên hoặc nhập Public Key mới</h5>
+                <form action="${pageContext.request.contextPath}/user/account" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="uploadPublicKey">
+                    <div class="mb-3">
+                        <label for="publicKeyFile" class="form-label">Tải lên file Public Key:</label>
+                        <input type="file" name="publicKeyFile" id="publicKeyFile" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="publicKeyText" class="form-label">Hoặc nhập Public Key:</label>
+                        <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật Public Key</button>
+                </form>
             </div>
         </div>
     </div>
