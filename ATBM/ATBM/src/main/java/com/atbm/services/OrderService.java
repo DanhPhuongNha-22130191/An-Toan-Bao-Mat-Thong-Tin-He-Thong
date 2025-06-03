@@ -11,11 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OrderService implements IService<Order, Long> {
-    private OrderDao dao;
+	private OrderDao dao;
+//	private OrderSecurityService securityService;
 
-    public OrderService() {
-        dao = new OrderDao();
-    }
+	public OrderService() {
+		dao = new OrderDao();
+//		securityService = new OrderSecurityService();
+	}
 
     @Override
     public boolean insert(Order entity) {
@@ -27,9 +29,10 @@ public class OrderService implements IService<Order, Long> {
         return false;
     }
 
-    public long getIdOrder(long accountId) {
-        return dao.getIdOrder(accountId);
-    }
+
+	public long getIdOrder(long accountId) {
+		return dao.getIdOrder(accountId);
+	}
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
         return dao.insertOrderDetail(detail, orderId);
@@ -53,17 +56,16 @@ public class OrderService implements IService<Order, Long> {
         return true;
     }
 
-    public List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
-        CartService cartService = new CartService();
-        List<CartItem> cartItems = new LinkedList<CartItem>();
-        for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
-            CartItem item = cartService.convertToModel(dto);
-            item.setOrderId(orderId);
-            cartItems.add(item);
-        }
-        return cartItems;
-
-    }
+	private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
+		CartService cartService = new CartService();
+		List<CartItem> cartItems = new LinkedList<>();
+		for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
+			CartItem item = cartService.convertToModel(dto);
+			item.setOrderId(orderId);
+			cartItems.add(item);
+		}
+		return cartItems;
+	}
 
     @Override
     public Order getById(Long id) {
@@ -100,4 +102,7 @@ public class OrderService implements IService<Order, Long> {
         }
         return null;
     }
+	public List<Order> getOrdersByAccountId(long accountId) {
+		return dao.getOrdersByAccountId(accountId);
+	}
 }
