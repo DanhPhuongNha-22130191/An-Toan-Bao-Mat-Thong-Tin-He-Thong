@@ -75,6 +75,9 @@ public class OrderService implements IService<Order, Long> {
     public List<Order> getAll() {
         return dao.getAll();
     }
+    public List<Order> getAllByAccountId(long accountId) {
+        return dao.getAllById(accountId);
+    }
 
     public List<Order> getAllByAccountId(long accountId) {
         List<Order> orders = dao.getAllById(accountId);
