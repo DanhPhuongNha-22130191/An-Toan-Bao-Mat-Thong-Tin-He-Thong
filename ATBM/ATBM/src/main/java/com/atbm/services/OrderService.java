@@ -6,6 +6,7 @@ import com.atbm.models.CartItem;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
 import com.atbm.models.OrderSecurity;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,6 +77,14 @@ public class OrderService implements IService<Order, Long> {
     }
     public List<Order> getAllByAccountId(long accountId) {
         return dao.getAllById(accountId);
+    }
+
+    public List<Order> getAllByAccountId(long accountId) {
+        List<Order> orders = dao.getAllById(accountId);
+        for (Order order : orders) {
+            order.setCartDTO(new CartService().convertToDTO(order.getOrderId()));
+        }
+        return orders;
     }
 
     @Override
