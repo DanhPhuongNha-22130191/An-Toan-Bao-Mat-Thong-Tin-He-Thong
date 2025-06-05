@@ -4762,6 +4762,32 @@ a {
 	padding-top: 60px !important;
 	padding-bottom: 60px !important
 }
+.product-image-wrapper {
+	width: 250px;                /* Cố định chiều rộng */
+	height: 250px;               /* Cố định chiều cao */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f2f2f2;
+	overflow: hidden;
+	margin: auto;
+}
+
+.product-image-wrapper img,
+.card-product__img img,
+.product-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;           /* Cắt ảnh vừa khung, không méo */
+	display: block;
+}
+
+.product-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
 
 @media ( min-width : 1000px) {
 	.footer-only {

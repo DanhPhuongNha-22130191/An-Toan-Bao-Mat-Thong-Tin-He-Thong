@@ -12,11 +12,13 @@ public class Product {
     private boolean waterResistance; // Chống nước
     private long brandId;
     private long strapId;
+    private long stateId;
+    private boolean isDeleted;
 
     public Product() {
     }
 
-    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId) {
+    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId, long stateId, boolean isDeleted) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -28,6 +30,24 @@ public class Product {
         this.waterResistance = waterResistance;
         this.brandId = brandId;
         this.strapId = strapId;
+        this.stateId = stateId;
+        this.isDeleted = isDeleted;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(long stateId) {
+        this.stateId = stateId;
     }
 
     public long getProductId() {
@@ -132,6 +152,7 @@ public class Product {
                 ", waterResistance=" + waterResistance +
                 ", brandId=" + brandId +
                 ", strapId=" + strapId +
+                ", stateId=" + stateId +
                 '}';
     }
 }

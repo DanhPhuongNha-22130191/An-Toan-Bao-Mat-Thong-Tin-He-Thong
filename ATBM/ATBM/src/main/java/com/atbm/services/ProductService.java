@@ -2,10 +2,12 @@ package com.atbm.services;
 
 import com.atbm.dao.ProductDao;
 import com.atbm.models.Brand;
+import com.atbm.models.ProductState;
 import com.atbm.models.Strap;
 import com.atbm.models.Product;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProductService implements IService<Product, Long> {
     private ProductDao productDao = new ProductDao();
@@ -52,6 +54,10 @@ public class ProductService implements IService<Product, Long> {
         return productDao.getStraps();
     }
 
+    public List<ProductState> getAllState() {
+        return productDao.getStates();
+    }
+
     public List<Product> getByBrandId(long brandId) {
         return productDao.getProductsByBrandId(brandId);
     }
@@ -67,6 +73,26 @@ public class ProductService implements IService<Product, Long> {
 
     public Double getMaxProductPrice() {
         return productDao.getMaxPrice();
+    }
+
+    // Tổng số lượng sản phẩm trong kho
+    public int getTotalProductStock() {
+        return productDao.getTotalProductStock();
+    }
+
+    // Đếm số sản phẩm sắp hết hàng (stock <= 2)
+    public int countLowStockProducts() {
+        return productDao.countLowStockProducts();
+    }
+
+
+    // Tổng số thương hiệu (Brand)
+    public int getTotalBrandCount() {
+        return productDao.getTotalBrandCount();
+    }
+
+    public String getImageByProductId(long id) {
+        return productDao.getImageByProductId(id);
     }
 
 }
