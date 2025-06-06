@@ -202,7 +202,7 @@ public class AccountController extends HttpServlet {
                 HttpSession session = req.getSession();
                 session.setAttribute("user", accountDTO);
                 LOGGER.info("Đăng nhập thành công cho người dùng: " + username);
-                resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+                resp.sendRedirect(req.getContextPath() + "/product/category");
             } else {
                 LOGGER.info("Đăng nhập thất bại cho người dùng: " + username);
                 req.setAttribute("error", "Sai tài khoản hoặc mật khẩu.");

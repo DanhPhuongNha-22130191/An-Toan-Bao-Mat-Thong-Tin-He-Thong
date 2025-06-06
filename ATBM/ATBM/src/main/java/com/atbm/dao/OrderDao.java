@@ -201,5 +201,25 @@ public class OrderDao implements IDao<Order, Long> {
         }
         return null;
     }
+    public List<Order> getAllById(long accountId) {
+        String query = "select * from [Order] where accountId=? order by orderId desc";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query,accountId);
+        List<Order> listOrder = new LinkedList<>();
+        try {
+            while (resultSet.next()) {
+                Order order = new Order(resultSet.getLong(1), resultSet.getLong(2), resultSet.getDouble(3),
+                        resultSet.getString(4), resultSet.getLong(5));
+                order.setOrderDate(resultSet.getDate("orderDate"));
+                order.setStatus(resultSet.getString("status"));
+                order.setOrderDetail(getDetailById(order.getOrderId()));
+                order.setOrderSecurity(getSecuriy(order.getOrderId()));
+                listOrder.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            listOrder = null;
+        }
+        return listOrder;
+    }
 
 }

@@ -46,9 +46,9 @@ public class ProductService implements IService<Product, Long> {
 		return productDao.getBrands();
 	}
 
-	public List<Product> getProductsByStrap(String strapId) {
-		return productDao.getProductByStrap(strapId);
-	}
+//	public List<Product> getProductsByStrapId(long strapId) {
+//		return productDao.getProductByStrapId(strapId);
+//	}
 
 	public List<Strap> getAllStrap() {
 		return productDao.getStraps();
