@@ -4,9 +4,6 @@ import com.atbm.dao.AccountDao;
 import com.atbm.dto.AccountDTO;
 import com.atbm.models.Account;
 import com.atbm.utils.SignatureUtil;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.util.Base64;
 import java.util.logging.Logger;
 
 public class AccountService {
@@ -125,28 +122,6 @@ public class AccountService {
             return account;
         } catch (Exception e) {
             LOGGER.severe("Lỗi khi lấy tài khoản bằng email " + email + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    public String generatePublicKey(long accountId) {
-        try {
-            Account account = accountDao.getById(accountId);
-            if (account != null) {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-                keyGen.initialize(2048);
-                KeyPair pair = keyGen.generateKeyPair();
-                String publicKey = Base64.getEncoder().encodeToString(pair.getPublic().getEncoded());
-                account.setPublicKeyActive(publicKey);
-                if (accountDao.update(account)) {
-                    LOGGER.info("Tạo public key thành công cho account ID: " + accountId);
-                    return publicKey;
-                }
-            }
-            LOGGER.warning("Tạo public key thất bại cho account ID: " + accountId);
-            return null;
-        } catch (Exception e) {
-            LOGGER.severe("Lỗi khi tạo public key cho account ID " + accountId + ": " + e.getMessage());
             return null;
         }
     }

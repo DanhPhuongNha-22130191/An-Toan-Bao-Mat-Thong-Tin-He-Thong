@@ -79,7 +79,7 @@
 					<div class="hover">
 						<h4>Mới sử dụng trang web của chúng tôi?</h4>
 						<p>Hãy đăng ký ngay để khám phá nhiều tính năng hấp dẫn!</p>
-						<a href="${pageContext.request.contextPath}/views/register.jsp">Tạo tài khoản</a>
+						<a href="${pageContext.request.contextPath}/user/account?action=register">Tạo tài khoản</a>
 					</div>
 				</div>
 			</div>
@@ -95,7 +95,7 @@
 						<p style="color: green;">Đăng ký thành công! Vui lòng đăng nhập.</p>
 					</c:if>
 
-					<form class="row login_form" action="${pageContext.servletContext.contextPath}/user/account" method="post">
+					<form class="row login_form" action="${pageContext.request.contextPath}/user/account" method="post">
 						<input type="hidden" name="action" value="login">
 						<div class="col-md-12 form-group">
 							<input type="text" class="form-control" name="username" placeholder="Tên đăng nhập" required>

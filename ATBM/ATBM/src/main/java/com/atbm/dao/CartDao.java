@@ -13,15 +13,21 @@ public class CartDao implements IDao<CartItem, Long> {
     private CartItem mapToCartItem(ResultSet rs) throws SQLException {
         return new CartItem(
                 rs.getLong("cartItemId"),
+                rs.getLong("accountId"),
                 rs.getLong("productId"),
+                rs.getLong("orderId") == 0 ? null : rs.getLong("orderId"), // Xử lý NULL
                 rs.getInt("quantity")
         );
     }
 
     @Override
     public boolean insert(CartItem entity) {
-        String query = "INSERT INTO CartItem (accountId, productId, quantity) VALUES (?, ?, ?)";
-        return ExecuteSQLUtil.executeUpdate(query, entity.getAccountId(), entity.getProductId(), entity.getQuantity());
+        String query = "INSERT INTO CartItem (accountId, productId, quantity, orderId) VALUES (?, ?, ?, ?)";
+        return ExecuteSQLUtil.executeUpdate(query,
+                entity.getAccountId(),
+                entity.getProductId(),
+                entity.getQuantity(),
+                entity.getOrderId());
     }
 
     @Override
@@ -55,8 +61,11 @@ public class CartDao implements IDao<CartItem, Long> {
 
     @Override
     public boolean update(CartItem entity) {
-        String query = "UPDATE CartItem SET quantity = ? WHERE cartItemId = ?";
-        return ExecuteSQLUtil.executeUpdate(query, entity.getQuantity(), entity.getCartItemId());
+        String query = "UPDATE CartItem SET quantity = ?, orderId = ? WHERE cartItemId = ?";
+        return ExecuteSQLUtil.executeUpdate(query,
+                entity.getQuantity(),
+                entity.getOrderId(),
+                entity.getCartItemId());
     }
 
     @Override

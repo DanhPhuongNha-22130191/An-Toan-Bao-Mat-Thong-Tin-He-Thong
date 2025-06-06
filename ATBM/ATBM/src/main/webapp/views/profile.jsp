@@ -1,30 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
 
 <c:if test="${empty sessionScope.user}">
-    <c:redirect url="login.jsp" />
+    <c:redirect url="/views/login.jsp" />
 </c:if>
-
 <c:set var="user" value="${sessionScope.user}" />
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <meta charset="UTF-8">
     <title>Trang Cá Nhân</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        body { background-color: #f8f9fa; font-family: 'Arial', sans-serif; }
-        .container { margin-top: 30px; }
-        .sidebar { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-        .sidebar .list-group-item { cursor: pointer; transition: background 0.3s; }
-        .sidebar .list-group-item:hover, .sidebar .list-group-item.active { background: #007bff; color: white; }
-        .content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .active-content { display: block !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .order-link { cursor: pointer; color: #007bff; }
-        .order-link:hover { text-decoration: underline; }
+        .order-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .order-item:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
@@ -38,32 +36,46 @@
 </nav>
 
 <c:if test="${not empty error}">
-    <div class="alert alert-danger">${error}</div>
+    <div class="alert alert-danger mt-3 mx-auto" style="max-width: 600px;">${error}</div>
 </c:if>
 <c:if test="${not empty message}">
-    <div class="alert alert-success">${message}</div>
+    <div class="alert alert-success mt-3 mx-auto" style="max-width: 600px;">${message}</div>
 </c:if>
 
-<div class="container">
+<div class="container mt-4">
     <div class="row">
-        <div class="col-md-3 sidebar">
-            <h4 class="text-center text-primary">Menu</h4>
-            <div class="list-group">
-                <a class="list-group-item list-group-item-action active tab-link" data-target="#profile">
-                    <i class="bi bi-person-circle"></i> Thông tin cá nhân
-                </a>
-                <a class="list-group-item list-group-item-action tab-link" data-target="#order-history">
-                    <i class="bi bi-receipt"></i> Lịch sử mua hàng
-                </a>
-                <a class="list-group-item list-group-item-action tab-link" data-target="#account-settings">
-                    <i class="bi bi-gear"></i> Cài đặt tài khoản
-                </a>
+        <!-- Sidebar menu -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary text-center">Menu</h5>
+                    <div class="list-group">
+                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=profile"
+                           class="list-group-item list-group-item-action ${activeTab == 'profile' ? 'active' : ''}">
+                            <i class="bi bi-person-circle"></i> Thông tin cá nhân
+                        </a>
+                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=order-history"
+                           class="list-group-item list-group-item-action ${activeTab == 'order-history' ? 'active' : ''}">
+                            <i class="bi bi-receipt"></i> Lịch sử mua hàng
+                        </a>
+                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=account-settings"
+                           class="list-group-item list-group-item-action ${activeTab == 'account-settings' ? 'active' : ''}">
+                            <i class="bi bi-gear"></i> Cài đặt tài khoản
+                        </a>
+                        <a href="${pageContext.request.contextPath}/user/account?action=logout"
+                           class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Nội dung chính -->
         <div class="col-md-9">
-            <div id="profile" class="content active-content card p-4">
-                <h3 class="text-primary">Thông tin cá nhân</h3>
+            <!-- Thông tin cá nhân -->
+            <div id="profile" class="tab-content card shadow-sm p-4 ${activeTab == 'profile' ? '' : 'd-none'}">
+                <h4 class="text-primary mb-4">Thông tin cá nhân</h4>
                 <form action="${pageContext.request.contextPath}/user/account" method="post">
                     <input type="hidden" name="action" value="updateProfile">
                     <div class="mb-3">
@@ -78,55 +90,42 @@
                 </form>
             </div>
 
-            <div id="order-history" class="content card p-4">
-                <h3 class="text-primary">Lịch sử mua hàng</h3>
-                <table class="table table-striped">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>Mã đơn hàng</th>
-                        <th>Ngày mua</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach var="order" items="${orders}">
-                        <tr>
-                            <td>
-                                <span class="order-link" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
-                                      onclick="showOrderDetails('${order.orderId}', '${order.orderDate}',
-                                              '${order.totalAmount}', '${requestScope['order_' + order.orderId + '_isTampered']}',
-                                              '${requestScope['order_' + order.orderId + '_hash']}')">
-                                        ${order.orderId}
-                                </span>
-                            </td>
-                            <td>${order.orderDate}</td>
-                            <td>${order.totalAmount}đ</td>
-                            <td>
-                                <c:if test="${requestScope['order_' + order.orderId + '_isTampered']}">
-                                    <span class="badge bg-danger">Đã bị thay đổi</span>
-                                </c:if>
-                                <c:if test="${!requestScope['order_' + order.orderId + '_isTampered']}">
-                                    <span class="badge bg-success">An toàn</span>
-                                </c:if>
-                            </td>
-                            <td>
-                                <c:if test="${requestScope['order_' + order.orderId + '_isTampered']}">
-                                    <button class="btn btn-warning btn-sm" onclick="reportOrder('${order.orderId}')">
-                                        Báo cáo
-                                    </button>
-                                </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
+            <!-- Lịch sử mua hàng -->
+            <div id="order-history" class="tab-content card shadow-sm p-4 ${activeTab == 'order-history' ? '' : 'd-none'}">
+                <h4 class="text-primary mb-4">Lịch sử mua hàng</h4>
+                <c:choose>
+                    <c:when test="${orders != null && not empty orders}">
+                        <c:forEach var="order" items="${orders}">
+                            <div class="order-item mb-3 p-3 border rounded" onclick="showOrderDetails(
+                                    '${order.orderId}',
+                                    '${order.orderDate}',
+                                    '${order.totalAmount}',
+                                    '${order.paymentMethod}',
+                                    '${order.status}',
+                                    '${order.orderDetail != null ? order.orderDetail.fullName : ''}',
+                                    '${order.orderDetail != null ? order.orderDetail.phone : ''}',
+                                    '${order.orderDetail != null ? order.orderDetail.email : ''}',
+                                    '${order.orderDetail != null ? order.orderDetail.address : ''}',
+                                    '${order.orderDetail != null ? order.orderDetail.orderNote : ''}'
+                                    )">
+                                <h5>Đơn hàng #${order.orderId}</h5>
+                                <p><strong>Account ID:</strong> ${order.accountId}</p>
+                                <p><strong>Trạng thái:</strong> ${order.status}</p>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="alert alert-info">
+                            Bạn chưa có đơn hàng nào.
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
-            <div id="account-settings" class="content card p-4">
-                <h3 class="text-primary">Cài đặt tài khoản</h3>
-                <form action="${pageContext.request.contextPath}/user/account" method="post">
+            <!-- Cài đặt tài khoản -->
+            <div id="account-settings" class="tab-content card shadow-sm p-4 ${activeTab == 'account-settings' ? '' : 'd-none'}">
+                <h4 class="text-primary mb-4">Cài đặt tài khoản</h4>
+                <form action="${pageContext.request.contextPath}/user/account" method="post" class="mb-4">
                     <input type="hidden" name="action" value="changePassword">
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu cũ:</label>
@@ -138,98 +137,133 @@
                     </div>
                     <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
                 </form>
+
                 <hr>
-                <h4 class="text-primary">Quản lý Public Key</h4>
+
+                <h5 class="text-primary mb-3">Quản lý Public Key</h5>
                 <div class="mb-3">
                     <label class="form-label">Public Key hiện tại:</label>
                     <div class="input-group">
                         <c:if test="${not empty user.publicKeyActive}">
-                            <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
-                            <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
-                                <i class="bi bi-clipboard"></i> Sao chép
-                            </button>
-                            <form action="${pageContext.request.contextPath}/user/account" method="post" class="mt-2">
-                                <input type="hidden" name="action" value="revokePublicKey">
-                                <button type="submit" class="btn btn-danger">Thu hồi Public Key</button>
-                            </form>
-                        </c:if>
-                        <c:if test="${empty user.publicKeyActive}">
-                            <p>Chưa có Public Key.</p>
-                            <form action="${pageContext.request.contextPath}/user/account" method="post">
-                                <input type="hidden" name="action" value="generatePublicKey">
-                                <button type="submit" class="btn btn-primary">Tạo Public Key mới</button>
-                            </form>
-                        </c:if>
+                        <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
+                            <i class="bi bi-clipboard"></i> Sao chép
+                        </button>
+                        <form action="${pageContext.request.contextPath}/user/account" method="post" class="mt-2">
+                            <input type="hidden" name="action" value="revokePublicKey">
+                            <button type="submit" class="btn btn-danger">Thu hồi Public Key</button>
+                        </form>
                     </div>
+                    <c:if test="${empty user.publicKeyActive}">
+                        <p>Chưa có Public Key.</p>
+                    </c:if>
+                </div>
+                <h6 class="text-primary">Tải lên hoặc nhập Public Key mới</h6>
+                <div>
+                    <form action="${pageContext.request.contextPath}/user/account" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="uploadPublicKey">
+                        <div class="mb-3">
+                            <label class="form-label" for="publicKeyFile">Tải lên file Public Key:</label>
+                            <input type="file" name="publicKeyFile" id="publicKeyFile" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="publicKeyText">Hoặc nhập Public Key:</label>
+                            <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal chi tiết đơn hàng -->
-<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
-                <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
-                <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
-                <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
-                <p><strong>Mã Hash:</strong> <span id="modalOrderHash"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+    <!-- Modal chi tiết đơn hàng -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="modalOrderDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
+                    <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
+                    <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
+                    <p><strong>Phương thức thanh toán:</strong> <span id="modalPaymentMethod"></span></p>
+                    <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>Họ tên:</strong> <span id="modalFullName"></span></p>
+                    <p><strong>Số điện thoại:</strong> <span id="modalPhone"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
+                    <p><strong>Ghi chú:</strong> <span id="modalOrderNote"></span></p>
+                </div>
+
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let tabs = document.querySelectorAll(".tab-link");
-        let contents = document.querySelectorAll(".content");
+    <script src="${pageContext.request.contextPath}/assets/vendors/jquery/jquery-3.2.1.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
 
-        tabs.forEach(tab => {
-            tab.addEventListener("click", function () {
-                tabs.forEach(t => t.classList.remove("active"));
-                contents.forEach(c => c.classList.remove("active-content"));
-                this.classList.add("active");
-                document.querySelector(this.getAttribute("data-target")).classList.add("active-content");
-            });
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Kiểm tra Bootstrap có tải đúng không
+            if (typeof bootstrap === 'undefined') {
+                console.error("Bootstrap JavaScript không được tải. Kiểm tra đường dẫn bootstrap.bundle.min.js.");
+            }
         });
-    });
 
-    function goBack() {
-        window.history.back();
-    }
-
-    function copyPublicKey() {
-        let publicKeyInput = document.getElementById("publicKeyInput");
-        publicKeyInput.select();
-        document.execCommand("copy");
-        alert("Public Key đã được sao chép vào clipboard!");
-    }
-
-    function showOrderDetails(orderId, orderDate, totalAmount, isTampered, orderHash) {
-        document.getElementById("modalOrderId").innerText = orderId;
-        document.getElementById("modalOrderDate").innerText = orderDate;
-        document.getElementById("modalTotalAmount").innerText = totalAmount;
-        document.getElementById("modalStatus").innerHTML = isTampered === 'true' ?
-            '<span class="badge bg-danger">Đã bị thay đổi</span>' :
-            '<span class="badge bg-success">An toàn</span>';
-        document.getElementById("modalOrderHash").innerText = orderHash;
-    }
-
-    function reportOrder(orderId) {
-        if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
-            alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
+        function goBack() {
+            window.history.back();
         }
-    }
-</script>
+
+        function copyPublicKey() {
+            const publicKeyInput = document.getElementById("publicKeyInput");
+            publicKeyInput.select();
+            document.execCommand("copy");
+            alert("Public Key đã được sao chép vào clipboard!");
+        }
+
+        function showOrderDetails(orderId, orderDate, totalAmount, paymentMethod, status, fullName, phone, email, address, orderNote) {
+            console.log("Showing details for Order ID: " + orderId);
+            document.getElementById("modalOrderId").innerText = orderId || "N/A";
+            document.getElementById("modalOrderDate").innerText = orderDate || "N/A";
+            document.getElementById("modalTotalAmount").innerText = totalAmount || "0";
+            document.getElementById("modalPaymentMethod").innerText = paymentMethod || "N/A";
+            document.getElementById("modalStatus").innerText = status || "N/A";
+            document.getElementById("modalFullName").innerText = fullName || "N/A";
+            document.getElementById("modalPhone").innerText = phone || "N/A";
+            document.getElementById("modalEmail").innerText = email || "N/A";
+            document.getElementById("modalAddress").innerText = address || "N/A";
+            document.getElementById("modalOrderNote").innerText = orderNote || "Không có";
+
+            // Khởi tạo modal
+            const modalElement = document.getElementById("orderDetailModal");
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        function closeModal() {
+            const modalElement = document.getElementById("orderDetailModal");
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else {
+                console.warn("Modal instance not found, hiding manually");
+                modalElement.classList.remove("show");
+                modalElement.style.display = "none";
+                document.body.classList.remove("modal-open");
+                const backdrop = document.querySelector(".modal-backdrop");
+                if (backdrop) backdrop.remove();
+            }
+        }
+
+        function reportOrder(orderId) {
+            if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
+                alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
+            }
+        }
+    </script>
+    </c:if>
 </body>
 </html>
