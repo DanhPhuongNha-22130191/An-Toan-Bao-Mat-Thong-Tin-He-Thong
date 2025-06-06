@@ -1,6 +1,7 @@
 package com.atbm.dao;
 
 import com.atbm.models.Brand;
+import com.atbm.models.ProductState;
 import com.atbm.models.Strap;
 import com.atbm.models.Product;
 import com.atbm.utils.ExecuteSQLUtil;
@@ -8,7 +9,9 @@ import com.atbm.utils.ExecuteSQLUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProductDao implements IDao<Product, Long> {
@@ -212,7 +215,9 @@ public class ProductDao implements IDao<Product, Long> {
                 rs.getDouble("size"),
                 rs.getBoolean("waterResistance"),
                 rs.getLong("brandId"),
-                rs.getLong("strapId")
+                rs.getLong("strapId"),
+                rs.getLong("strapId"),
+                rs.getBoolean("isDeleted")
         );
     }
 
@@ -235,6 +240,24 @@ public class ProductDao implements IDao<Product, Long> {
         return brands;
     }
 
+    // Lấy danh sách nhãn hàng (Brand)
+    public List<ProductState> getStates() {
+        List<ProductState> states = new ArrayList<>();
+        String query = "SELECT * FROM State";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        try {
+            while (rs != null && rs.next()) {
+                // Giả sử Brand có constructor Brand(long brandId, String name)
+                states.add(new ProductState(
+                        rs.getLong("stateId"),
+                        rs.getString("name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return states;
+    }
     // Lấy danh sách dây đồng hồ (Strap)
     public List<Strap> getStraps() {
         List<Strap> straps = new ArrayList<>();
@@ -255,5 +278,55 @@ public class ProductDao implements IDao<Product, Long> {
         }
         return straps;
     }
+    public int getTotalProductStock() {
+        String query = "SELECT SUM(stock) AS totalStock FROM Product";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        try {
+            if (rs != null && rs.next()) {
+                return rs.getInt("totalStock");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public int countLowStockProducts() {
+        String query = "SELECT COUNT(*) AS lowStockCount FROM Product WHERE stock <= 2";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        try {
+            if (rs != null && rs.next()) {
+                return rs.getInt("lowStockCount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalBrandCount() {
+        String query = "SELECT COUNT(*) AS brandCount FROM Brand";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
+        try {
+            if (rs != null && rs.next()) {
+                return rs.getInt("brandCount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public String getImageByProductId(long id) {
+        String query = "SELECT image FROM Product WHERE productId = ?";
+        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, id);
+        try {
+            if (rs != null && rs.next()) {
+                return rs.getString("image");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }

@@ -1,6 +1,8 @@
 -- Create or use the WatchShop database
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'WatchShop')
-    CREATE DATABASE WatchShop;
+IF
+NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'WatchShop')
+    CREATE
+DATABASE WatchShop;
 GO
 USE WatchShop;
 GO
@@ -64,12 +66,13 @@ CREATE TABLE Product
     FOREIGN KEY (strapId) REFERENCES Strap (strapId)
 );
 
-CREATE TABLE Account (
-                         accountId INT IDENTITY(1,1) PRIMARY KEY,
-                         username NVARCHAR(50) NOT NULL UNIQUE,
-                         password NVARCHAR(255) NOT NULL,
-                         email NVARCHAR(100) NOT NULL UNIQUE,
-                         publicKeyActive NVARCHAR(MAX)
+CREATE TABLE Account
+(
+    accountId       INT IDENTITY(1,1) PRIMARY KEY,
+    username        NVARCHAR(50) NOT NULL UNIQUE,
+    password        NVARCHAR(255) NOT NULL,
+    email           NVARCHAR(100) NOT NULL UNIQUE,
+    publicKeyActive NVARCHAR(MAX)
 );
 
 -- Tạo bảng Gender (giới tính)
@@ -111,16 +114,47 @@ CREATE TABLE Voucher
     quantity        INT   NOT NULL
 );
 
-CREATE TABLE [Order] (
-                         orderId INT PRIMARY KEY IDENTITY(1,1),
+CREATE TABLE [Order]
+(
+    orderId
+    INT
+    PRIMARY
+    KEY
+    IDENTITY
+(
+    1,
+    1
+),
     accountId INT,
     voucherId BIGINT NULL,
-    shipping DECIMAL(10, 2) NOT NULL,
-    status NVARCHAR(50) NOT NULL,
+    shipping DECIMAL
+(
+    10,
+    2
+) NOT NULL,
+    status NVARCHAR
+(
+    50
+) NOT NULL,
     orderDate DATE NOT NULL,
-    paymentMethod NVARCHAR(50) NOT NULL,
-    FOREIGN KEY (accountId) REFERENCES Account(accountId),
-    FOREIGN KEY (voucherId) REFERENCES Voucher(voucherId)
+    paymentMethod NVARCHAR
+(
+    50
+) NOT NULL,
+    FOREIGN KEY
+(
+    accountId
+) REFERENCES Account
+(
+    accountId
+),
+    FOREIGN KEY
+(
+    voucherId
+) REFERENCES Voucher
+(
+    voucherId
+)
     );
 
 -- Tạo bảng OrderSecurity
@@ -199,12 +233,12 @@ VALUES (1, N'Men'),
        (3, N'Unisex');
 
 -- Accounts
-INSERT INTO Account (username, password, email, publicKeyActive) VALUES
-                                                                     (N'john_doe', N'hashed_password_1', N'john.doe@example.com', NULL),
-                                                                     (N'jane_smith', N'hashed_password_2', N'jane.smith@example.com', NULL),
-                                                                     (N'robert_johnson', N'hashed_password_3', N'robert.johnson@example.com', NULL),
-                                                                     (N'susan_wilson', N'hashed_password_4', N'susan.wilson@example.com', NULL),
-                                                                     (N'mike_brown', N'hashed_password_5', N'mike.brown@example.com', NULL);
+INSERT INTO Account (username, password, email, publicKeyActive)
+VALUES (N'john_doe', N'hashed_password_1', N'john.doe@example.com', NULL),
+       (N'jane_smith', N'hashed_password_2', N'jane.smith@example.com', NULL),
+       (N'robert_johnson', N'hashed_password_3', N'robert.johnson@example.com', NULL),
+       (N'susan_wilson', N'hashed_password_4', N'susan.wilson@example.com', NULL),
+       (N'mike_brown', N'hashed_password_5', N'mike.brown@example.com', NULL);
 
 
 -- Product Specifications
@@ -236,20 +270,18 @@ VALUES (N'WELCOME10', '2025-12-31', 10.00, N'Welcome Discount', 1000),
        (N'FLASH50', '2025-06-01', 50.00, N'Flash Sale', 50);
 
 -- Orders
-INSERT INTO [Order] (accountId, voucherId, shipping, status, orderDate, paymentMethod) VALUES
-    (1, 1, 15.00, N'Pending', '2025-05-30', N'Credit Card'),
-    (2, NULL, 10.00, N'Shipped', '2025-05-29', N'PayPal'),
-    (3, 2, 0.00, N'Cancelled', '2025-05-28', N'Bank Transfer'),
-    (1, NULL, 15.00, N'Completed', '2025-05-27', N'Credit Card'),
-    (4, 3, 20.00, N'Pending', '2025-05-26', N'Credit Card');
+INSERT INTO [
+Order] (accountId, voucherId, shipping, status, orderDate, paymentMethod)
+VALUES
+    (1, 1, 15.00, N'Pending', '2025-05-30', N'Credit Card'), (2, NULL, 10.00, N'Shipped', '2025-05-29', N'PayPal'), (3, 2, 0.00, N'Cancelled', '2025-05-28', N'Bank Transfer'), (1, NULL, 15.00, N'Completed', '2025-05-27', N'Credit Card'), (4, 3, 20.00, N'Pending', '2025-05-26', N'Credit Card');
 
 -- Order Security (Sample data, adjust as needed)
-INSERT INTO OrderSecurity (orderId, signature, publicKey) VALUES
-                                                              (1, N'sample_signature_1', N'sample_public_key_1'),
-                                                              (2, N'sample_signature_2', N'sample_public_key_2'),
-                                                              (3, N'sample_signature_3', N'sample_public_key_3'),
-                                                              (4, N'sample_signature_4', N'sample_public_key_4'),
-                                                              (5, N'sample_signature_5', N'sample_public_key_5');
+INSERT INTO OrderSecurity (orderId, signature, publicKey)
+VALUES (1, N'sample_signature_1', N'sample_public_key_1'),
+       (2, N'sample_signature_2', N'sample_public_key_2'),
+       (3, N'sample_signature_3', N'sample_public_key_3'),
+       (4, N'sample_signature_4', N'sample_public_key_4'),
+       (5, N'sample_signature_5', N'sample_public_key_5');
 
 -- Cart Items
 INSERT INTO CartItem (accountId, productId, orderId, quantity)
@@ -268,3 +300,17 @@ VALUES (1, N'John Doe', N'+1-555-123-4567', N'john.doe@example.com', N'123 Main 
        (5, N'Robert Johnson', N'+1-555-246-8135', N'robert.johnson@example.com', N'789 Pine Rd, Chicago, IL 60007',
         N'Call before delivery');
 GO
+-- Tạo bảng Strap (danh mục dây đeo)
+CREATE TABLE State
+(
+    stateId INT PRIMARY KEY,
+    name    NVARCHAR(50)
+);
+-- State
+INSERT INTO State (stateId, name)
+VALUES (1, N'Đang bán'),
+       (2, N'Tạm dừng'),
+       (3, N'Hết hàng');
+
+ALTER TABLE Product
+    ADD isDeleted BIT NOT NULL DEFAULT 0;
