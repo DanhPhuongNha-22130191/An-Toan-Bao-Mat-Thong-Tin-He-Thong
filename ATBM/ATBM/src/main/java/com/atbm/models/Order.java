@@ -20,8 +20,10 @@ public class Order {
     private String status;
     private LocalDateTime orderDate;
 
-    public Order(long accountId, double shipping, String paymentMethod, CartDTO cartDTO,
-                 OrderDetail orderDetail) {
+    public Order() {
+    }
+
+    public Order(long accountId, double shipping, String paymentMethod, CartDTO cartDTO, OrderDetail orderDetail) {
         this.accountId = accountId;
         this.shipping = shipping;
         this.paymentMethod = paymentMethod;
@@ -29,30 +31,22 @@ public class Order {
         this.orderDetail = orderDetail;
     }
 
-    public OrderSecurity getOrderSecurity() {
-        return orderSecurity;
+    public Order(long accountId, double shipping, String paymentMethod) {
+        this.accountId = accountId;
+        this.shipping = shipping;
+        this.paymentMethod = paymentMethod;
     }
 
-    public void setOrderSecurity(OrderSecurity orderSecurity) {
-        this.orderSecurity = orderSecurity;
+    // ✅ Constructor này sửa voucherId -> Long để tránh lỗi null
+    public Order(long orderId, long accountId, double shipping, String paymentMethod, Long voucherId) {
+        this.orderId = orderId;
+        this.accountId = accountId;
+        this.shipping = shipping;
+        this.paymentMethod = paymentMethod;
+        this.voucherId = voucherId;
     }
 
-    public CartDTO getCartDTO() {
-        return cartDTO;
-    }
-
-    public void setCartDTO(CartDTO cartDTO) {
-        this.cartDTO = cartDTO;
-    }
-
-    public OrderDetail getOrderDetail() {
-        return orderDetail;
-    }
-
-    public void setOrderDetail(OrderDetail orderDetail) {
-        this.orderDetail = orderDetail;
-    }
-
+    // Getters and Setters
     public long getOrderId() {
         return orderId;
     }
@@ -89,27 +83,34 @@ public class Order {
         return voucherId;
     }
 
-    public void setVoucherId(long voucherId) {
+    // ✅ Hỗ trợ set null
+    public void setVoucherId(Long voucherId) {
         this.voucherId = voucherId;
     }
 
-    public Order(long accountId, double shipping, String paymentMethod) {
-        this.accountId = accountId;
-        this.shipping = shipping;
-        this.paymentMethod = paymentMethod;
+    public CartDTO getCartDTO() {
+        return cartDTO;
     }
 
-    public Order(long orderId, long accountId, double shipping, String paymentMethod, long voucherId) {
-        this.orderId = orderId;
-        this.accountId = accountId;
-        this.shipping = shipping;
-        this.paymentMethod = paymentMethod;
-        this.voucherId = voucherId;
+    public void setCartDTO(CartDTO cartDTO) {
+        this.cartDTO = cartDTO;
     }
 
-    public Order() {
+    public OrderDetail getOrderDetail() {
+        return orderDetail;
     }
 
+    public void setOrderDetail(OrderDetail orderDetail) {
+        this.orderDetail = orderDetail;
+    }
+
+    public OrderSecurity getOrderSecurity() {
+        return orderSecurity;
+    }
+
+    public void setOrderSecurity(OrderSecurity orderSecurity) {
+        this.orderSecurity = orderSecurity;
+    }
 
     public String getStatus() {
         return status;
@@ -124,24 +125,36 @@ public class Order {
     }
 
     public void setOrderDate(Date orderDate) {
-        this.orderDate = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(orderDate.getTime()),
-                ZoneId.systemDefault()
-        );
+        if (orderDate != null) {
+            this.orderDate = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(orderDate.getTime()),
+                    ZoneId.systemDefault()
+            );
+        }
     }
 
     public boolean isPaid() {
-        return "PAID".equals(status);
+        return "PAID".equalsIgnoreCase(status);
     }
 
     public boolean isConfirmed() {
-        return "CONFIRMED".equals(status);
+        return "CONFIRMED".equalsIgnoreCase(status);
     }
 
     public boolean isCancelled() {
-        return "CANCELLED".equals(status);
+        return "CANCELLED".equalsIgnoreCase(status);
     }
 
+    // ✅ Tránh NullPointerException khi voucherId hoặc cartDTO là null
+    public double getTotalAmount() {
+        double total = 0;
+
+        if (cartDTO != null) {
+            total = cartDTO.getSubTotal();
+
+            if (voucherId != null && cartDTO.getVoucher() != null) {
+                total -= cartDTO.getVoucher().getPercentDecrease();
+            }
 //    public double getTotalAmount() {
 //        double total = cartDTO.getSubTotal();
 //        if (voucherId != null) {
@@ -160,6 +173,30 @@ public double getTotalAmount() {
                 System.err.println("Error applying voucher discount for orderId " + orderId + ": " + e.getMessage());
             }
         }
+
+        return total + shipping;
+    }
+    public java.util.Date getOrderDateAsDate() {
+        if (orderDate == null) return null;
+        return java.util.Date.from(orderDate.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", accountId=" + accountId +
+                ", shipping=" + shipping +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", voucherId=" + voucherId +
+                ", cartDTO=" + cartDTO +
+                ", orderDetail=" + orderDetail +
+                ", orderSecurity=" + orderSecurity +
+                ", status='" + status + '\'' +
+                ", orderDate=" + orderDate +
+                '}';
+    }
     }
     return total + shipping;
 }

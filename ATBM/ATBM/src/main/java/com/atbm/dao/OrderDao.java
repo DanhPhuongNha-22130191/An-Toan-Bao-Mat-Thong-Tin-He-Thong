@@ -81,8 +81,19 @@ public class OrderDao implements IDao<Order, Long> {
         List<Order> listOrder = new LinkedList<>();
         try {
             while (resultSet.next()) {
-                Order order = new Order(resultSet.getLong(1), resultSet.getLong(2), resultSet.getDouble(3),
-                        resultSet.getString(4), resultSet.getLong(5));
+                Long voucherId = resultSet.getObject("voucherId", Long.class); // ✅ An toàn với NULL
+
+                Order order = new Order(
+                        resultSet.getLong("orderId"),
+                        resultSet.getLong("accountId"),
+                        resultSet.getDouble("shipping"),
+                        resultSet.getString("paymentMethod"),
+                        voucherId
+                );
+
+                order.setOrderDate(resultSet.getDate("orderDate"));
+                order.setStatus(resultSet.getString("status"));
+                order.setOrderDetail(getDetailById(order.getOrderId()));
                 listOrder.add(order);
             }
         } catch (SQLException e) {
@@ -91,6 +102,7 @@ public class OrderDao implements IDao<Order, Long> {
         }
         return listOrder;
     }
+
 
     @Override
     public boolean delete(Long id) {

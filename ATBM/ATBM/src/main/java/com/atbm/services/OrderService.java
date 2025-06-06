@@ -6,6 +6,7 @@ import com.atbm.models.CartItem;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
 import com.atbm.models.OrderSecurity;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class OrderService implements IService<Order, Long> {
             LOGGER.warning("CartDTO or CartDTO items is null for orderId = " + orderId);
         }
         return cartItems;
+
     }
 
     @Override
@@ -81,6 +83,15 @@ public class OrderService implements IService<Order, Long> {
         return dao.getAll();
     }
 
+
+    public List<Order> getAllByAccountId(long accountId) {
+        List<Order> orders = dao.getAllById(accountId);
+        for (Order order : orders) {
+            order.setCartDTO(new CartService().convertToDTO(order.getOrderId()));
+        }
+        return orders;
+    }
+
     @Override
     public boolean delete(Long id) {
         return dao.delete(id);
@@ -90,6 +101,7 @@ public class OrderService implements IService<Order, Long> {
     public boolean update(Order entity) {
         return dao.update(entity);
     }
+
 
     public void sign(Long orderId, String signature, String publicKey) {
         dao.sign(orderId, signature, publicKey);
