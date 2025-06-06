@@ -11,19 +11,23 @@
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/linericon/style.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/nice-select.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/css/style.css">
 </head>
 
 <body>
 <!-- ================ category section start ================= -->
 <!--================ Start Header Menu Area =================-->
-<jsp:include page="/views/header.jsp" />
+<jsp:include page="/views/header.jsp"/>
 <!--================ End Header Menu Area =================-->
 <section class="section-margin--small mb-5">
     <div class="container">
@@ -107,7 +111,16 @@
                             <div class="col-md-6 col-lg-4">
                                 <div class="card text-center card-product">
                                     <div class="card-product__img">
-                                        <img class="card-img" src="${product.image}" alt="${product.name}">
+                                        <div class="product-image-wrapper">
+                                            <img src="${pageContext.request.contextPath}/assests/img/product/${product.image}"
+                                                 alt="${product.name}"
+                                                 class="product-image"
+                                                 onerror="this.style.display='none'; this.parentElement.querySelector('.product-placeholder').style.display='flex';">
+                                            <div class="product-placeholder" style="display: none;">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        </div>
+
                                         <ul class="card-product__imgOverlay">
                                             <li>
                                                 <button><i class="ti-search"></i></button>
@@ -122,7 +135,9 @@
                                     </div>
                                     <div class="card-body">
                                         <p>${product.description}</p>
-                                        <h4 class="card-product__title"><a href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">${product.name}</a></h4>
+                                        <h4 class="card-product__title"><a
+                                                href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">${product.name}</a>
+                                        </h4>
                                         <p class="card-product__price">$${product.price}</p>
                                     </div>
                                 </div>
@@ -142,11 +157,12 @@
 <script src="${pageContext.request.contextPath}/assests/vendors/nice-select/jquery.nice-select.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.js"></script>
 <script>
+    const contextPath = '${pageContext.request.contextPath}';
+</script>
+<script>
     async function applyFilters() {
         const data = $('#filterForm').serialize();
         $('#loading-spinner').show();
-
-        const contextPath = '${pageContext.request.contextPath}';
 
         try {
             const response = await $.ajax({
@@ -155,8 +171,6 @@
                 data: data,
                 dataType: 'json'
             });
-
-            console.log("Response data:", response);
 
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -179,11 +193,54 @@
                 const imgContainer = document.createElement('div');
                 imgContainer.classList.add('card-product__img');
 
+                // Tạo wrapper giữ kích thước cố định
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('product-image-wrapper');
+                wrapper.style.width = '250px';
+                wrapper.style.height = '250px';
+                wrapper.style.overflow = 'hidden';
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.justifyContent = 'center';
+                wrapper.style.position = 'relative';
+
+                // Tạo ảnh
                 const img = document.createElement('img');
-                img.classList.add('card-img');
-                img.src = `${contextPath}/assests/img/${product.image}`;
+                img.classList.add('product-image');
+                img.src = '${pageContext.request.contextPath}/assests/img/product/' + product.image;
                 img.alt = product.name;
-                imgContainer.appendChild(img);
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.display = 'block';
+
+                // Placeholder nếu ảnh lỗi
+                const placeholder = document.createElement('div');
+                placeholder.classList.add('product-placeholder');
+                placeholder.style.display = 'none';
+                placeholder.style.alignItems = 'center';
+                placeholder.style.justifyContent = 'center';
+                placeholder.style.backgroundColor = '#667eea';
+                placeholder.style.width = '100%';
+                placeholder.style.height = '100%';
+
+                const icon = document.createElement('i');
+                icon.classList.add('fas', 'fa-image');
+                icon.style.color = '#ccc';
+                icon.style.fontSize = '32px';
+                placeholder.appendChild(icon);
+
+                // Xử lý khi ảnh lỗi
+                img.onerror = function () {
+                    img.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                };
+
+                // Thêm vào wrapper
+                wrapper.appendChild(img);
+                wrapper.appendChild(placeholder);
+
+                imgContainer.appendChild(wrapper);
 
                 const overlay = document.createElement('ul');
                 overlay.classList.add('card-product__imgOverlay');
@@ -210,14 +267,13 @@
                 const title = document.createElement('h4');
                 title.classList.add('card-product__title');
                 const link = document.createElement('a');
-                link.href = '#';
+                link.href = `${contextPath}/product?action=details&id=${product.productId}`;
                 link.textContent = product.name;
                 title.appendChild(link);
 
                 const price = document.createElement('p');
                 price.classList.add('card-product__price');
-                price.textContent = product.price !== undefined && product.price !== null ? `$`+product.price : '$0';
-                // console.log("Product price:", product.price);
+                price.textContent = product.price !== undefined && product.price !== null ? `$` + product.price : '$0';
 
                 body.appendChild(title);
                 body.appendChild(desc);
@@ -259,13 +315,13 @@
             });
         }
 
-        // Handle checkbox changes
         document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
             checkbox.addEventListener('change', function () {
-                applyFilters(); // Update products on any checkbox change
+                applyFilters();
             });
         });
     });
 </script>
+
 </body>
 </html>

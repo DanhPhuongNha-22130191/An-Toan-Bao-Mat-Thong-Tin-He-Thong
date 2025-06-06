@@ -19,7 +19,7 @@
                     <div class="hover">
                         <h4>Bạn đã có tài khoản?</h4>
                         <p>Đăng nhập ngay để tiếp tục!</p>
-                        <a href="${pageContext.request.contextPath}/views/login.jsp">Đăng nhập ngay</a>
+                        <a href="${pageContext.request.contextPath}/user/account?action=login">Đăng nhập ngay</a>
                     </div>
                 </div>
             </div>
