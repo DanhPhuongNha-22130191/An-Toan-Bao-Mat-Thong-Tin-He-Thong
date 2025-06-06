@@ -115,9 +115,17 @@ public class CartController extends HttpServlet {
             message = "Lỗi thêm sản phẩm: " + e.getMessage();
         }
 
-        req.setAttribute("message", message);
-        req.getRequestDispatcher("/views/cart.jsp").forward(req, resp);
+        req.getSession().setAttribute("message", message);
+
+        String referer = req.getHeader("Referer");
+        if (referer != null && !referer.contains("error")) {
+            resp.sendRedirect(referer);
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+        }
     }
+
+
 
 
     private void handleRemoveFromCart(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -1,4 +1,3 @@
-
 package com.atbm.models;
 
 /**
@@ -8,9 +7,8 @@ public class CartItem {
 	private long cartItemId;
 	private long accountId;
 	private long productId;
-	private long orderId;
+	private Long orderId; // Sửa thành Long
 	private int quantity;
-
 
 	public CartItem(long cartItemId, long productId, int quantity) {
 		this.cartItemId = cartItemId;
@@ -20,6 +18,21 @@ public class CartItem {
 
 	public CartItem(long cartItemId, int quantity) {
 		this.cartItemId = cartItemId;
+		this.quantity = quantity;
+	}
+
+	public CartItem(long cartItemId, long accountId, long productId, int quantity) {
+		this.cartItemId = cartItemId;
+		this.accountId = accountId;
+		this.productId = productId;
+		this.quantity = quantity;
+	}
+
+	public CartItem(long cartItemId, long accountId, long productId, Long orderId, int quantity) {
+		this.cartItemId = cartItemId;
+		this.accountId = accountId;
+		this.productId = productId;
+		this.orderId = orderId;
 		this.quantity = quantity;
 	}
 
@@ -47,12 +60,11 @@ public class CartItem {
 		this.quantity = quantity;
 	}
 
-
-	public long getOrderId() {
+	public Long getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(long orderId) {
+	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
 
@@ -63,5 +75,4 @@ public class CartItem {
 	public void setCartItemId(long cartItemId) {
 		this.cartItemId = cartItemId;
 	}
-
 }

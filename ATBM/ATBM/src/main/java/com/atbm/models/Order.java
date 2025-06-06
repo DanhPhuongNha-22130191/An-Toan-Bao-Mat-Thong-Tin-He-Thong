@@ -142,11 +142,25 @@ public class Order {
         return "CANCELLED".equals(status);
     }
 
-    public double getTotalAmount() {
-        double total = cartDTO.getSubTotal();
-        if (voucherId != null) {
-            total -= cartDTO.getVoucher().getPercentDecrease();
+//    public double getTotalAmount() {
+//        double total = cartDTO.getSubTotal();
+//        if (voucherId != null) {
+//            total -= cartDTO.getVoucher().getPercentDecrease();
+//        }
+//        return total + shipping;
+//    }
+public double getTotalAmount() {
+    double total = 0.0;
+    if (cartDTO != null && cartDTO.getItems() != null) {
+        total = cartDTO.getSubTotal();
+        if (voucherId != null && cartDTO.getVoucher() != null) {
+            try {
+                total -= cartDTO.getVoucher().getPercentDecrease();
+            } catch (Exception e) {
+                System.err.println("Error applying voucher discount for orderId " + orderId + ": " + e.getMessage());
+            }
         }
-        return total + shipping;
     }
+    return total + shipping;
+}
 }

@@ -6,10 +6,14 @@ import com.atbm.models.OrderDetail;
 import com.atbm.models.OrderSecurity;
 import com.atbm.utils.ExecuteSQLUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.atbm.database.DBConnection.getConnection;
 
 public class OrderDao implements IDao<Order, Long> {
 
@@ -134,24 +138,56 @@ public class OrderDao implements IDao<Order, Long> {
         return orderSecurity;
     }
 
-	public List<Order> getOrdersByAccountId(long accountId) {
-		String query = "SELECT * FROM Orders WHERE accountId = ?";
-		ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
-		List<Order> orders = new LinkedList<>();
-		try {
-			while (resultSet.next()) {
-				Order order = new Order();
-				order.setOrderId(resultSet.getLong("orderId"));
-				order.setAccountId(resultSet.getLong("accountId"));
-				order.setShipping(resultSet.getDouble("shipping"));
-				order.setPaymentMethod(resultSet.getString("paymentMethod"));
-				order.setVoucherId(resultSet.getLong("voucherId"));
-				order.setOrderDate(resultSet.getDate("orderDate"));
-				orders.add(order);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return orders;
-	}
+    public List<Order> getOrdersByAccountId(long accountId) {
+        String query = "SELECT * FROM [Order] WHERE accountId = ?";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
+        List<Order> orders = new LinkedList<>();
+        try {
+            while (resultSet.next()) {
+                Order order = new Order();
+                order.setOrderId(resultSet.getLong("orderId"));
+                order.setAccountId(resultSet.getLong("accountId"));
+                order.setShipping(resultSet.getDouble("shipping"));
+                order.setPaymentMethod(resultSet.getString("paymentMethod"));
+                // Nếu cột voucherId trong DB cho phép NULL, bạn có thể dùng getObject để tránh lỡ parse NULL thành 0
+                long v = resultSet.getLong("voucherId");
+                if (!resultSet.wasNull()) {
+                    order.setVoucherId(v);
+                }
+                // Gán status (kiểu NVARCHAR hoặc VARCHAR trong DB)
+                order.setStatus(resultSet.getString("status"));
+                // Gán orderDate (kiểu Date hoặc DateTime)
+                order.setOrderDate(resultSet.getDate("orderDate"));
+
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+    public OrderDetail getOrderDetailByOrderId(long orderId) {
+        String query = "SELECT * FROM OrderDetail WHERE orderId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, orderId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                OrderDetail detail = new OrderDetail();
+                detail.setOrderDetailId(rs.getLong("orderDetailId"));
+                detail.setOrderId(rs.getLong("orderId"));
+                detail.setFullName(rs.getString("fullName"));
+                detail.setPhone(rs.getString("phone"));
+                detail.setEmail(rs.getString("email"));
+                detail.setAddress(rs.getString("address"));
+                detail.setOrderNote(rs.getString("orderNote"));
+
+                return detail;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -17,10 +17,92 @@
 	<link rel="stylesheet" href="assets/vendors/nice-select/nice-select.css">
 	<link rel="stylesheet" href="assets/vendors/nouislider/nouislider.min.css">
 	<link rel="stylesheet" href="assets/css/style.css">
+
+	<!-- ======= Phần CSS tùy chỉnh để header thu nhỏ mượt ======= -->
+	<style>
+		.header_area {
+			height: 50px;
+			background: #fff;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			transition: height 0.3s ease, padding 0.3s ease;
+			padding: 10px 0;
+			will-change: height, padding;
+		}
+		.header_area.scrolled {
+			height: 40px;
+			padding: 5px 0;
+		}
+
+		.sticky-header {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			z-index: 1000;
+		}
+
+		body {
+			padding-top: 50px;
+			transition: padding-top 0.3s ease;
+		}
+		body.header-scrolled {
+			padding-top: 40px;
+		}
+
+		.main_menu {
+			height: 100%;
+		}
+		.navbar {
+			padding: 0 15px;
+		}
+		.nav-link {
+			padding: 10px 15px !important;
+			font-size: 14px;
+			transition: font-size 0.3s ease, padding 0.3s ease;
+			will-change: font-size, padding;
+		}
+		.header_area.scrolled .nav-link {
+			font-size: 12px !important;
+			padding: 8px 10px !important;
+		}
+
+		.submenu .dropdown-menu .nav-link {
+			font-size: 14px;
+			padding: 8px 20px;
+			transition: font-size 0.3s ease, padding 0.3s ease;
+			will-change: font-size, padding;
+		}
+		.header_area.scrolled .submenu .dropdown-menu .nav-link {
+			font-size: 12px !important;
+			padding: 4px 10px !important;
+		}
+
+		.navbar-brand img {
+			max-height: 50px;
+			transition: max-height 0.3s ease;
+			will-change: max-height;
+		}
+		.header_area.scrolled .navbar-brand img {
+			max-height: 30px;
+		}
+
+		@media (max-width: 991px) {
+			.header_area {
+				height: auto;
+				padding: 10px 0;
+			}
+			.header_area.scrolled {
+				height: auto;
+				padding: 10px 0;
+			}
+			body {
+				padding-top: 10px;
+			}
+		}
+	</style>
 </head>
 <body>
 <!--================ Start Header Menu Area =================-->
-<header class="header_area">
+<header class="header_area sticky-header">
 	<div class="main_menu">
 		<nav class="navbar navbar-expand-lg navbar-light">
 			<div class="container">
@@ -44,12 +126,12 @@
 						<c:choose>
 							<c:when test="${empty sessionScope.user}">
 								<li class="nav-item">
-									<a class="nav-link" href="views/login.jsp">
+									<a class="nav-link" href="${pageContext.request.contextPath}/user/account?action=login">
 										<i class="ti-lock"></i> Đăng nhập
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="views/register.jsp">
+									<a class="nav-link" href="${pageContext.request.contextPath}/user/account?action=register">
 										<i class="ti-user"></i> Đăng ký
 									</a>
 								</li>
@@ -60,7 +142,7 @@
 										<i class="ti-user"></i> ${sessionScope.user.username}
 									</a>
 									<ul class="dropdown-menu">
-										<li class="nav-item"><a class="nav-link" href="views/profile.jsp">Xem thông tin</a></li>
+										<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/profile.jsp">Xem thông tin</a></li>
 										<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/user/account?action=logout">Đăng xuất</a></li>
 									</ul>
 								</li>
@@ -73,5 +155,31 @@
 	</div>
 </header>
 <!--================ End Header Menu Area =================-->
+
+<script src="assets/vendors/jquery/jquery-3.2.1.min.js"></script>
+<script src="assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const header = document.querySelector('.header_area');
+		const bodyTag = document.body;
+		const scrollThreshold = 50;
+
+		window.addEventListener('scroll', function () {
+			const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+			if (scrollTop > scrollThreshold) {
+				if (!header.classList.contains('scrolled')) {
+					header.classList.add('scrolled');
+					bodyTag.classList.add('header-scrolled');
+				}
+			} else {
+				if (header.classList.contains('scrolled')) {
+					header.classList.remove('scrolled');
+					bodyTag.classList.remove('header-scrolled');
+				}
+			}
+		});
+	});
+</script>
 </body>
 </html>

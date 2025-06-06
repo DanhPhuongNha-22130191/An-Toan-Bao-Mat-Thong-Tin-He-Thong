@@ -1,11 +1,13 @@
 package com.atbm.controllers;
 
+import com.atbm.dao.OrderDao;
 import com.atbm.dto.AccountDTO;
 import com.atbm.mail.EmailUtil;
 import com.atbm.models.Account;
 import com.atbm.models.Order;
 import com.atbm.models.OrderDetail;
 import com.atbm.services.AccountService;
+import com.atbm.services.CartService;
 import com.atbm.services.OrderSecurityService;
 import com.atbm.services.OrderService;
 import com.atbm.utils.SignatureUtil;
@@ -25,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -100,8 +103,12 @@ public class AccountController extends HttpServlet {
                 logout(req, resp);
             } else if ("profile".equals(action)) {
                 showProfile(req, resp);
+            } else if ("login".equals(action)) {
+                req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            } else if ("register".equals(action)) {
+                req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
             } else {
-                resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+                req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
             }
         } catch (Exception e) {
             LOGGER.severe("Lỗi khi xử lý hành động GET " + action + ": " + e.getMessage());
@@ -396,7 +403,7 @@ public class AccountController extends HttpServlet {
             req.setAttribute("message", "Public Key đã được thu hồi.");
             showProfile(req, resp);
         } catch (Exception e) {
-            LOGGER.severe("Lỗi khi thu hồi public key cho người dùng " + user.getUsername() + ": " + e.getMessage());
+            LOGGER.severe("Lỗi khi thu hồi public key cho người dùng: " + user.getUsername() + ": " + e.getMessage());
             req.setAttribute("error", "Lỗi khi thu hồi Public Key.");
             showProfile(req, resp);
         }
@@ -410,26 +417,104 @@ public class AccountController extends HttpServlet {
 
     private void showProfile(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
+        LOGGER.info("=== SHOWPROFILE DEBUG START ===");
+        LOGGER.info("Session ID: " + session.getId());
+
         AccountDTO user = (AccountDTO) session.getAttribute("user");
         if (user == null) {
+            LOGGER.severe("User not found in session. Redirecting to login.");
             resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
             return;
         }
 
+        LOGGER.info("Account ID from session: " + user.getAccountId());
+        LOGGER.info("Username from session: " + user.getUsername());
+
         try {
-            List<Order> orders = orderService.getOrdersByAccountId(user.getAccountId());
-            for (Order order : orders) {
-                boolean isTampered = orderSecurityService.isOrderTampered(order);
-                String orderHash = generateOrderHash(order);
-                req.setAttribute("order_" + order.getOrderId() + "_isTampered", isTampered);
-                req.setAttribute("order_" + order.getOrderId() + "_hash", orderHash);
+            if (orderService == null) {
+                LOGGER.severe("OrderService is null. Initializing new instance.");
+                orderService = new OrderService();
             }
+
+            LOGGER.info("Calling orderService.getOrdersByAccountId with Account ID: " + user.getAccountId());
+            List<Order> orders = orderService.getOrdersByAccountId(user.getAccountId());
+
+            if (orders == null) {
+                LOGGER.warning("getOrdersByAccountId returned null for Account ID: " + user.getAccountId());
+                orders = new ArrayList<>();
+            }
+
+            LOGGER.info("Retrieved " + orders.size() + " orders for Account ID: " + user.getAccountId());
+
+            CartService cartService = new CartService();
+            OrderDao orderDao = new OrderDao();
+            for (Order order : orders) {
+                LOGGER.info("Processing Order ID: " + order.getOrderId());
+                try {
+                    if (order.getCartDTO() == null) {
+                        order.setCartDTO(cartService.convertToDTO(order.getOrderId()));
+                        LOGGER.info("Set CartDTO for Order ID: " + order.getOrderId());
+                    }
+                } catch (Exception e) {
+                    LOGGER.warning("Failed to set CartDTO for Order ID: " + order.getOrderId() + ": " + e.getMessage());
+                }
+                try {
+                    if (order.getOrderDetail() == null) {
+                        order.setOrderDetail(orderDao.getOrderDetailByOrderId(order.getOrderId()));
+                        LOGGER.info("Set OrderDetail for Order ID: " + order.getOrderId() +
+                                ", FullName: " + (order.getOrderDetail() != null ? order.getOrderDetail().getFullName() : "Null"));
+                    }
+                } catch (Exception e) {
+                    LOGGER.warning("Failed to set OrderDetail for Order ID: " + order.getOrderId() + ": " + e.getMessage());
+                }
+            }
+
+            for (int i = 0; i < orders.size(); i++) {
+                Order order = orders.get(i);
+                LOGGER.info("Order " + (i + 1) + ":");
+                LOGGER.info("  - Order ID: " + order.getOrderId());
+                LOGGER.info("  - Account ID: " + order.getAccountId());
+                LOGGER.info("  - Status: " + order.getStatus());
+                LOGGER.info("  - Payment Method: " + order.getPaymentMethod());
+                LOGGER.info("  - Order Date: " + order.getOrderDate());
+                LOGGER.info("  - Total Amount: " + order.getTotalAmount());
+                LOGGER.info("  - Shipping: " + order.getShipping());
+                LOGGER.info("  - Voucher ID: " + (order.getVoucherId() != null ? order.getVoucherId() : "NULL"));
+                LOGGER.info("  - CartDTO: " + (order.getCartDTO() != null ? "Present" : "Null"));
+                LOGGER.info("  - OrderDetail: " + (order.getOrderDetail() != null ?
+                        "Present (Name: " + order.getOrderDetail().getFullName() + ")" : "Null"));
+            }
+
             req.setAttribute("orders", orders);
+            req.setAttribute("ordersCount", orders.size());
+            req.setAttribute("debugInfo", "Total orders: " + orders.size() + " for Account ID: " + user.getAccountId());
+
+            // Xử lý tab active
+            String activeTab = req.getParameter("tab");
+            if (activeTab == null || activeTab.isEmpty()) {
+                activeTab = "profile"; // Mặc định là profile
+            }
+            req.setAttribute("activeTab", activeTab);
+            LOGGER.info("Active tab: " + activeTab);
+
+            LOGGER.info("Set request attributes: orders=" + orders.size() + ", ordersCount=" + orders.size() + ", debugInfo=" + req.getAttribute("debugInfo"));
+            LOGGER.info("Forwarding to profile.jsp");
             req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+
         } catch (Exception e) {
-            LOGGER.severe("Lỗi khi hiển thị hồ sơ cho người dùng " + user.getUsername() + ": " + e.getMessage());
-            req.setAttribute("error", "Lỗi khi tải trang hồ sơ.");
-            resp.sendRedirect(req.getContextPath() + "/views/login.jsp");
+            LOGGER.severe("Error in showProfile for Account ID " + user.getAccountId() + ": " + e.getMessage());
+            e.printStackTrace();
+
+            req.setAttribute("orders", new ArrayList<>());
+            req.setAttribute("ordersCount", 0);
+            req.setAttribute("error", "Error loading orders: " + e.getMessage());
+            req.setAttribute("debugInfo", "Error occurred: " + e.getMessage());
+            req.setAttribute("activeTab", "profile");
+            LOGGER.info("Forwarding to profile.jsp with error: " + e.getMessage());
+
+            req.getRequestDispatcher("/views/profile.jsp").forward(req, resp);
+        } finally {
+            LOGGER.info("=== SHOWPROFILE DEBUG END ===");
         }
     }
 
@@ -437,8 +522,8 @@ public class AccountController extends HttpServlet {
         try {
             OrderDetail detail = order.getOrderDetail();
             if (detail == null) {
-                LOGGER.warning("Chi tiết đơn hàng null cho đơn hàng ID: " + order.getOrderId());
-                return "Lỗi tạo hash";
+                LOGGER.warning("Order detail is null for Order ID: " + order.getOrderId());
+                return "Null order detail";
             }
             StringBuilder data = new StringBuilder();
             data.append(order.getOrderId())
@@ -452,8 +537,8 @@ public class AccountController extends HttpServlet {
                     .append(order.getVoucherId() != null ? order.getVoucherId() : "none");
             return SignatureUtil.hash(data.toString());
         } catch (Exception e) {
-            LOGGER.warning("Lỗi khi tạo hash đơn hàng cho ID: " + order.getOrderId() + ": " + e.getMessage());
-            return "Lỗi tạo hash";
+            LOGGER.warning("Error generating hash for Order ID: " + order.getOrderId() + ": " + e.getMessage());
+            return "Hash error";
         }
     }
 }
