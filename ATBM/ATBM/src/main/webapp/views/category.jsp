@@ -6,18 +6,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Aroma Shop - Category</title>
-    <link rel="icon" href="${pageContext.request.contextPath}/assests/img/Fevicon.png" type="image/png">
+    <link rel="icon" href="${pageContext.servletContext.contextPath}/assests/img/Fevicon.png" type="image/png">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/themify-icons/themify-icons.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/linericon/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nice-select/nice-select.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/vendors/nouislider/nouislider.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/style.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/linericon/style.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/nice-select.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/css/style.css">
 </head>
 
 <body>
@@ -41,7 +41,7 @@
                                             <input class="pixel-checkbox" type="checkbox" name="brandId[]"
                                                    id="brand${brand.brandId}" value="${brand.brandId}"
                                                    onchange="applyFilters();"
-                                                   <c:if test="${fn:contains(paramValues['brandId[]'], brand.brandId)}">checked</c:if>>
+                                                   <c:if test="${fn:contains(paramValues['brandId'], brand.brandId)}">checked</c:if>>
                                             <label for="brand${brand.brandId}">${brand.name}</label>
                                         </li>
                                     </c:forEach>
@@ -61,7 +61,8 @@
                                         <input class="pixel-checkbox" type="checkbox" name="strapId[]"
                                                id="strap${strap.strapId}" value="${strap.strapId}"
                                                onchange="applyFilters();"
-                                               <c:if test="${fn:contains(paramValues['strapId[]'], strap.strapId)}">checked</c:if>>
+                                               <c:if test="${fn:contains(paramValues['strapId'], strap.strapId)}">checked</c:if>
+                                        >
                                         <label for="strap${strap.strapId}">${strap.material}</label>
                                     </li>
                                 </c:forEach>
@@ -121,7 +122,7 @@
                                     </div>
                                     <div class="card-body">
                                         <p>${product.description}</p>
-                                        <h4 class="card-product__title"><a href="#">${product.name}</a></h4>
+                                        <h4 class="card-product__title"><a href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">${product.name}</a></h4>
                                         <p class="card-product__price">$${product.price}</p>
                                     </div>
                                 </div>

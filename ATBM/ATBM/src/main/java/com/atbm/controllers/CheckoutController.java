@@ -154,7 +154,7 @@ public class CheckoutController extends HttpServlet {
 
         if (orderId != null) {
             session.removeAttribute("cartDTO");
-            resp.sendRedirect(req.getContextPath() + "/user/order/confirmation/" + orderId);
+            resp.sendRedirect(req.getContextPath() + "/user/order/confirmation?orderId=" + orderId);
         } else {
             req.setAttribute("message", "Không thể tạo đơn hàng. Vui lòng thử lại!");
             try {
