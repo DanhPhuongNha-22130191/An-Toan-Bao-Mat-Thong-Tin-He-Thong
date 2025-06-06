@@ -4,6 +4,7 @@ import com.atbm.models.CartItem;
 import com.atbm.models.OrderDetail;
 import com.atbm.models.Product;
 import com.atbm.models.Voucher;
+import com.google.gson.Gson;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,26 +29,22 @@ public class CartDTO {
     }
 
     public CartItem add(Product product, long cartItemId, int quantity) {
-        // Kiểm tra tồn kho
         if (product.getStock() < quantity) {
             throw new IllegalStateException("Số lượng sản phẩm trong kho không đủ");
         }
 
-        // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
         CartItemDTO existingItem = items.stream()
                 .filter(item -> item.getProductId() == product.getProductId())
                 .findFirst()
                 .orElse(null);
 
         if (existingItem != null) {
-            // Cập nhật số lượng nếu sản phẩm đã tồn tại
             int newQuantity = existingItem.getQuantity() + quantity;
             if (product.getStock() < newQuantity) {
                 throw new IllegalStateException("Số lượng sản phẩm trong kho không đủ");
             }
             existingItem.setQuantity(newQuantity);
         } else {
-            // Thêm sản phẩm mới vào giỏ hàng
             CartItemDTO newItem = new CartItemDTO(
                     cartItemId,
                     product.getProductId(),
@@ -87,13 +84,11 @@ public class CartDTO {
         return null;
     }
 
-
     public void clear() {
         items.clear();
         voucher = null;
         orderDetail = null;
     }
-
 
     public double getShipping() {
         double subtotal = getSubTotal();
@@ -107,23 +102,23 @@ public class CartDTO {
     }
 
     public String getOrderNote() {
-        return orderDetail.getOrderNote();
+        return orderDetail != null ? orderDetail.getOrderNote() : null;
     }
 
     public String getAddress() {
-        return orderDetail.getAddress();
+        return orderDetail != null ? orderDetail.getAddress() : null;
     }
 
     public String getEmail() {
-        return orderDetail.getEmail();
+        return orderDetail != null ? orderDetail.getEmail() : null;
     }
 
     public String getPhone() {
-        return orderDetail.getPhone();
+        return orderDetail != null ? orderDetail.getPhone() : null;
     }
 
     public String getFullName() {
-        return orderDetail.getFullName();
+        return orderDetail != null ? orderDetail.getFullName() : null;
     }
 
     public void setOrderDetail(OrderDetail orderDetail) {
@@ -131,7 +126,7 @@ public class CartDTO {
     }
 
     public long getVoucherId() {
-        return voucher.getVoucherId();
+        return voucher != null ? voucher.getVoucherId() : 0;
     }
 
     public Voucher getVoucher() {
@@ -155,51 +150,51 @@ public class CartDTO {
     }
 
     public double getTotalPrice() {
-        double subtotal = getSubTotal() - getDiscount();
-        return subtotal + getShipping();
+        return getSubTotal() - getDiscount() + getShipping();
     }
-
 
     public void addVoucher(Voucher voucher) {
         this.voucher = voucher;
     }
 
-
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
-
     public void validateCart() {
-        // Kiểm tra giỏ hàng trống
         if (items.isEmpty()) {
             throw new IllegalStateException("Giỏ hàng trống");
         }
 
-        // Kiểm tra từng sản phẩm trong giỏ hàng
         for (CartItemDTO item : items) {
-            // Kiểm tra số lượng
             if (item.getQuantity() <= 0) {
                 throw new IllegalStateException("Số lượng sản phẩm không hợp lệ");
             }
-
-
-            // Kiểm tra giá
             if (item.getProductPrice() <= 0) {
                 throw new IllegalStateException("Giá sản phẩm không hợp lệ");
             }
         }
-
     }
 
     public double getDiscount() {
-        if (voucher == null)
+        if (voucher == null) {
             return 0;
-        return getDiscountedPrice(voucher.getPercentDecrease());
+        }
+        return items.stream().mapToDouble(item -> item.getProductPrice() * item.getQuantity() * (voucher.getPercentDecrease() / 100)).sum();
     }
 
     public double getDiscountedPrice(double discountPercentage) {
         return items.stream().mapToDouble(item -> item.getDiscountedPrice(discountPercentage)).sum();
+    }
+
+    // Thêm phương thức getItemsJson
+    public String getItemsJson() {
+        try {
+            return new Gson().toJson(this.items);
+        } catch (Exception e) {
+            System.err.println("Error converting CartDTO items to JSON: " + e.getMessage());
+            return "[]";
+        }
     }
 
     public class CartItemDTO {
@@ -275,12 +270,8 @@ public class CartDTO {
             this.quantity = quantity;
         }
 
-
         public double getDiscountedPrice(double discountPercentage) {
             return productPrice * (1 - discountPercentage / 100);
         }
-
     }
 }
-
-

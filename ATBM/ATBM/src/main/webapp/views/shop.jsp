@@ -22,23 +22,6 @@
 
 <jsp:include page="/views/header.jsp" />
 
-<!-- ================ start banner area ================= -->
-<section class="blog-banner-area" id="category">
-	<div class="container h-100">
-		<div class="blog-banner">
-			<div class="text-center">
-				<h1>Shop Category</h1>
-				<nav aria-label="breadcrumb" class="banner-breadcrumb">
-					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="#">Home</a></li>
-						<li class="breadcrumb-item active" aria-current="page">Shop Category</li>
-					</ol>
-				</nav>
-			</div>
-		</div>
-	</div>
-</section>
-<!-- ================ end banner area ================= -->
 
 <!-- ================ category section start ================= -->
 <section class="section-margin--small mb-5">
@@ -151,9 +134,9 @@
 										<ul class="card-product__imgOverlay">
 											<li><button><i class="ti-search"></i></button></li>
 											<li>
-												<form action="${pageContext.request.contextPath}/product" method="post">
-													<input type="hidden" name="action" value="addToCart">
-													<input type="hidden" name="productId" value="${product.productId}">
+												<form action="${pageContext.request.contextPath}/user/cart/add" method="post">
+													<input type="hidden" name="productId" value="${product.productId}" />
+													<input type="hidden" name="quantity" value="1" />
 													<button type="submit">
 														<i class="ti-shopping-cart"></i>
 													</button>

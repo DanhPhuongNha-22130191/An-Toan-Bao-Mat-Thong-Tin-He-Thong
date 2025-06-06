@@ -1,7 +1,9 @@
 package com.atbm.controllers;
 
+import com.atbm.dto.AccountDTO;
 import com.atbm.dto.ProductDTO;
 import com.atbm.models.Product;
+import com.atbm.services.CartService;
 import com.atbm.services.ProductService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,9 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -21,12 +21,14 @@ import java.util.stream.Collectors;
 public class ProductController extends HttpServlet {
 	private static final Logger LOGGER = Logger.getLogger(ProductController.class.getName());
 	private ProductService productService;
+	private CartService cartService;
 
 	@Override
 	public void init() throws ServletException {
 		try {
-			LOGGER.info("Khởi tạo ProductService...");
+			LOGGER.info("Khởi tạo ProductService và CartService...");
 			productService = new ProductService();
+			cartService = new CartService();
 			LOGGER.info("ProductController khởi tạo thành công");
 		} catch (Exception e) {
 			LOGGER.severe("Lỗi khi khởi tạo ProductController: " + e.getMessage());
@@ -82,6 +84,7 @@ public class ProductController extends HttpServlet {
 			if (product != null) {
 				req.setAttribute("product", mapToDTO(product));
 				LOGGER.info("Hiển thị chi tiết sản phẩm ID: " + productId);
+				// Sửa đường dẫn JSP từ /WEB-INF/views/productdetails.jsp thành /views/productdetails.jsp
 				req.getRequestDispatcher("/views/productdetails.jsp").forward(req, resp);
 			} else {
 				LOGGER.warning("Không tìm thấy sản phẩm với ID: " + productId);
@@ -102,7 +105,7 @@ public class ProductController extends HttpServlet {
 		LOGGER.info("Xử lý hành động POST: " + (action != null ? action : "null"));
 		try {
 			if ("addToCart".equals(action)) {
-				addToCart(req, resp);
+//				addToCart(req, resp);
 			} else {
 				LOGGER.warning("Hành động POST không hợp lệ: " + action);
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Hành động không hợp lệ");
@@ -113,44 +116,69 @@ public class ProductController extends HttpServlet {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void addToCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		try {
-			HttpSession session = req.getSession();
-			Map<Long, Integer> cart = (Map<Long, Integer>) session.getAttribute("cart");
-
-			if (cart == null) {
-				cart = new HashMap<>();
-				session.setAttribute("cart", cart);
-			}
-
-			String productIdParam = req.getParameter("productId");
-			if (productIdParam == null || productIdParam.isEmpty()) {
-				LOGGER.warning("Thiếu tham số productId cho giỏ hàng");
-				session.setAttribute("error", "Thiếu ID sản phẩm");
-				resp.sendRedirect(req.getContextPath() + "/product?action=shop");
-				return;
-			}
-
-			Long productId = Long.parseLong(productIdParam);
-			cart.put(productId, cart.getOrDefault(productId, 0) + 1);
-			LOGGER.info("Thêm sản phẩm vào giỏ hàng: ID = " + productId);
-
-			session.setAttribute("message", "Sản phẩm đã được thêm vào giỏ hàng!");
-
-			String referer = req.getHeader("Referer");
-			if (referer != null && !referer.contains("error")) {
-				resp.sendRedirect(referer);
-			} else {
-				resp.sendRedirect(req.getContextPath() + "/product?action=shop");
-			}
-		} catch (NumberFormatException e) {
-			LOGGER.warning("ID sản phẩm không hợp lệ: " + req.getParameter("productId"));
-			req.getSession().setAttribute("error", "ID sản phẩm không hợp lệ");
-			resp.sendRedirect(req.getContextPath() + "/product?action=shop");
-		}
-	}
-
+//	private void addToCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+//		HttpSession session = req.getSession();
+//		AccountDTO accountDTO = (AccountDTO) session.getAttribute("user");
+//		if (accountDTO == null) {
+//			session.setAttribute("error", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+//			resp.sendRedirect(req.getContextPath() + "/login");
+//			return;
+//		}
+//
+//		String productIdParam = req.getParameter("productId");
+//		String qtyParam = req.getParameter("qty");
+//
+//		if (productIdParam == null || productIdParam.isEmpty()) {
+//			LOGGER.warning("Thiếu tham số productId cho giỏ hàng");
+//			session.setAttribute("error", "Thiếu ID sản phẩm");
+//			resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+//			return;
+//		}
+//
+//		try {
+//			Long productId = Long.parseLong(productIdParam);
+//			int quantity = 1; // Default quantity
+//
+//			// Parse quantity if provided
+//			if (qtyParam != null && !qtyParam.isEmpty()) {
+//				try {
+//					quantity = Integer.parseInt(qtyParam);
+//					if (quantity <= 0) {
+//						quantity = 1;
+//					}
+//				} catch (NumberFormatException e) {
+//					LOGGER.warning("Số lượng không hợp lệ: " + qtyParam);
+//					quantity = 1;
+//				}
+//			}
+//
+//			Product product = productService.getById(productId);
+//			if (product == null) {
+//				session.setAttribute("error", "Sản phẩm không tồn tại");
+//				resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+//				return;
+//			}
+//
+//			Long accountId = accountDTO.getAccountId();
+//			boolean success = cartService.addToCart(accountId, productId, quantity);
+//			if (success) {
+//				session.setAttribute("message", "Sản phẩm đã được thêm vào giỏ hàng!");
+//			} else {
+//				session.setAttribute("error", "Không thể thêm sản phẩm vào giỏ hàng");
+//			}
+//		} catch (NumberFormatException e) {
+//			LOGGER.warning("ID sản phẩm không hợp lệ: " + productIdParam);
+//			session.setAttribute("error", "ID sản phẩm không hợp lệ");
+//		}
+//
+//		String referer = req.getHeader("Referer");
+//		if (referer != null && !referer.contains("error")) {
+//			resp.sendRedirect(referer);
+//		} else {
+//			resp.sendRedirect(req.getContextPath() + "/product?action=shop");
+//		}
+//	}
+//
 	private ProductDTO mapToDTO(Product product) {
 		return new ProductDTO(
 				product.getProductId(),
