@@ -110,4 +110,8 @@ public class OrderService implements IService<Order, Long> {
         }
         return null;
     }
+    public boolean updateStatus(long orderId, String status) {
+        return dao.updateStatus(orderId, status);
+    }
+
 }

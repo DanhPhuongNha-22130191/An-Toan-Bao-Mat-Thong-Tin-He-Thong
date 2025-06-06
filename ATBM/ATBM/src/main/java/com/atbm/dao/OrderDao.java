@@ -166,4 +166,9 @@ public class OrderDao implements IDao<Order, Long> {
         }
         return listOrder;
     }
+    public boolean updateStatus(long orderId, String status) {
+        String query = "UPDATE [Order] SET status = ? WHERE orderId = ?";
+        return ExecuteSQLUtil.executeUpdate(query, status, orderId);
+    }
+
 }
