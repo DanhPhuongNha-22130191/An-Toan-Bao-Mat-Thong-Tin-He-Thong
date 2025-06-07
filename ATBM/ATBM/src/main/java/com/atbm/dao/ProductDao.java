@@ -1,7 +1,6 @@
 package com.atbm.dao;
 
 import com.atbm.models.Brand;
-import com.atbm.models.ProductState;
 import com.atbm.models.Strap;
 import com.atbm.models.Product;
 import com.atbm.utils.ExecuteSQLUtil;
@@ -9,9 +8,7 @@ import com.atbm.utils.ExecuteSQLUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProductDao implements IDao<Product, Long> {
@@ -35,7 +32,7 @@ public class ProductDao implements IDao<Product, Long> {
 
     @Override
     public boolean update(Product product) {
-        String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, image = ?, haveTrending = ?, size = ?, waterResistance = ?, brandId = ?, strapId = ? " +
+        String query = "UPDATE Product SET name = ?, price = ?, description = ?, stock = ?, image = ?, brandId = ?, status = ? " +
                 "WHERE productId = ?";
         return ExecuteSQLUtil.executeUpdate(query,
                 product.getName(),
@@ -43,11 +40,8 @@ public class ProductDao implements IDao<Product, Long> {
                 product.getDescription(),
                 product.getStock(),
                 product.getImage(),
-                product.isHaveTrending(),
-                product.getSize(),
-                product.isWaterResistance(),
                 product.getBrandId(),
-                product.getStrapId(),
+                product.getStatus(),
                 product.getProductId());
     }
 
@@ -74,7 +68,7 @@ public class ProductDao implements IDao<Product, Long> {
     @Override
     public List<Product> getAll() {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Product";
+        String query = "SELECT * FROM Product WHERE isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
@@ -216,7 +210,7 @@ public class ProductDao implements IDao<Product, Long> {
                 rs.getBoolean("waterResistance"),
                 rs.getLong("brandId"),
                 rs.getLong("strapId"),
-                rs.getLong("strapId"),
+                rs.getString("status"),
                 rs.getBoolean("isDeleted")
         );
     }
@@ -240,24 +234,7 @@ public class ProductDao implements IDao<Product, Long> {
         return brands;
     }
 
-    // Lấy danh sách nhãn hàng (Brand)
-    public List<ProductState> getStates() {
-        List<ProductState> states = new ArrayList<>();
-        String query = "SELECT * FROM State";
-        ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
-        try {
-            while (rs != null && rs.next()) {
-                // Giả sử Brand có constructor Brand(long brandId, String name)
-                states.add(new ProductState(
-                        rs.getLong("stateId"),
-                        rs.getString("name")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return states;
-    }
+
     // Lấy danh sách dây đồng hồ (Strap)
     public List<Strap> getStraps() {
         List<Strap> straps = new ArrayList<>();
@@ -278,6 +255,7 @@ public class ProductDao implements IDao<Product, Long> {
         }
         return straps;
     }
+
     public int getTotalProductStock() {
         String query = "SELECT SUM(stock) AS totalStock FROM Product";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
@@ -290,6 +268,7 @@ public class ProductDao implements IDao<Product, Long> {
         }
         return 0;
     }
+
     public int countLowStockProducts() {
         String query = "SELECT COUNT(*) AS lowStockCount FROM Product WHERE stock <= 2";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
@@ -315,6 +294,7 @@ public class ProductDao implements IDao<Product, Long> {
         }
         return 0;
     }
+
     public String getImageByProductId(long id) {
         String query = "SELECT image FROM Product WHERE productId = ?";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, id);
@@ -326,6 +306,12 @@ public class ProductDao implements IDao<Product, Long> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    // Phương thức xóa mềm 1 sản phẩm dựa vào id
+    public boolean deleteById(long productId) {
+        String query = "UPDATE Product SET isDeleted = 1 WHERE productId = ?";
+        return ExecuteSQLUtil.executeUpdate(query, productId);
     }
 
 

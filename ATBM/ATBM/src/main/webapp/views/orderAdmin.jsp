@@ -155,9 +155,10 @@
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-info" onclick="viewOrder('${order.orderId}')">Xem</button>
-                                <button class="btn btn-sm btn-success" onclick="updateOrderStatus('${order.orderId}', 'CONFIRMED')">Xác nhận</button>
-                                <button class="btn btn-sm btn-danger" onclick="updateOrderStatus('${order.orderId}', 'CANCELLED')">Hủy</button>
+                                <button class="btn btn-sm btn-info"
+                                        onclick="openStatusModal('${order.orderId}', '${order.status}')">
+                                    Cập nhật trạng thái
+                                </button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -167,6 +168,71 @@
         </div>
     </div>
 </div>
+<!-- Modal cập nhật trạng thái -->
+<div id="statusModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeStatusModal()">&times;</span>
+        <h3>Cập nhật trạng thái đơn hàng</h3>
+        <form action="${pageContext.request.contextPath}/admin/updateState" method="post">
+            <input type="hidden" name="orderId" id="modalOrderId" />
+            <label for="statusSelect">Trạng thái:</label>
+            <select name="status" id="statusSelect" required>
+                <option value="PENDING">Chờ xử lý</option>
+                <option value="CONFIRMED">Đã xác nhận</option>
+                <option value="PAID">Đã thanh toán</option>
+                <option value="SHIPPED">Đang giao</option>
+                <option value="DELIVERED">Đã giao</option>
+                <option value="CANCELLED">Đã hủy</option>
+            </select>
+            <br><br>
+            <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .modal {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 9999; display: flex; align-items: center; justify-content: center;
+    }
+
+    .modal-content {
+        background: #fff; padding: 20px; border-radius: 8px;
+        width: 300px; position: relative;
+    }
+
+    .close {
+        position: absolute; top: 10px; right: 15px; cursor: pointer;
+        font-size: 20px;
+    }
+
+    .btn-success {
+        background-color: #28a745; color: white;
+        padding: 8px 16px; border: none; border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function openStatusModal(orderId, currentStatus) {
+        document.getElementById("modalOrderId").value = orderId;
+        document.getElementById("statusSelect").value = currentStatus;
+        document.getElementById("statusModal").style.display = "flex";
+    }
+
+    function closeStatusModal() {
+        document.getElementById("statusModal").style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById("statusModal");
+        if (event.target === modal) {
+            closeStatusModal();
+        }
+    };
+</script>
 </body>
 
 </html>

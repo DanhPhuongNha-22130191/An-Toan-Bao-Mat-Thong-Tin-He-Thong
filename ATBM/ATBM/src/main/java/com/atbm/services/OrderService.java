@@ -10,10 +10,8 @@ import com.atbm.models.OrderSecurity;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class OrderService implements IService<Order, Long> {
-    private static final Logger LOGGER = Logger.getLogger(OrderService.class.getName());
     private OrderDao dao;
 
     public OrderService() {
@@ -23,16 +21,15 @@ public class OrderService implements IService<Order, Long> {
     @Override
     public boolean insert(Order entity) {
         if (dao.insert(entity)) {
-            long id = getIdOrder(entity.getAccountId());
+            long id = getOrderId(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
-                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id))
-                    && insertOrerSecurity(entity.getOrderSecurity(), id);
+                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
 
-    public long getIdOrder(long accountId) {
-        return dao.getIdOrder(accountId);
+    public long getOrderId(long accountId) {
+        return dao.getOrderId(accountId);
     }
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
@@ -57,17 +54,13 @@ public class OrderService implements IService<Order, Long> {
         return true;
     }
 
-    private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
+    public List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
         CartService cartService = new CartService();
-        List<CartItem> cartItems = new LinkedList<>();
-        if (cartDTO != null && cartDTO.getItems() != null) {
-            for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
-                CartItem item = cartService.convertToModel(dto);
-                item.setOrderId(orderId);
-                cartItems.add(item);
-            }
-        } else {
-            LOGGER.warning("CartDTO or CartDTO items is null for orderId = " + orderId);
+        List<CartItem> cartItems = new LinkedList<CartItem>();
+        for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
+            CartItem item = cartService.convertToModel(dto);
+            item.setOrderId(orderId);
+            cartItems.add(item);
         }
         return cartItems;
 
@@ -92,13 +85,7 @@ public class OrderService implements IService<Order, Long> {
         return orders;
     }
 
-    public List<Order> getAllByAccountId(long accountId) {
-        List<Order> orders = dao.getAllById(accountId);
-        for (Order order : orders) {
-            order.setCartDTO(new CartService().convertToDTO(order.getOrderId()));
-        }
-        return orders;
-    }
+
 
     @Override
     public boolean delete(Long id) {
@@ -121,44 +108,12 @@ public class OrderService implements IService<Order, Long> {
 
     public Long createOrder(Order order) {
         if (insert(order)) {
-            return dao.getIdOrder(order.getAccountId());
+            return dao.getOrderId(order.getAccountId());
         }
         return null;
     }
-
-    public List<Order> getOrdersByAccountId(long accountId) {
-        List<Order> orders = dao.getOrdersByAccountId(accountId);
-        LOGGER.info("OrderService: Retrieved " + (orders != null ? orders.size() : 0) + " orders for accountId " + accountId);
-        if (orders != null) {
-            for (Order order : orders) {
-                LOGGER.info("OrderService: Processing Order ID: " + order.getOrderId() + ", Account ID: " + order.getAccountId());
-                // Gán CartDTO
-                try {
-                    CartService cartService = new CartService();
-                    CartDTO cartDTO = cartService.convertToDTO(order.getOrderId());
-                    if (cartDTO != null) {
-                        order.setCartDTO(cartDTO);
-                        LOGGER.info("OrderService: Successfully set CartDTO for Order ID: " + order.getOrderId());
-                    } else {
-                        LOGGER.warning("OrderService: CartDTO is null for Order ID: " + order.getOrderId());
-                    }
-                } catch (Exception e) {
-                    LOGGER.severe("OrderService: Error setting CartDTO for Order ID " + order.getOrderId() + ": " + e.getMessage());
-                }
-                // Gán OrderDetail
-                try {
-                    OrderDetail orderDetail = dao.getOrderDetailByOrderId(order.getOrderId());
-                    if (orderDetail != null) {
-                        order.setOrderDetail(orderDetail);
-                        LOGGER.info("OrderService: Successfully set OrderDetail for Order ID: " + order.getOrderId() + ", FullName: " + orderDetail.getFullName());
-                    } else {
-                        LOGGER.warning("OrderService: OrderDetail is null for Order ID: " + order.getOrderId());
-                    }
-                } catch (Exception e) {
-                    LOGGER.severe("OrderService: Error setting OrderDetail for Order ID " + order.getOrderId() + ": " + e.getMessage());
-                }
-            }
-        }
-        return orders;
+    public boolean updateStatus(long orderId, String status) {
+        return dao.updateStatus(orderId, status);
     }
+
 }

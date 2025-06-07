@@ -12,13 +12,23 @@ public class Product {
     private boolean waterResistance; // Chống nước
     private long brandId;
     private long strapId;
-    private long stateId;
+    private String status;
     private boolean isDeleted;
 
     public Product() {
     }
+    public Product(long productId, String name, double price, String description, int stock, String image, long brandId, String status) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.stock = stock;
+        this.image = image;
+        this.brandId = brandId;
+        this.status = status;
+    }
 
-    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId, long stateId, boolean isDeleted) {
+    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId, String status, boolean isDeleted) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -30,7 +40,7 @@ public class Product {
         this.waterResistance = waterResistance;
         this.brandId = brandId;
         this.strapId = strapId;
-        this.stateId = stateId;
+        this.status = status;
         this.isDeleted = isDeleted;
     }
 
@@ -42,12 +52,12 @@ public class Product {
         isDeleted = deleted;
     }
 
-    public long getStateId() {
-        return stateId;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStateId(long stateId) {
-        this.stateId = stateId;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public long getProductId() {
@@ -152,7 +162,7 @@ public class Product {
                 ", waterResistance=" + waterResistance +
                 ", brandId=" + brandId +
                 ", strapId=" + strapId +
-                ", stateId=" + stateId +
+                ", status=" + status +
                 '}';
     }
 }
