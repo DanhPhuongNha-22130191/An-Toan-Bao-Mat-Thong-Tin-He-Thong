@@ -45,7 +45,7 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/productAmin.jsp" class="nav-link ">
+                <a href="${pageContext.request.contextPath}/views/productAdmin.jsp" class="nav-link ">
                     <i class="fas fa-box"></i>
                     Sản phẩm
                 </a>

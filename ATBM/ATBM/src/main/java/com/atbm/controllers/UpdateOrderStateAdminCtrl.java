@@ -32,7 +32,7 @@ public class UpdateOrderStateAdminCtrl extends HttpServlet {
             boolean updated = orderService.updateStatus(orderId, newStatus);
 
             if (updated) {
-                resp.sendRedirect(req.getContextPath() + "/admin/order"); // Đường dẫn trang quản lý đơn hàng
+                resp.sendRedirect(req.getContextPath() + "/admin/order");
             } else {
                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cập nhật trạng thái thất bại.");
             }

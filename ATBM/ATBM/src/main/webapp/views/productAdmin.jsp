@@ -1,0 +1,286 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<!-- CẤU HÌNH THÔNG TIN TRANG VÀ THƯ VIỆN JSTL -->
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- THÔNG TIN CƠ BẢN CỦA TRANG WEB -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Quản lý sản phẩm</title>
+
+    <!-- LINK TỚI FONT VÀ ICON -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- LINK CSS RIÊNG CHO TRANG QUẢN LÝ SẢN PHẨM -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/productAdmin.css">
+</head>
+<body>
+
+<!-- GIAO DIỆN TỔNG THỂ CỦA DASHBOARD -->
+<div class="dashboard">
+
+    <!-- PHẦN SIDEBAR BÊN TRÁI -->
+    <div class="sidebar animate-slide-left">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h2>Admin Panel</h2>
+            <p>Quản lý hệ thống</p>
+        </div>
+
+        <!-- THANH MENU ĐIỀU HƯỚNG CHỨC NĂNG -->
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/views/userAdmin.jsp" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    Người dùng
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/orders.jsp" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Đơn hàng
+                    <span class="badge">5</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/views/productAdmin.jsp" class="nav-link active">
+                    <i class="fas fa-box"></i>
+                    Sản phẩm
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/views/voucherAdmin.jsp" class="nav-link">
+                    <i class="fas fa-ticket-alt"></i>
+                    Voucher
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- PHẦN NỘI DUNG CHÍNH CỦA TRANG -->
+    <div class="main-content">
+
+        <!-- PHẦN HEADER TRÊN CÙNG CỦA TRANG -->
+        <div class="content-header animate-fade-up">
+            <div class="content-header-top">
+                <h1 class="page-title">Quản lý sản phẩm</h1>
+                <div class="user-info">
+                    <!-- BIỂU TƯỢNG THÔNG BÁO -->
+                    <div class="notifications tooltip" data-tooltip="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <!-- THÔNG TIN NGƯỜI DÙNG ĐĂNG NHẬP -->
+                    <div class="user-avatar tooltip" data-tooltip="${sessionScope.userName}">
+                        <c:out value="${sessionScope.userInitials}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHẦN BẢNG HIỂN THỊ DANH SÁCH SẢN PHẨM -->
+        <div class="table-container animate-fade-up">
+            <div class="table-header">
+                <div class="table-controls">
+                    <!-- NÚT THÊM SẢN PHẨM MỚI -->
+                    <button class="btn btn-primary" onclick="openAddProductModal()">
+                        <i class="fas fa-plus"></i>
+                        Thêm sản phẩm
+                    </button>
+                </div>
+            </div>
+
+            <!-- BẢNG HIỂN THỊ DỮ LIỆU SẢN PHẨM -->
+            <div class="table-wrapper">
+                <table id="productTable">
+                    <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Thương hiệu</th>
+                        <th>Giá (Đ)</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    <!-- LẶP QUA DANH SÁCH SẢN PHẨM TỪ SERVER -->
+                    <c:forEach var="p" items="${product}">
+                        <tr>
+                            <!-- CỘT HÌNH ẢNH SẢN PHẨM -->
+                            <td>
+                                <div class="product-image-wrapper">
+                                    <img src="${pageContext.request.contextPath}/assests/img/product/${p.image}"
+                                         alt="${p.name}"
+                                         class="product-image"
+                                         onerror="this.style.display='none'; this.parentElement.querySelector('.product-placeholder').style.display='flex';">
+                                    <div class="product-placeholder" style="display: none;">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- CÁC CỘT THÔNG TIN SẢN PHẨM -->
+                            <td>${p.productId}</td>
+                            <td>${p.name}</td>
+                            <td>${brandMap[p.brandId].name}</td>
+                            <td>${p.price} đ</td>
+                            <td>${p.stock}</td>
+                            <td class="status active" style="margin-left: 15px; margin-top: 35px;">
+                                    ${p.status}
+                            </td>
+                            <!-- NÚT SỬA VÀ XÓA -->
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                        data-product-id="${p.productId}"
+                                        data-image="${p.image}"
+                                        data-name="${p.name}"
+                                        data-price="${p.price}"
+                                        data-stock="${p.stock}"
+                                        data-description="${p.description}"
+                                        data-brand-id="${p.brandId}"
+                                        data-status="${fn:escapeXml(p.status)}">
+                                    Sửa
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                        onclick="confirmDelete(${p.productId})">
+                                    Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORM CHỈNH SỬA SẢN PHẨM (ẨN THEO MẶC ĐỊNH, HIỆN RA KHI SỬA) -->
+<div id="editFormContainer" style="display: none;">
+    <form action="/ATBM/admin/editProduct" method="POST" enctype="multipart/form-data"
+          style="max-width: 600px; margin: auto;">
+
+        <!-- TRƯỜNG NHẬP THÔNG TIN SẢN PHẨM CẦN SỬA -->
+        <input type="hidden" id="editProductId" name="productId"/>
+
+        <label for="name">Tên sản phẩm:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="price">Giá (₫):</label>
+        <input type="number" id="price" name="price" step="0.01" required>
+
+        <label for="description">Mô tả:</label>
+        <textarea id="description" name="description" rows="3"></textarea>
+
+        <label for="stock">Số lượng:</label>
+        <input type="number" id="stock" name="stock" required>
+
+        <!-- HIỂN THỊ ẢNH HIỆN TẠI -->
+        <label>Ảnh hiện tại:</label><br>
+        <img id="currentImagePreview" src="" alt="Ảnh hiện tại"
+             style="max-width: 100px; display: none; margin-bottom: 10px;"><br>
+
+        <!-- CHỌN ẢNH MỚI -->
+        <label for="image">Chọn ảnh mới:</label>
+        <input type="file" id="image" name="image" accept="image/*"><br>
+
+        <!-- PREVIEW ẢNH MỚI -->
+        <img id="newImagePreview" src="" alt="Ảnh mới chọn"
+             style="max-width: 100px; margin-top: 10px; display: none;"><br><br>
+
+        <!-- THƯƠNG HIỆU VÀ TRẠNG THÁI -->
+        <label for="brandId">Thương hiệu:</label>
+        <select id="brandId" name="brandId" required>
+            <c:forEach var="brand" items="${brands}">
+                <option value="${brand.brandId}">${brand.name}</option>
+            </c:forEach>
+        </select>
+        <label for="status">Trạng thái:</label>
+        <select id="status" name="status">
+            <option>Còn hàng</option>
+            <option>Hết hàng</option>
+            <option>Sắp hết</option>
+        </select>
+        <!-- NÚT LƯU THAY ĐỔI -->
+        <button type="submit">Lưu thay đổi</button>
+    </form>
+</div>
+
+<!-- FORM THÊM SẢN PHẨM (ẨN THEO MẶC ĐỊNH, HIỆN RA KHI THÊM) -->
+<div id="addFormContainer" style="display: none;">
+    <form action="${pageContext.request.contextPath}/admin/addProduct" method="POST" enctype="multipart/form-data" class="product-form">
+        <h2>Thêm sản phẩm mới</h2>
+
+        <label for="add-name">Tên sản phẩm:</label>
+        <input type="text" id="add-name" name="name" required>
+
+        <label for="add-price">Giá (₫):</label>
+        <input type="number" id="add-price" name="price" step="0.01" required>
+
+        <label for="add-description">Mô tả:</label>
+        <textarea id="add-description" name="description" rows="3"></textarea>
+
+        <label for="add-stock">Số lượng:</label>
+        <input type="number" id="add-stock" name="stock" required>
+
+        <label for="add-image">Chọn ảnh:</label>
+        <input type="file" id="add-image" name="image" accept="image/*"><br>
+        <img id="addImagePreview" src="" style="max-width: 100px; display: none; margin-top: 10px;">
+
+        <label for="add-brandId">Thương hiệu:</label>
+        <select id="add-brandId" name="brandId" required>
+            <c:forEach var="brand" items="${brands}">
+                <option value="${brand.brandId}">${brand.name}</option>
+            </c:forEach>
+        </select>
+
+        <label for="add-strapId">Dây đeo:</label>
+        <select id="add-strapId" name="strapId" required>
+            <c:forEach var="strap" items="${straps}">
+                <option value="${strap.strapId}">${strap.material}</option>
+            </c:forEach>
+        </select>
+
+        <label for="add-size">Kích thước mặt:</label>
+        <input type="number" id="add-size" name="size" step="0.1" required>
+
+        <label for="add-haveTrending">Trending:</label>
+        <select id="add-haveTrending" name="haveTrending" required>
+            <option value="true">Có</option>
+            <option value="false">Không</option>
+        </select>
+
+        <label for="add-waterResistance">Chống nước:</label>
+        <select id="add-waterResistance" name="waterResistance" required>
+            <option value="true">Có</option>
+            <option value="false">Không</option>
+        </select>
+
+        <label for="add-status">Trạng thái:</label>
+        <select id="add-status" name="status">
+            <option>Còn hàng</option>
+            <option>Hết hàng</option>
+            <option>Sắp hết</option>
+        </select>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Thêm</button>
+            <button type="button" id="cancelAddForm" class="btn btn-secondary">Hủy</button>
+        </div>
+    </form>
+</div>
+<!-- SCRIPT -->
+<script src="${pageContext.request.contextPath}/assests/js/editProductAdmin.js"></script>
+<script src="${pageContext.request.contextPath}/assests/js/deleteProductAdmin.js"></script>
+<script src="${pageContext.request.contextPath}/assests/js/addProductAdmin.js"></script>
+</body>
+</html>
