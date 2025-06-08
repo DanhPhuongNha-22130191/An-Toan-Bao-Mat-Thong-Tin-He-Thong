@@ -24,7 +24,7 @@ public class OrderDao implements IDao<Order, Long> {
                 entity.getPaymentMethod(), entity.getVoucherId(),entity.getStatus(),entity.getOrderDate());
     }
 
-    public long getIdOrder(long accountId) {
+    public long getOrderId(long accountId) {
         String query = "select orderId from [Order] where accountId=?";
         ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
         long newOrderId = 0;
@@ -144,8 +144,8 @@ public class OrderDao implements IDao<Order, Long> {
         if(resultSet.next()){
             orderSecurity = new OrderSecurity();
             orderSecurity.setOrderId(orderId);
-            orderSecurity.setSignature(resultSet.getString(2));
-            orderSecurity.setSignature(resultSet.getString(3));
+            orderSecurity.setSignature(resultSet.getString("signature"));
+            orderSecurity.setPublicKey(resultSet.getString("publicKey"));
         }
         return orderSecurity;
     }
@@ -221,5 +221,10 @@ public class OrderDao implements IDao<Order, Long> {
         }
         return listOrder;
     }
+    public boolean updateStatus(long orderId, String status) {
+        String query = "UPDATE [Order] SET status = ? WHERE orderId = ?";
+        return ExecuteSQLUtil.executeUpdate(query, status, orderId);
+    }
+
 
 }

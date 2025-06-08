@@ -23,16 +23,15 @@ public class OrderService implements IService<Order, Long> {
     @Override
     public boolean insert(Order entity) {
         if (dao.insert(entity)) {
-            long id = getIdOrder(entity.getAccountId());
+            long id = getOrderId(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
-                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id))
-                    && insertOrerSecurity(entity.getOrderSecurity(), id);
+                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
 
-    public long getIdOrder(long accountId) {
-        return dao.getIdOrder(accountId);
+    public long getOrderId(long accountId) {
+        return dao.getOrderId(accountId);
     }
 
     private boolean insertOrderDetail(OrderDetail detail, long orderId) {
@@ -57,17 +56,13 @@ public class OrderService implements IService<Order, Long> {
         return true;
     }
 
-    private List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
+    public List<CartItem> getListCartItem(CartDTO cartDTO, long orderId) {
         CartService cartService = new CartService();
-        List<CartItem> cartItems = new LinkedList<>();
-        if (cartDTO != null && cartDTO.getItems() != null) {
-            for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
-                CartItem item = cartService.convertToModel(dto);
-                item.setOrderId(orderId);
-                cartItems.add(item);
-            }
-        } else {
-            LOGGER.warning("CartDTO or CartDTO items is null for orderId = " + orderId);
+        List<CartItem> cartItems = new LinkedList<CartItem>();
+        for (CartDTO.CartItemDTO dto : cartDTO.getItems()) {
+            CartItem item = cartService.convertToModel(dto);
+            item.setOrderId(orderId);
+            cartItems.add(item);
         }
         return cartItems;
 
@@ -92,6 +87,8 @@ public class OrderService implements IService<Order, Long> {
         return orders;
     }
 
+
+
     @Override
     public boolean delete(Long id) {
         return dao.delete(id);
@@ -113,10 +110,14 @@ public class OrderService implements IService<Order, Long> {
 
     public Long createOrder(Order order) {
         if (insert(order)) {
-            return dao.getIdOrder(order.getAccountId());
+            return dao.getOrderId(order.getAccountId());
         }
         return null;
     }
+    public boolean updateStatus(long orderId, String status) {
+        return dao.updateStatus(orderId, status);
+    }
+
 
     public List<Order> getOrdersByAccountId(long accountId) {
         List<Order> orders = dao.getOrdersByAccountId(accountId);
