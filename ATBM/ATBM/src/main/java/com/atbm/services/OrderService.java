@@ -92,13 +92,6 @@ public class OrderService implements IService<Order, Long> {
         return orders;
     }
 
-    public List<Order> getAllByAccountId(long accountId) {
-        List<Order> orders = dao.getAllById(accountId);
-        for (Order order : orders) {
-            order.setCartDTO(new CartService().convertToDTO(order.getOrderId()));
-        }
-        return orders;
-    }
 
     @Override
     public boolean delete(Long id) {

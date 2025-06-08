@@ -498,8 +498,8 @@
                                         <button class="copy-btn" onclick="copyHash()" type="button">
                                             <i class="fas fa-copy"></i>
                                         </button>
-                                        <div>Mã hash đơn hàng:</div>
-                                        <div id="hash-value">Đang tạo mã hash...</div>
+                                        <div>Thông tin đơn hàng:</div>
+                                        <div id="hash-value">Đang tạo thông tin đơn...</div>
                                     </div>
                                     <div>Nhập chữ ký để xác nhận:</div>
                                     <form class="signature-form"
@@ -577,13 +577,12 @@
                 if (!name || !phone || !email || !address) {
                     throw new Error('Thiếu thông tin đơn hàng');
                 }
-
-                const orderString = paymentMethod + name + phone + email + address + productInfo;
-                const encoder = new TextEncoder();
-                const data = encoder.encode(orderString);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return paymentMethod + "|"
+                    + name + "|"
+                    + phone + "|"
+                    + email + "|"
+                    + address + "|"
+                    + productInfo;
             } catch (error) {
                 console.error('Error generating hash:', error);
                 throw error;
@@ -595,7 +594,7 @@
                 const hashValueDiv = document.getElementById('hash-value');
                 if (!hashValueDiv) return;
 
-                hashValueDiv.textContent = "Đang tạo hash...";
+                hashValueDiv.textContent = "Đang tạo thông tin đơn...";
                 const hash = await generateOrderHash();
                 hashValueDiv.textContent = hash;
             } catch (error) {
@@ -604,7 +603,7 @@
                 if (hashValueDiv) {
                     hashValueDiv.textContent = "Lỗi tạo hash";
                 }
-                showNotification('Lỗi khi tạo mã hash', 'error');
+                showNotification('Lỗi khi tạo thông tin đơn ', 'error');
             }
         }
 
@@ -618,13 +617,13 @@
             const hashDisplay = document.querySelector('.hash-display');
             
             if (!hashValueDiv) {
-                showNotification("Không tìm thấy mã hash!", "error");
+                showNotification("Không tìm thấy mã !", "error");
                 return;
             }
 
             const hash = hashValueDiv.textContent.trim();
-            if (!hash || hash === "Đang tạo hash..." || hash === "Lỗi tạo hash") {
-                showNotification("Không thể sao chép hash!", "warning");
+            if (!hash || hash === "Đang tạo thông tin đơn ..." || hash === "Lỗi tạo thông tin đơn hàng") {
+                showNotification("Không thể sao chép thông tin!", "warning");
                 return;
             }
 
