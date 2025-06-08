@@ -17,6 +17,18 @@ import static com.atbm.database.DBConnection.getConnection;
 
 public class OrderDao implements IDao<Order, Long> {
 
+    public static int countOrdersByUserId(long userId) {
+        String query = "SELECT COUNT(*) FROM [Order] WHERE accountId = ?";
+        try (ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, userId)) {
+            if (rs != null && rs.next()) {
+                return rs.getInt(1); // Lấy số lượng từ cột đầu tiên
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Ghi log lỗi
+        }
+        return 0; // Trả về 0 nếu không có đơn hàng hoặc có lỗi
+    }
+
     @Override
     public boolean insert(Order entity) {
         String query = "insert into [Order] (accountId,shipping,paymentMethod,voucherId,status,orderDate) values(?,?,?,?,?,?)";

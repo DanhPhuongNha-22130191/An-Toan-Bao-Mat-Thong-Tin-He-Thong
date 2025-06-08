@@ -154,4 +154,7 @@ public class OrderService implements IService<Order, Long> {
         }
         return orders;
     }
+    public boolean hasOrders(long userId) {
+        return OrderDao.countOrdersByUserId(userId) > 0;
+    }
 }
