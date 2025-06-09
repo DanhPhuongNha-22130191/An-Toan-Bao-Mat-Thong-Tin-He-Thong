@@ -6,7 +6,7 @@ public class Product {
     private double price;
     private String description;
     private int stock;
-    private String image;
+    private byte[] image;
     private boolean haveTrending;
     private double size; // Kích thước mặt đồng hồ
     private boolean waterResistance; // Chống nước
@@ -17,7 +17,7 @@ public class Product {
 
     public Product() {
     }
-    public Product(long productId, String name, double price, String description, int stock, String image, long brandId, String status) {
+    public Product(long productId, String name, double price, String description, int stock, byte[] image, long brandId, String status) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -28,7 +28,7 @@ public class Product {
         this.status = status;
     }
 
-    public Product(long productId, String name, double price, String description, int stock, String image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId, String status, boolean isDeleted) {
+    public Product(long productId, String name, double price, String description, int stock, byte[] image, boolean haveTrending, double size, boolean waterResistance, long brandId, long strapId, String status, boolean isDeleted) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -80,7 +80,7 @@ public class Product {
         return stock;
     }
 
-    public String getImage() {
+    public byte[] getImage() {
         return image;
     }
 
@@ -124,7 +124,7 @@ public class Product {
         this.stock = stock;
     }
 
-    public void setImage(String image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 

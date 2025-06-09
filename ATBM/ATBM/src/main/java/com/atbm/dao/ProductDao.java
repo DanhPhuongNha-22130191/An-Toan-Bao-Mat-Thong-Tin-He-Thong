@@ -22,13 +22,14 @@ public class ProductDao implements IDao<Product, Long> {
                 product.getPrice(),
                 product.getDescription(),
                 product.getStock(),
-                product.getImage(),
+                new java.io.ByteArrayInputStream(product.getImage()), // truyền BLOB
                 product.isHaveTrending(),
                 product.getSize(),
                 product.isWaterResistance(),
                 product.getBrandId(),
                 product.getStrapId());
     }
+
 
     @Override
     public boolean update(Product product) {
@@ -39,11 +40,12 @@ public class ProductDao implements IDao<Product, Long> {
                 product.getPrice(),
                 product.getDescription(),
                 product.getStock(),
-                product.getImage(),
+                new java.io.ByteArrayInputStream(product.getImage()),
                 product.getBrandId(),
                 product.getStatus(),
                 product.getProductId());
     }
+
 
     @Override
     public boolean delete(Long id) {
@@ -198,13 +200,15 @@ public class ProductDao implements IDao<Product, Long> {
 
     // Hàm ánh xạ ResultSet thành Product
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+        byte[] imageBytes = rs.getBytes("image");
+
         return new Product(
                 rs.getLong("productId"),
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getString("description"),
                 rs.getInt("stock"),
-                rs.getString("image"),
+                imageBytes,
                 rs.getBoolean("haveTrending"),
                 rs.getDouble("size"),
                 rs.getBoolean("waterResistance"),
@@ -214,6 +218,7 @@ public class ProductDao implements IDao<Product, Long> {
                 rs.getBoolean("isDeleted")
         );
     }
+
 
     // Lấy danh sách nhãn hàng (Brand)
     public List<Brand> getBrands() {

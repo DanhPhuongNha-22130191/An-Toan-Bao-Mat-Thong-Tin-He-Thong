@@ -119,7 +119,7 @@
                             <!-- CỘT HÌNH ẢNH SẢN PHẨM -->
                             <td>
                                 <div class="product-image-wrapper">
-                                    <img src="${pageContext.request.contextPath}/assests/img/product/${p.image}"
+                                    <img src="${pageContext.request.contextPath}/admin/productImage?productId=${p.productId}"
                                          alt="${p.name}"
                                          class="product-image"
                                          onerror="this.style.display='none'; this.parentElement.querySelector('.product-placeholder').style.display='flex';">

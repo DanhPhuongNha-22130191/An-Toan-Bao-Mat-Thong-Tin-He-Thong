@@ -112,7 +112,7 @@
                                 <div class="card text-center card-product">
                                     <div class="card-product__img">
                                         <div class="product-image-wrapper">
-                                            <img src="${pageContext.request.contextPath}/assests/img/product/${product.image}"
+                                            <img src="${pageContext.request.contextPath}/admin/productImage?productId=${p.productId}"
                                                  alt="${product.name}"
                                                  class="product-image"
                                                  onerror="this.style.display='none'; this.parentElement.querySelector('.product-placeholder').style.display='flex';">
@@ -207,7 +207,7 @@
                 // Tạo ảnh
                 const img = document.createElement('img');
                 img.classList.add('product-image');
-                img.src = '${pageContext.request.contextPath}/assests/img/product/' + product.image;
+                img.src = '${pageContext.request.contextPath}/admin/productImage?productId=' + product.productId;
                 img.alt = product.name;
                 img.style.width = '100%';
                 img.style.height = '100%';

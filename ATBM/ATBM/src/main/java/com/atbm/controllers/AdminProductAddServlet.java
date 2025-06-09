@@ -12,6 +12,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 
 @WebServlet("/admin/addProduct")
@@ -43,10 +44,17 @@ public class AdminProductAddServlet extends HttpServlet {
             boolean haveTrending = Boolean.parseBoolean(request.getParameter("haveTrending"));
             boolean waterResistance = Boolean.parseBoolean(request.getParameter("waterResistance"));
 
-            String imageFileName = handleImageUpload(request.getPart("image"));
+            Part imagePart = request.getPart("image");
+            byte[] imageBytes = null;
+
+            if (imagePart != null && imagePart.getSize() > 0) {
+                try (InputStream inputStream = imagePart.getInputStream()) {
+                    imageBytes = inputStream.readAllBytes();
+                }
+            }
 
             Product product = new Product(
-                    0, name, price, description, stock, imageFileName,
+                    0, name, price, description, stock, imageBytes,
                     haveTrending, size, waterResistance,
                     brandId, strapId, status, false
             );
@@ -60,15 +68,5 @@ public class AdminProductAddServlet extends HttpServlet {
         }
     }
 
-    private String handleImageUpload(Part imagePart) throws IOException {
-        if (imagePart != null && imagePart.getSize() > 0) {
-            String fileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-            File uploadDir = new File(IMAGE_UPLOAD_DIR);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-            String fullPath = IMAGE_UPLOAD_DIR + File.separator + fileName;
-            imagePart.write(fullPath);
-            return fileName;
-        }
-        return "";
-    }
+
 }
