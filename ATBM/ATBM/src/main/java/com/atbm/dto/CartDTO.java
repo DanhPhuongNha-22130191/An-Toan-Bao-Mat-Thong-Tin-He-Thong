@@ -205,9 +205,10 @@ public class CartDTO {
         private double productPrice;
         private int quantity;
 
+        public CartItemDTO(long cartItemId, long productId, String name, byte[] image, double price, int quantity) {
+        }
         public CartItemDTO() {
         }
-
         public CartItemDTO(long cartItemId, long productId, String productName, String productImg,
                            double productPrice, int quantity) {
             this.cartItemId = cartItemId;
