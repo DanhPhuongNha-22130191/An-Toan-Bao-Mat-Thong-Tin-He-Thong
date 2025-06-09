@@ -4,6 +4,8 @@ import com.atbm.dao.AccountDao;
 import com.atbm.dto.AccountDTO;
 import com.atbm.models.Account;
 import com.atbm.utils.SignatureUtil;
+
+import java.util.List;
 import java.util.logging.Logger;
 
 public class AccountService {
@@ -152,6 +154,62 @@ public class AccountService {
         } catch (Exception e) {
             LOGGER.severe("Lỗi khi lấy publicKeyActive cho account ID " + accountId + ": " + e.getMessage());
             return null;
+        }
+    }
+
+    public List<Account> getAll() {
+        try {
+            List<Account> accounts = accountDao.getAll();
+            LOGGER.info("Lấy thành công " + accounts.size() + " tài khoản");
+            return accounts;
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi lấy danh sách tất cả tài khoản: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public Account getById(long userId) {
+        try {
+            Account account = accountDao.getById(userId);
+            if (account != null) {
+                LOGGER.info("Tìm thấy tài khoản với ID: " + userId);
+            } else {
+                LOGGER.info("Không tìm thấy tài khoản với ID: " + userId);
+            }
+            return account;
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi lấy tài khoản với ID " + userId + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean update(Account account) {
+        try {
+            boolean success = accountDao.update(account);
+            if (success) {
+                LOGGER.info("Cập nhật tài khoản thành công cho ID: " + account.getAccountId());
+            } else {
+                LOGGER.warning("Cập nhật tài khoản thất bại cho ID: " + account.getAccountId());
+            }
+            return success;
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi cập nhật tài khoản với ID " + account.getAccountId() + ": " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean delete(long userId) {
+        try {
+            boolean success = accountDao.delete(userId);
+            if (success) {
+                LOGGER.info("Xóa tài khoản thành công cho ID: " + userId);
+            } else {
+                LOGGER.warning("Xóa tài khoản thất bại cho ID: " + userId);
+            }
+            return success;
+        } catch (Exception e) {
+            LOGGER.severe("Lỗi khi xóa tài khoản với ID " + userId + ": " + e.getMessage());
+            return false;
         }
     }
 }
