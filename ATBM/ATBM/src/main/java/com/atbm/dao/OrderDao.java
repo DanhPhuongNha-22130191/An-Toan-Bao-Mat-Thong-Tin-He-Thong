@@ -6,12 +6,28 @@ import com.atbm.models.OrderDetail;
 import com.atbm.models.OrderSecurity;
 import com.atbm.utils.ExecuteSQLUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.atbm.database.DBConnection.getConnection;
+
 public class OrderDao implements IDao<Order, Long> {
+
+    public static int countOrdersByUserId(long userId) {
+        String query = "SELECT COUNT(*) FROM [Order] WHERE accountId = ?";
+        try (ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, userId)) {
+            if (rs != null && rs.next()) {
+                return rs.getInt(1); // Lấy số lượng từ cột đầu tiên
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Ghi log lỗi
+        }
+        return 0; // Trả về 0 nếu không có đơn hàng hoặc có lỗi
+    }
 
     @Override
     public boolean insert(Order entity) {
@@ -146,6 +162,57 @@ public class OrderDao implements IDao<Order, Long> {
         return orderSecurity;
     }
 
+    public List<Order> getOrdersByAccountId(long accountId) {
+        String query = "SELECT * FROM [Order] WHERE accountId = ?";
+        ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query, accountId);
+        List<Order> orders = new LinkedList<>();
+        try {
+            while (resultSet.next()) {
+                Order order = new Order();
+                order.setOrderId(resultSet.getLong("orderId"));
+                order.setAccountId(resultSet.getLong("accountId"));
+                order.setShipping(resultSet.getDouble("shipping"));
+                order.setPaymentMethod(resultSet.getString("paymentMethod"));
+                // Nếu cột voucherId trong DB cho phép NULL, bạn có thể dùng getObject để tránh lỡ parse NULL thành 0
+                long v = resultSet.getLong("voucherId");
+                if (!resultSet.wasNull()) {
+                    order.setVoucherId(v);
+                }
+                // Gán status (kiểu NVARCHAR hoặc VARCHAR trong DB)
+                order.setStatus(resultSet.getString("status"));
+                // Gán orderDate (kiểu Date hoặc DateTime)
+                order.setOrderDate(resultSet.getDate("orderDate"));
+
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+    public OrderDetail getOrderDetailByOrderId(long orderId) {
+        String query = "SELECT * FROM OrderDetail WHERE orderId = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, orderId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                OrderDetail detail = new OrderDetail();
+                detail.setOrderDetailId(rs.getLong("orderDetailId"));
+                detail.setOrderId(rs.getLong("orderId"));
+                detail.setFullName(rs.getString("fullName"));
+                detail.setPhone(rs.getString("phone"));
+                detail.setEmail(rs.getString("email"));
+                detail.setAddress(rs.getString("address"));
+                detail.setOrderNote(rs.getString("orderNote"));
+
+                return detail;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public List<Order> getAllById(long accountId) {
         String query = "select * from [Order] where accountId=? order by orderId desc";
         ResultSet resultSet = ExecuteSQLUtil.ExecuteQuery(query,accountId);
@@ -170,5 +237,6 @@ public class OrderDao implements IDao<Order, Long> {
         String query = "UPDATE [Order] SET status = ? WHERE orderId = ?";
         return ExecuteSQLUtil.executeUpdate(query, status, orderId);
     }
+
 
 }
