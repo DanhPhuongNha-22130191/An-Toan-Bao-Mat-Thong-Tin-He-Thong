@@ -42,6 +42,12 @@ public class AdminProductEditServlet extends HttpServlet {
             try (InputStream inputStream = imagePart.getInputStream()) {
                 imageBytes = inputStream.readAllBytes();
             }
+        } else {
+            // Lấy ảnh cũ từ cơ sở dữ liệu nếu không có ảnh mới được upload
+            Product existingProduct = productService.getProductById(id);
+            if (existingProduct != null) {
+                imageBytes = existingProduct.getImage();
+            }
         }
 
         Product product = new Product(id, name, price, description, stock, imageBytes, brandId, status);
@@ -49,4 +55,5 @@ public class AdminProductEditServlet extends HttpServlet {
 
         response.sendRedirect("/ATBM/admin/product");
     }
+
 }
