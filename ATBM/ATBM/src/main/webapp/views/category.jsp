@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Aroma Shop - Category</title>
+    <title>Cửa Hàng Aroma - Danh Mục</title>
     <link rel="icon" href="${pageContext.servletContext.contextPath}/assests/img/Fevicon.png" type="image/png">
 
     <!-- CSS -->
@@ -34,7 +34,7 @@
 
                     <!-- Brand Filter -->
                     <div class="sidebar-categories">
-                        <div class="head">Browse Brands</div>
+                        <div class="head">Thương hiệu</div>
                         <ul class="main-categories">
                             <li class="common-filter">
                                 <ul>
@@ -42,7 +42,7 @@
                                         <li class="filter-list">
                                             <input class="pixel-checkbox" type="checkbox" name="brandId[]"
                                                    id="brand${brand.brandId}" value="${brand.brandId}"
-                                                   <c:if test="${fn:contains(paramValues['brandId'], brand.brandId)}">checked</c:if>>
+                                                   <c:if test="${fn:contains(paramValues['brandId'], brand.brandId)}">checked</c:if> >
                                             <label for="brand${brand.brandId}">${brand.name}</label>
                                         </li>
                                     </c:forEach>
@@ -53,15 +53,15 @@
 
                     <!-- Strap Filter -->
                     <div class="sidebar-filter">
-                        <div class="top-filter-head">Product Filters</div>
+                        <div class="top-filter-head">Bộ lọc sản phẩm</div>
                         <div class="common-filter">
-                            <div class="head">Strap Material</div>
+                            <div class="head">Chất liệu dây</div>
                             <ul>
                                 <c:forEach var="strap" items="${straps}">
                                     <li class="filter-list">
                                         <input class="pixel-checkbox" type="checkbox" name="strapId[]"
                                                id="strap${strap.strapId}" value="${strap.strapId}"
-                                               <c:if test="${fn:contains(paramValues['strapId'], strap.strapId)}">checked</c:if>>
+                                               <c:if test="${fn:contains(paramValues['strapId'], strap.strapId)}">checked</c:if> >
                                         <label for="strap${strap.strapId}">${strap.material}</label>
                                     </li>
                                 </c:forEach>
@@ -70,14 +70,14 @@
 
                         <!-- Price Range -->
                         <div class="common-filter">
-                            <div class="head">Price</div>
+                            <div class="head">Giá</div>
                             <div class="price-range-area">
                                 <div id="price-range"></div>
                                 <div class="value-wrapper d-flex">
-                                    <div class="price">Price:</div>
+                                    <div class="price">Giá:</div>
                                     <span>$</span>
                                     <div id="lower-value">0</div>
-                                    <div class="to">to</div>
+                                    <div class="to">đến</div>
                                     <span>$</span>
                                     <div id="upper-value">1000</div>
                                 </div>
@@ -97,7 +97,7 @@
                 <!-- Spinner -->
                 <div id="loading-spinner" style="display: none; text-align:center; margin:20px;">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+                        <span class="sr-only">Đang tải...</span>
                     </div>
                 </div>
 
