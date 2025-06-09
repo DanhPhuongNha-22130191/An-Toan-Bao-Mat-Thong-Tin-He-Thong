@@ -116,11 +116,10 @@
                                                 <i class="fas fa-image"></i>
                                             </div>
                                         </div>
-
                                         <ul class="card-product__imgOverlay">
-                                            <li><button><i class="ti-search"></i></button></li>
-                                            <li><button><i class="ti-shopping-cart"></i></button></li>
-                                            <li><button><i class="ti-heart"></i></button></li>
+                                           <%-- <li>
+                                                <button onclick="addToCart(${product.productId})"><i class="ti-shopping-cart"></i></button>
+                                            </li>--%>
                                         </ul>
                                     </div>
                                     <div class="card-body">
@@ -157,6 +156,5 @@
 
 <!-- Custom JS file -->
 <script src="${pageContext.request.contextPath}/assests/js/filterCategory.js"></script>
-
 </body>
 </html>
