@@ -28,7 +28,7 @@
 
         <nav class="nav-menu">
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
                     <i class="fas fa-users"></i>
                     Người dùng
                 </a>
