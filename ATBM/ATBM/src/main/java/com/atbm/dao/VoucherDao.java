@@ -13,8 +13,8 @@ public class VoucherDao implements IDao<Voucher, Long> {
 
     @Override
     public boolean insert(Voucher entity) {
-        String query = "INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity, maxUsagePerUser, isActive) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Voucher (code, expirationTime, percentDecrease, name, quantity) " +
+                "VALUES (?, ?, ?, ?, ?)";
         return ExecuteSQLUtil.executeUpdate(query,
                 entity.getCode(),
                 entity.getExpirationTime(),
