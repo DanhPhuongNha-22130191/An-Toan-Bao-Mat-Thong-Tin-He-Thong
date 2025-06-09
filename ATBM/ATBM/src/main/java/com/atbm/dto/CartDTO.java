@@ -201,15 +201,14 @@ public class CartDTO {
         private long cartItemId;
         private long productId;
         private String productName;
-        private String productImg;
+        private byte[] productImg;
         private double productPrice;
         private int quantity;
 
-        public CartItemDTO(long cartItemId, long productId, String name, byte[] image, double price, int quantity) {
-        }
+
         public CartItemDTO() {
         }
-        public CartItemDTO(long cartItemId, long productId, String productName, String productImg,
+        public CartItemDTO(long cartItemId, long productId, String productName, byte[] productImg,
                            double productPrice, int quantity) {
             this.cartItemId = cartItemId;
             this.productId = productId;
@@ -247,11 +246,11 @@ public class CartDTO {
             this.productName = productName;
         }
 
-        public String getProductImg() {
+        public byte[] getProductImg() {
             return productImg;
         }
 
-        public void setProductImg(String productImg) {
+        public void setProductImg(byte[] productImg) {
             this.productImg = productImg;
         }
 

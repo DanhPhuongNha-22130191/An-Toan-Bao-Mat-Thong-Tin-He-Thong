@@ -11,12 +11,16 @@
     <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/themify-icons/themify-icons.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/linericon/style.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.theme.default.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/owl-carousel/owl.carousel.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nice-select/nice-select.css">
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
+    <link rel="stylesheet"
+          href="${pageContext.servletContext.contextPath}/assests/vendors/nouislider/nouislider.min.css">
     <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assests/css/style.css">
 </head>
 
@@ -75,11 +79,11 @@
                                 <div id="price-range"></div>
                                 <div class="value-wrapper d-flex">
                                     <div class="price">Giá:</div>
-                                    <span>$</span>
                                     <div id="lower-value">0</div>
+                                    <span>&nbsp;₫</span>
                                     <div class="to">đến</div>
-                                    <span>$</span>
                                     <div id="upper-value">1000</div>
+                                    <span>&nbsp;₫</span>
                                 </div>
                                 <input type="hidden" id="minPriceInput" name="minPrice"
                                        value="${param.minPrice != null ? param.minPrice : minPrice}">
@@ -117,9 +121,10 @@
                                             </div>
                                         </div>
                                         <ul class="card-product__imgOverlay">
-                                           <%-- <li>
-                                                <button onclick="addToCart(${product.productId})"><i class="ti-shopping-cart"></i></button>
-                                            </li>--%>
+                                            <li>
+                                                <button onclick="addToCart(${product.productId})"><i
+                                                        class="ti-shopping-cart"></i></button>
+                                            </li>
                                         </ul>
                                     </div>
                                     <div class="card-body">
@@ -129,7 +134,7 @@
                                                     ${product.name}
                                             </a>
                                         </h4>
-                                        <p class="card-product__price">$${product.price}</p>
+                                        <p class="card-product__price">${product.price} ₫</p>
                                     </div>
                                 </div>
                             </div>
@@ -152,6 +157,33 @@
 <!-- Pass contextPath JS biến toàn cục -->
 <script>
     window.contextPath = '${pageContext.request.contextPath}';
+</script>
+<script>
+    function addToCart(productId) {
+        fetch('/ATBM/user/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                productId: productId,
+                quantity: 1 // mặc định thêm 1 sản phẩm
+            }),
+            credentials: 'same-origin'  // <=== thêm dòng này để gửi cookie session
+        })
+            .then(response => {
+                if (response.redirected) {
+                    // Nếu controller redirect (đúng như bạn làm), thì thực hiện redirect
+                    window.location.href = response.url;
+                } else {
+                    return response.text();
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi thêm vào giỏ hàng:', error);
+                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+            });
+    }
 </script>
 
 <!-- Custom JS file -->

@@ -111,7 +111,7 @@ async function applyFilters() {
 
             const price = document.createElement('p');
             price.classList.add('card-product__price');
-            price.textContent = product.price !== undefined && product.price !== null ? `$${product.price}` : '$0';
+            price.textContent = product.price !== undefined && product.price !== null ? `${product.price} ₫` : '$0';
 
             body.appendChild(title);
             body.appendChild(desc);

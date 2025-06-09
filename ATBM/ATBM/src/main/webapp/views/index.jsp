@@ -108,7 +108,7 @@
 							<h4 class="card-product__title">
 								<a href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">${product.name}</a>
 							</h4>
-							<p class="card-product__price">${product.price}</p>
+							<p class="card-product__price">${product.price} ₫</p>
 						</div>
 					</div>
 				</c:forEach>
@@ -143,7 +143,7 @@
 								<h4 class="card-product__title">
 									<a href="single-product.html">${newProduct.name}</a>
 								</h4>
-								<p class="card-product__price">$${newProduct.price}</p>
+								<p class="card-product__price">${newProduct.price} ₫</p>
 							</div>
 						</div>
 					</div>

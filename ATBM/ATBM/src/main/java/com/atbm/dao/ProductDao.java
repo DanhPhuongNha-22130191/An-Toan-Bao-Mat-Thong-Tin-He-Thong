@@ -8,7 +8,9 @@ import com.atbm.utils.ExecuteSQLUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ProductDao implements IDao<Product, Long> {
@@ -211,14 +213,17 @@ public class ProductDao implements IDao<Product, Long> {
 
     public List<Brand> getBrands() {
         List<Brand> brands = new ArrayList<>();
-        String query = "SELECT * FROM Brand";
+        Set<Long> brandIds = new HashSet<>();
+
+        String query = "SELECT DISTINCT name, brandId FROM Brand";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
-                brands.add(new Brand(
-                        rs.getLong("brandId"),
-                        rs.getString("name")
-                ));
+                long id = rs.getLong("brandId");
+                if (!brandIds.contains(id)) {
+                    brands.add(new Brand(id, rs.getString("name")));
+                    brandIds.add(id);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -226,24 +231,32 @@ public class ProductDao implements IDao<Product, Long> {
         return brands;
     }
 
+
     public List<Strap> getStraps() {
         List<Strap> straps = new ArrayList<>();
+        Set<String> seenMaterials = new HashSet<>();
+
         String query = "SELECT * FROM Strap";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
-                straps.add(new Strap(
-                        rs.getLong("strapId"),
-                        rs.getString("color"),
-                        rs.getString("material"),
-                        rs.getDouble("length")
-                ));
+                String material = rs.getString("material");
+                if (!seenMaterials.contains(material)) {
+                    straps.add(new Strap(
+                            rs.getLong("strapId"),
+                            rs.getString("color"),
+                            material,
+                            rs.getDouble("length")
+                    ));
+                    seenMaterials.add(material);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return straps;
     }
+
 
     public int getTotalProductStock() {
         String query = "SELECT SUM(stock) AS totalStock FROM Product WHERE isDeleted = 0";
