@@ -98,10 +98,10 @@
 						<div class="card-product__img">
 							<img src="${pageContext.request.contextPath}/admin/productImage?productId=${product.productId}" alt="${product.name}">
 							<ul class="card-product__imgOverlay">
-								<li><button><i class="ti-search"></i></button></li>
-								<li><button><i class="ti-shopping-cart"></i></button></li>
-								<li><button><i class="ti-heart"></i></button></li>
-							</ul>
+								<li>
+									<button onclick="addToCart(${product.productId})"><i
+											class="ti-shopping-cart"></i></button>
+								</li>							</ul>
 						</div>
 						<div class="card-body">
 							<p>${product.description}</p>
@@ -133,9 +133,10 @@
 							<div class="card-product__img">
 								<img src="${pageContext.request.contextPath}/admin/productImage?productId=${newProduct.productId}" alt="${newProduct.name}">
 								<ul class="card-product__imgOverlay">
-									<li><button><i class="ti-search"></i></button></li>
-									<li><button><i class="ti-shopping-cart"></i></button></li>
-									<li><button><i class="ti-heart"></i></button></li>
+									<li>
+										<button onclick="addToCart(${product.productId})"><i
+												class="ti-shopping-cart"></i></button>
+									</li>
 								</ul>
 							</div>
 							<div class="card-body">
@@ -259,5 +260,33 @@
 <script src="${pageContext.request.contextPath}/assests/vendors/jquery.ajaxchimp.min.js"></script>
 <script src="${pageContext.request.contextPath}/assests/vendors/mail-script.js"></script>
 <script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
+<script>
+	function addToCart(productId) {
+		fetch('/ATBM/user/cart/add', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: new URLSearchParams({
+				productId: productId,
+				quantity: 1 // mặc định thêm 1 sản phẩm
+			}),
+			credentials: 'same-origin'  // <=== thêm dòng này để gửi cookie session
+		})
+				.then(response => {
+					if (response.redirected) {
+						// Nếu controller redirect (đúng như bạn làm), thì thực hiện redirect
+						window.location.href = response.url;
+					} else {
+						return response.text();
+					}
+				})
+				.catch(error => {
+					console.error('Lỗi khi thêm vào giỏ hàng:', error);
+					alert("Có lỗi xảy ra. Vui lòng thử lại.");
+				});
+	}
+</script>
+
 </body>
 </html>
