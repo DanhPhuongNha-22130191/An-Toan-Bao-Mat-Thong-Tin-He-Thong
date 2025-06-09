@@ -7,25 +7,26 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <!-- THÔNG TIN CƠ BẢN CỦA TRANG WEB -->
+    <!-- THIẾT LẬP THÔNG TIN CƠ BẢN CỦA TRANG WEB -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Quản lý sản phẩm</title>
 
-    <!-- LINK TỚI FONT VÀ ICON -->
+    <!-- KẾT NỐI TỚI FONT VÀ ICON -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- LINK CSS RIÊNG CHO TRANG QUẢN LÝ SẢN PHẨM -->
+    <!-- KẾT NỐI CSS RIÊNG CHO TRANG QUẢN LÝ SẢN PHẨM -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/productAdmin.css">
 </head>
 <body>
 
-<!-- GIAO DIỆN TỔNG THỂ CỦA DASHBOARD -->
+<!-- KHUNG GIAO DIỆN TỔNG THỂ CỦA DASHBOARD -->
 <div class="dashboard">
 
-    <!-- PHẦN SIDEBAR BÊN TRÁI -->
+    <!-- THANH SIDEBAR BÊN TRÁI -->
     <div class="sidebar animate-slide-left">
+        <!-- TIÊU ĐỀ SIDEBAR -->
         <div class="sidebar-header">
             <div class="logo">
                 <i class="fas fa-crown"></i>
@@ -34,7 +35,7 @@
             <p>Quản lý hệ thống</p>
         </div>
 
-        <!-- THANH MENU ĐIỀU HƯỚNG CHỨC NĂNG -->
+        <!-- MENU ĐIỀU HƯỚNG CHỨC NĂNG -->
         <nav class="nav-menu">
             <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/views/userAdmin.jsp" class="nav-link">
@@ -64,10 +65,10 @@
         </nav>
     </div>
 
-    <!-- PHẦN NỘI DUNG CHÍNH CỦA TRANG -->
+    <!-- KHU VỰC NỘI DUNG CHÍNH -->
     <div class="main-content">
 
-        <!-- PHẦN HEADER TRÊN CÙNG CỦA TRANG -->
+        <!-- PHẦN HEADER CỦA TRANG -->
         <div class="content-header animate-fade-up">
             <div class="content-header-top">
                 <h1 class="page-title">Quản lý sản phẩm</h1>
@@ -85,7 +86,7 @@
             </div>
         </div>
 
-        <!-- PHẦN BẢNG HIỂN THỊ DANH SÁCH SẢN PHẨM -->
+        <!-- BẢNG HIỂN THỊ DANH SÁCH SẢN PHẨM -->
         <div class="table-container animate-fade-up">
             <div class="table-header">
                 <div class="table-controls">
@@ -97,7 +98,7 @@
                 </div>
             </div>
 
-            <!-- BẢNG HIỂN THỊ DỮ LIỆU SẢN PHẨM -->
+            <!-- BẢNG DỮ LIỆU SẢN PHẨM -->
             <div class="table-wrapper">
                 <table id="productTable">
                     <thead>
@@ -113,7 +114,7 @@
                     </tr>
                     </thead>
                     <tbody id="productTableBody">
-                    <!-- LẶP QUA DANH SÁCH SẢN PHẨM TỪ SERVER -->
+                    <!-- LẶP QUA DANH SÁCH SẢN PHẨM -->
                     <c:forEach var="p" items="${product}">
                         <tr>
                             <!-- CỘT HÌNH ẢNH SẢN PHẨM -->
@@ -141,7 +142,7 @@
                             <td>
                                 <button class="btn btn-sm btn-warning"
                                         data-product-id="${p.productId}"
-                                        data-image="${p.image}"
+                                        data-image="${pageContext.request.contextPath}/admin/productImage?productId=${p.productId}"
                                         data-name="${p.name}"
                                         data-price="${p.price}"
                                         data-stock="${p.stock}"
@@ -164,12 +165,11 @@
     </div>
 </div>
 
-<!-- FORM CHỈNH SỬA SẢN PHẨM (ẨN THEO MẶC ĐỊNH, HIỆN RA KHI SỬA) -->
+<!-- FORM CHỈNH SỬA SẢN PHẨM -->
 <div id="editFormContainer" style="display: none;">
     <form action="/ATBM/admin/editProduct" method="POST" enctype="multipart/form-data"
           style="max-width: 600px; margin: auto;">
-
-        <!-- TRƯỜNG NHẬP THÔNG TIN SẢN PHẨM CẦN SỬA -->
+        <!-- TRƯỜNG NHẬP THÔNG TIN SẢN PHẨM -->
         <input type="hidden" id="editProductId" name="productId"/>
 
         <label for="name">Tên sản phẩm:</label>
@@ -215,7 +215,7 @@
     </form>
 </div>
 
-<!-- FORM THÊM SẢN PHẨM (ẨN THEO MẶC ĐỊNH, HIỆN RA KHI THÊM) -->
+<!-- FORM THÊM SẢN PHẨM MỚI -->
 <div id="addFormContainer" style="display: none;">
     <form action="${pageContext.request.contextPath}/admin/addProduct" method="POST" enctype="multipart/form-data" class="product-form">
         <h2>Thêm sản phẩm mới</h2>
@@ -278,9 +278,9 @@
         </div>
     </form>
 </div>
-<!-- SCRIPT -->
-<script src="${pageContext.request.contextPath}/assests/js/editProductAdmin.js"></script>
-<script src="${pageContext.request.contextPath}/assests/js/deleteProductAdmin.js"></script>
-<script src="${pageContext.request.contextPath}/assests/js/addProductAdmin.js"></script>
+
+<!-- KẾT NỐI JAVASCRIPT -->
+<script src="${pageContext.request.contextPath}/assests/js/productManager.js"></script>
+
 </body>
 </html>
