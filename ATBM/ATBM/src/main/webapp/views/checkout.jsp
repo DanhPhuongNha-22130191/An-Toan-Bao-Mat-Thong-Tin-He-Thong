@@ -296,18 +296,18 @@
 
                         <!-- BẮT ĐẦU HASH và CHỮ KÝ SỐ -->
                         <div class="signature-section mt-3">
-                            <h5>Hash đơn hàng</h5>
+                            <h5>Thông tin ký đơn</h5>
                             <div class="hash-display" style="margin-bottom: 8px;">
-                                <div>Mã hash đơn hàng:</div>
-                                <div id="hash-value" style="font-size:0.97em;">Chưa tạo hash</div>
+                                <div>Thông tin đơn hàng:</div>
+                                <div id="hash-value" style="font-size:0.97em;">Chưa tạo thông tin</div>
                                 <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;"><i
                                         class="fas fa-copy"></i></button>
                             </div>
                             <button type="button" id="generateHashBtn" class="btn btn-outline-primary btn-sm"
-                                    style="margin-bottom:10px;">Tạo hash
+                                    style="margin-bottom:10px;">Tạo thông tin đơn hàng
                             </button>
                             <div id="hash-warning" class="text-danger" style="font-size: 0.96em; display:none;">Vui lòng
-                                nhập đầy đủ thông tin để tạo hash!
+                                nhập đầy đủ thông tin để tạo thông tin đơn hàng!
                             </div>
 
                             <!-- Chỗ nhập chữ ký điện tử: chỉ hiện khi đã có hash -->
@@ -395,19 +395,19 @@
 
     // Generate hash từ thông tin đơn hàng và user
     let productInfo =`${cartDTO.productInfo}` ;
-    async function generateOrderHash() {
+    async function generateOrderInfo() {
         const paymentMethod = "COD";
         const name = document.getElementById('full-name').value.trim();
         const phone = document.getElementById('phone-number').value.trim();
         const email = document.getElementById('email').value.trim();
         const address = document.getElementById('address').value.trim();
-        const orderString = paymentMethod
-            + name + phone + email + address + productInfo;
-        const encoder = new TextEncoder();
-        const data = encoder.encode(orderString);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return paymentMethod + "|"
+            + name + "|"
+            + phone + "|"
+            + email + "|"
+            + address + "|"
+            + productInfo;
+
     }
 
     let hashCreated = false; // trạng thái đã tạo hash hay chưa
@@ -424,7 +424,7 @@
         }
         warning.style.display = 'none';
         hashValueDiv.textContent = "Đang tạo hash...";
-        const hash = await generateOrderHash();
+        const hash = await generateOrderInfo();
         hashValueDiv.textContent = hash;
         // Hiện input chữ ký điện tử khi đã có hash
         document.getElementById('signature-area').style.display = '';

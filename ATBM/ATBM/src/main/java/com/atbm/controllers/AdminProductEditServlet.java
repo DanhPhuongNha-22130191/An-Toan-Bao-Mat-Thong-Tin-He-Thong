@@ -12,6 +12,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 
 @WebServlet("/admin/editProduct")
@@ -35,23 +36,24 @@ public class AdminProductEditServlet extends HttpServlet {
         String status = request.getParameter("status");
 
         Part imagePart = request.getPart("image");
-        String imageFileName;
+        byte[] imageBytes = null;
 
         if (imagePart != null && imagePart.getSize() > 0) {
-            imageFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-
-            File uploadDir = new File(IMAGE_UPLOAD_DIR);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-
-            String imageFullPath = IMAGE_UPLOAD_DIR + File.separator + imageFileName;
-            imagePart.write(imageFullPath);
+            try (InputStream inputStream = imagePart.getInputStream()) {
+                imageBytes = inputStream.readAllBytes();
+            }
         } else {
-            imageFileName = productService.getImageByProductId(id);
+            // Lấy ảnh cũ từ cơ sở dữ liệu nếu không có ảnh mới được upload
+            Product existingProduct = productService.getProductById(id);
+            if (existingProduct != null) {
+                imageBytes = existingProduct.getImage();
+            }
         }
 
-        Product product = new Product(id, name, price, description, stock, imageFileName, brandId, status);
+        Product product = new Product(id, name, price, description, stock, imageBytes, brandId, status);
         productService.update(product);
 
         response.sendRedirect("/ATBM/admin/product");
     }
+
 }

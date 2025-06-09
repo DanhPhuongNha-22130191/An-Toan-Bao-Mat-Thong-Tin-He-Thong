@@ -5,9 +5,11 @@ import com.atbm.models.Voucher;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class VoucherService implements IService<Voucher, Long> {
-    private final VoucherDao dao;
+    private static final Logger LOGGER = Logger.getLogger(VoucherService.class.getName());
+    private VoucherDao dao;
 
     public VoucherService() {
         dao = new VoucherDao();
@@ -15,7 +17,6 @@ public class VoucherService implements IService<Voucher, Long> {
 
     @Override
     public boolean insert(Voucher entity) {
-        if (entity == null) return false;
         return dao.insert(entity);
     }
 
@@ -43,9 +44,13 @@ public class VoucherService implements IService<Voucher, Long> {
         return dao.getByCode(code);
     }
 
+    public boolean existsByCode(String code) throws SQLException {
+        return dao.getByCode(code) != null;
+    }
+
     public Voucher canApplyVoucher(String code) throws SQLException {
         Voucher voucher = getByCode(code);
-        if (voucher == null || voucher.isValid())
+        if (voucher == null || !voucher.isValid())
             return null;
         return voucher;
     }
@@ -58,4 +63,3 @@ public class VoucherService implements IService<Voucher, Long> {
     }
 
 }
-

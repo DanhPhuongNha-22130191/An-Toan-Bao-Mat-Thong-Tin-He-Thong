@@ -88,4 +88,7 @@ public class ProductService implements IService<Product, Long> {
         return productDao.deleteById(productId);
     }
 
+    public Product getProductById(long id) {
+        return productDao.getById(id);
+    }
 }

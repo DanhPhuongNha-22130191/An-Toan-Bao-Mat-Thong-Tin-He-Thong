@@ -22,7 +22,7 @@ public class ProductDao implements IDao<Product, Long> {
                 product.getPrice(),
                 product.getDescription(),
                 product.getStock(),
-                product.getImage(),
+                new java.io.ByteArrayInputStream(product.getImage()),
                 product.isHaveTrending(),
                 product.getSize(),
                 product.isWaterResistance(),
@@ -39,7 +39,7 @@ public class ProductDao implements IDao<Product, Long> {
                 product.getPrice(),
                 product.getDescription(),
                 product.getStock(),
-                product.getImage(),
+                new java.io.ByteArrayInputStream(product.getImage()),
                 product.getBrandId(),
                 product.getStatus(),
                 product.getProductId());
@@ -53,7 +53,7 @@ public class ProductDao implements IDao<Product, Long> {
 
     @Override
     public Product getById(Long id) {
-        String query = "SELECT * FROM Product WHERE productId = ?";
+        String query = "SELECT * FROM Product WHERE productId = ? AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, id);
         try {
             if (rs != null && rs.next()) {
@@ -80,10 +80,9 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    // Lấy danh sách sản phẩm theo brandId
     public List<Product> getProductsByBrandId(long brandId) {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Product WHERE brandId = ?";
+        String query = "SELECT * FROM Product WHERE brandId = ? AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, brandId);
         try {
             while (rs != null && rs.next()) {
@@ -95,10 +94,9 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    // Lấy danh sách sản phẩm theo strapId
     public List<Product> getProductsByStrapId(long strapId) {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Product WHERE strapId = ?";
+        String query = "SELECT * FROM Product WHERE strapId = ? AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, strapId);
         try {
             while (rs != null && rs.next()) {
@@ -110,10 +108,9 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    // Lấy danh sách sản phẩm trending
     public List<Product> getTrendingProducts() {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Product WHERE haveTrending = 1";
+        String query = "SELECT * FROM Product WHERE haveTrending = 1 AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
@@ -125,10 +122,9 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    // Phương thức lọc sản phẩm theo brandId, strapId, giá min max
     public List<Product> filterProducts(List<Long> brandIds, List<Long> strapIds, Double minPrice, Double maxPrice) {
         List<Product> products = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM Product WHERE 1=1 ");
+        StringBuilder query = new StringBuilder("SELECT * FROM Product WHERE isDeleted = 0 ");
 
         List<Object> params = new ArrayList<>();
 
@@ -168,9 +164,8 @@ public class ProductDao implements IDao<Product, Long> {
         return products;
     }
 
-    // Hàm lấy giá min
     public Double getMinPrice() {
-        String query = "SELECT MIN(price) AS minPrice FROM Product";
+        String query = "SELECT MIN(price) AS minPrice FROM Product WHERE isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             if (rs != null && rs.next()) {
@@ -182,9 +177,8 @@ public class ProductDao implements IDao<Product, Long> {
         return 0.0;
     }
 
-    // Hàm lấy giá max
     public Double getMaxPrice() {
-        String query = "SELECT MAX(price) AS maxPrice FROM Product";
+        String query = "SELECT MAX(price) AS maxPrice FROM Product WHERE isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             if (rs != null && rs.next()) {
@@ -196,15 +190,15 @@ public class ProductDao implements IDao<Product, Long> {
         return 0.0;
     }
 
-    // Hàm ánh xạ ResultSet thành Product
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+        byte[] imageBytes = rs.getBytes("image");
         return new Product(
                 rs.getLong("productId"),
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getString("description"),
                 rs.getInt("stock"),
-                rs.getString("image"),
+                imageBytes,
                 rs.getBoolean("haveTrending"),
                 rs.getDouble("size"),
                 rs.getBoolean("waterResistance"),
@@ -215,14 +209,12 @@ public class ProductDao implements IDao<Product, Long> {
         );
     }
 
-    // Lấy danh sách nhãn hàng (Brand)
     public List<Brand> getBrands() {
         List<Brand> brands = new ArrayList<>();
         String query = "SELECT * FROM Brand";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
-                // Giả sử Brand có constructor Brand(long brandId, String name)
                 brands.add(new Brand(
                         rs.getLong("brandId"),
                         rs.getString("name")
@@ -234,15 +226,12 @@ public class ProductDao implements IDao<Product, Long> {
         return brands;
     }
 
-
-    // Lấy danh sách dây đồng hồ (Strap)
     public List<Strap> getStraps() {
         List<Strap> straps = new ArrayList<>();
         String query = "SELECT * FROM Strap";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             while (rs != null && rs.next()) {
-                // Giả sử Strap có constructor Strap(long strapId, String color, String material, double length)
                 straps.add(new Strap(
                         rs.getLong("strapId"),
                         rs.getString("color"),
@@ -257,7 +246,7 @@ public class ProductDao implements IDao<Product, Long> {
     }
 
     public int getTotalProductStock() {
-        String query = "SELECT SUM(stock) AS totalStock FROM Product";
+        String query = "SELECT SUM(stock) AS totalStock FROM Product WHERE isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             if (rs != null && rs.next()) {
@@ -270,7 +259,7 @@ public class ProductDao implements IDao<Product, Long> {
     }
 
     public int countLowStockProducts() {
-        String query = "SELECT COUNT(*) AS lowStockCount FROM Product WHERE stock <= 2";
+        String query = "SELECT COUNT(*) AS lowStockCount FROM Product WHERE stock <= 2 AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query);
         try {
             if (rs != null && rs.next()) {
@@ -296,7 +285,7 @@ public class ProductDao implements IDao<Product, Long> {
     }
 
     public String getImageByProductId(long id) {
-        String query = "SELECT image FROM Product WHERE productId = ?";
+        String query = "SELECT image FROM Product WHERE productId = ? AND isDeleted = 0";
         ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, id);
         try {
             if (rs != null && rs.next()) {
@@ -308,11 +297,8 @@ public class ProductDao implements IDao<Product, Long> {
         return null;
     }
 
-    // Phương thức xóa mềm 1 sản phẩm dựa vào id
     public boolean deleteById(long productId) {
         String query = "UPDATE Product SET isDeleted = 1 WHERE productId = ?";
         return ExecuteSQLUtil.executeUpdate(query, productId);
     }
-
-
 }

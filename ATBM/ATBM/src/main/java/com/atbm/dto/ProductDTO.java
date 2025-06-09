@@ -6,14 +6,12 @@ public class ProductDTO {
 	private String name;
 	private double price;
 	private String description;
-	private String image;
+	private byte[] image;
 	private boolean haveTrending;
 	
 
-	public ProductDTO() {
-	}
 
-	public ProductDTO(long productId, String name, double price, String description, String image,
+	public ProductDTO(long productId, String name, double price, String description, byte[] image,
 			boolean haveTrending) {
 		this.productId = productId;
 
@@ -58,12 +56,12 @@ public class ProductDTO {
 		this.description = description;
 	}
 
-	public String getImage() {
+	public byte[] getImage() {
 		return image;
 	}
 
 	public void setImage(String image) {
-		this.image = image;
+		this.image = image.getBytes();
 	}
 
 	public boolean isHaveTrending() {

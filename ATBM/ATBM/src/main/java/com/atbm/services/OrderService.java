@@ -25,7 +25,8 @@ public class OrderService implements IService<Order, Long> {
         if (dao.insert(entity)) {
             long id = getOrderId(entity.getAccountId());
             return insertOrderDetail(entity.getOrderDetail(), id)
-                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id)) && insertOrerSecurity(entity.getOrderSecurity(), id);
+                    && insertOrderItems(getListCartItem(entity.getCartDTO(), id))
+                    && insertOrerSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }

@@ -17,8 +17,10 @@ public class AuthFilter implements Filter {
         HttpSession session = req.getSession();
         String uri = req.getRequestURI();
         if (!uri.equals("/ATBM/user/account")) {
-            if (session == null || session.getAttribute("user") == null)
+            if (session == null || session.getAttribute("user") == null) {
                 res.sendRedirect("/ATBM/views/login.jsp");
+                return;
+            }
         }
         filterChain.doFilter(req, res);
     }
