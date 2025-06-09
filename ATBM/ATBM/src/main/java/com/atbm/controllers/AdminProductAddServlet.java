@@ -13,6 +13,7 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.file.Paths;
 
 @WebServlet("/admin/addProduct")
@@ -55,6 +56,7 @@ public class AdminProductAddServlet extends HttpServlet {
 
             Product product = new Product(
                     0, name, price, description, stock, imageBytes,
+
                     haveTrending, size, waterResistance,
                     brandId, strapId, status, false
             );
@@ -67,6 +69,4 @@ public class AdminProductAddServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không thể thêm sản phẩm: " + e.getMessage());
         }
     }
-
-
 }
