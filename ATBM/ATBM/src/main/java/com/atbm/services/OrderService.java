@@ -24,9 +24,10 @@ public class OrderService implements IService<Order, Long> {
     public boolean insert(Order entity) {
         if (dao.insert(entity)) {
             long id = getOrderId(entity.getAccountId());
+
             return insertOrderDetail(entity.getOrderDetail(), id)
                     && insertOrderItems(getListCartItem(entity.getCartDTO(), id))
-                    && insertOrerSecurity(entity.getOrderSecurity(), id);
+                    && insertOrderSecurity(entity.getOrderSecurity(), id);
         }
         return false;
     }
@@ -39,7 +40,7 @@ public class OrderService implements IService<Order, Long> {
         return dao.insertOrderDetail(detail, orderId);
     }
 
-    private boolean insertOrerSecurity(OrderSecurity security, long orderId) {
+    private boolean insertOrderSecurity(OrderSecurity security, long orderId) {
         return dao.sign(orderId, security.getSignature(), security.getPublicKey());
     }
 

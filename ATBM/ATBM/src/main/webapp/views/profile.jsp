@@ -125,6 +125,8 @@
             <!-- Cài đặt tài khoản -->
             <div id="account-settings" class="tab-content card shadow-sm p-4 ${activeTab == 'account-settings' ? '' : 'd-none'}">
                 <h4 class="text-primary mb-4">Cài đặt tài khoản</h4>
+
+                <!-- Form đổi mật khẩu -->
                 <form action="${pageContext.request.contextPath}/user/account" method="post" class="mb-4">
                     <input type="hidden" name="action" value="changePassword">
                     <div class="mb-3">
@@ -140,130 +142,139 @@
 
                 <hr>
 
+                <!-- Quản lý Public Key -->
                 <h5 class="text-primary mb-3">Quản lý Public Key</h5>
-                <div class="mb-3">
-                    <label class="form-label">Public Key hiện tại:</label>
-                    <div class="input-group">
-                        <c:if test="${not empty user.publicKeyActive}">
-                        <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
-                            <i class="bi bi-clipboard"></i> Sao chép
-                        </button>
-                        <form action="${pageContext.request.contextPath}/user/account" method="post" class="mt-2">
-                            <input type="hidden" name="action" value="revokePublicKey">
-                            <button type="submit" class="btn btn-danger">Thu hồi Public Key</button>
-                        </form>
+
+                <!-- Hiển thị Public Key hiện tại -->
+                <c:if test="${not empty user.publicKeyActive}">
+                    <div class="mb-3">
+                        <label class="form-label">Public Key hiện tại:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
+                                <i class="bi bi-clipboard"></i> Sao chép
+                            </button>
+                        </div>
+                        <div class="mt-2">
+                            <form action="${pageContext.request.contextPath}/user/account" method="post" style="display: inline;">
+                                <input type="hidden" name="action" value="revokePublicKey">
+                                <button type="submit" class="btn btn-danger btn-sm">Thu hồi Public Key</button>
+                            </form>
+                        </div>
                     </div>
-                    <c:if test="${empty user.publicKeyActive}">
-                        <p>Chưa có Public Key.</p>
-                    </c:if>
-                </div>
+                </c:if>
+
+                <c:if test="${empty user.publicKeyActive}">
+                    <div class="mb-3">
+                        <p class="text-muted">Chưa có Public Key.</p>
+                    </div>
+                </c:if>
+
+                <!-- Form upload/nhập Public Key mới -->
                 <h6 class="text-primary">Tải lên hoặc nhập Public Key mới</h6>
-                <div>
-                    <form action="${pageContext.request.contextPath}/user/account" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="action" value="uploadPublicKey">
-                        <div class="mb-3">
-                            <label class="form-label" for="publicKeyFile">Tải lên file Public Key:</label>
-                            <input type="file" name="publicKeyFile" id="publicKeyFile" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="publicKeyText">Hoặc nhập Public Key:</label>
-                            <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                    </form>
-                </div>
+                <form action="${pageContext.request.contextPath}/user/account" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="uploadPublicKey">
+                    <div class="mb-3">
+                        <label class="form-label" for="publicKeyFile">Tải lên file Public Key:</label>
+                        <input type="file" name="publicKeyFile" id="publicKeyFile" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="publicKeyText">Hoặc nhập Public Key:</label>
+                        <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3" placeholder="Nhập public key của bạn vào đây..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal chi tiết đơn hàng -->
-    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="modalOrderDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
-                    <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
-                    <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
-                    <p><strong>Phương thức thanh toán:</strong> <span id="modalPaymentMethod"></span></p>
-                    <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
-                    <p><strong>Họ tên:</strong> <span id="modalFullName"></span></p>
-                    <p><strong>Số điện thoại:</strong> <span id="modalPhone"></span></p>
-                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-                    <p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
-                    <p><strong>Ghi chú:</strong> <span id="modalOrderNote"></span></p>
-                </div>
-
+<!-- Modal chi tiết đơn hàng -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="modalOrderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
+                <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
+                <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
+                <p><strong>Phương thức thanh toán:</strong> <span id="modalPaymentMethod"></span></p>
+                <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
+                <p><strong>Họ tên:</strong> <span id="modalFullName"></span></p>
+                <p><strong>Số điện thoại:</strong> <span id="modalPhone"></span></p>
+                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                <p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
+                <p><strong>Ghi chú:</strong> <span id="modalOrderNote"></span></p>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="${pageContext.request.contextPath}/assets/vendors/jquery/jquery-3.2.1.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/vendors/jquery/jquery-3.2.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Kiểm tra Bootstrap có tải đúng không
-            if (typeof bootstrap === 'undefined') {
-                console.error("Bootstrap JavaScript không được tải. Kiểm tra đường dẫn bootstrap.bundle.min.js.");
-            }
-        });
-
-        function goBack() {
-            window.history.back();
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Kiểm tra Bootstrap có tải đúng không
+        if (typeof bootstrap === 'undefined') {
+            console.error("Bootstrap JavaScript không được tải. Kiểm tra đường dẫn bootstrap.bundle.min.js.");
         }
+    });
 
-        function copyPublicKey() {
-            const publicKeyInput = document.getElementById("publicKeyInput");
-            publicKeyInput.select();
-            document.execCommand("copy");
-            alert("Public Key đã được sao chép vào clipboard!");
+    function goBack() {
+        window.history.back();
+    }
+
+    function copyPublicKey() {
+        const publicKeyInput = document.getElementById("publicKeyInput");
+        publicKeyInput.select();
+        document.execCommand("copy");
+        alert("Public Key đã được sao chép vào clipboard!");
+    }
+
+    function showOrderDetails(orderId, orderDate, totalAmount, paymentMethod, status, fullName, phone, email, address, orderNote) {
+        console.log("Showing details for Order ID: " + orderId);
+        document.getElementById("modalOrderId").innerText = orderId || "N/A";
+        document.getElementById("modalOrderDate").innerText = orderDate || "N/A";
+        document.getElementById("modalTotalAmount").innerText = totalAmount || "0";
+        document.getElementById("modalPaymentMethod").innerText = paymentMethod || "N/A";
+        document.getElementById("modalStatus").innerText = status || "N/A";
+        document.getElementById("modalFullName").innerText = fullName || "N/A";
+        document.getElementById("modalPhone").innerText = phone || "N/A";
+        document.getElementById("modalEmail").innerText = email || "N/A";
+        document.getElementById("modalAddress").innerText = address || "N/A";
+        document.getElementById("modalOrderNote").innerText = orderNote || "Không có";
+
+        // Khởi tạo modal
+        const modalElement = document.getElementById("orderDetailModal");
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
+
+    function closeModal() {
+        const modalElement = document.getElementById("orderDetailModal");
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        } else {
+            console.warn("Modal instance not found, hiding manually");
+            modalElement.classList.remove("show");
+            modalElement.style.display = "none";
+            document.body.classList.remove("modal-open");
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) backdrop.remove();
         }
+    }
 
-        function showOrderDetails(orderId, orderDate, totalAmount, paymentMethod, status, fullName, phone, email, address, orderNote) {
-            console.log("Showing details for Order ID: " + orderId);
-            document.getElementById("modalOrderId").innerText = orderId || "N/A";
-            document.getElementById("modalOrderDate").innerText = orderDate || "N/A";
-            document.getElementById("modalTotalAmount").innerText = totalAmount || "0";
-            document.getElementById("modalPaymentMethod").innerText = paymentMethod || "N/A";
-            document.getElementById("modalStatus").innerText = status || "N/A";
-            document.getElementById("modalFullName").innerText = fullName || "N/A";
-            document.getElementById("modalPhone").innerText = phone || "N/A";
-            document.getElementById("modalEmail").innerText = email || "N/A";
-            document.getElementById("modalAddress").innerText = address || "N/A";
-            document.getElementById("modalOrderNote").innerText = orderNote || "Không có";
-
-            // Khởi tạo modal
-            const modalElement = document.getElementById("orderDetailModal");
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
+    function reportOrder(orderId) {
+        if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
+            alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
         }
+    }
+</script>
 
-        function closeModal() {
-            const modalElement = document.getElementById("orderDetailModal");
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            } else {
-                console.warn("Modal instance not found, hiding manually");
-                modalElement.classList.remove("show");
-                modalElement.style.display = "none";
-                document.body.classList.remove("modal-open");
-                const backdrop = document.querySelector(".modal-backdrop");
-                if (backdrop) backdrop.remove();
-            }
-        }
-
-        function reportOrder(orderId) {
-            if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
-                alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
-            }
-        }
-    </script>
-    </c:if>
 </body>
 </html>

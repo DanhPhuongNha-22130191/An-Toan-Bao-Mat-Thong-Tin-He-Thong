@@ -28,7 +28,7 @@ public class CartDTO {
         return builder.toString();
     }
 
-    public CartItem add(Product product, long cartItemId, int quantity) {
+    public CartItem add(Product product, long cartItemId,long accountId, int quantity) {
         if (product.getStock() < quantity) {
             throw new IllegalStateException("Số lượng sản phẩm trong kho không đủ");
         }
@@ -55,7 +55,9 @@ public class CartDTO {
             );
             items.add(newItem);
         }
-        return new CartItem(cartItemId, product.getProductId(), quantity);
+        CartItem item = new CartItem(cartItemId, product.getProductId(), quantity);
+        item.setAccountId(accountId);
+        return item;
     }
 
     public CartItem updateQuantity(long productId, int quantity) {
@@ -67,7 +69,7 @@ public class CartDTO {
         if (quantity <= 0) {
             items.remove(item);
         } else {
-            item.setQuantity(quantity);
+            item.setQuantity(quantity+item.getQuantity());
         }
         return new CartItem(item.getCartItemId(), item.getProductId(), item.getQuantity());
     }
@@ -204,7 +206,6 @@ public class CartDTO {
         private byte[] productImg;
         private double productPrice;
         private int quantity;
-
 
         public CartItemDTO() {
         }

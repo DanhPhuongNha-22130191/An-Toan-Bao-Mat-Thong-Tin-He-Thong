@@ -107,25 +107,11 @@ public class CartController extends HttpServlet {
                 throw new IllegalArgumentException("Sản phẩm không tồn tại");
             }
 
+            CartDTO cartDTO = getOrCreateCart(req);
             AccountDTO accountDTO = (AccountDTO) req.getSession().getAttribute("user");
-            if (accountDTO == null) {
-                resp.sendRedirect(req.getContextPath() + "/login.jsp");
-                return;
-            }
-
-            long accountId = accountDTO.getAccountId();
-
-            // Thêm sản phẩm vào giỏ hàng với accountId đúng
-            boolean success = cartService.addToCart(accountId, productId, quantity);
-
-            CartDTO cartDTO = cartService.convertToDTO(accountId);
-            req.getSession().setAttribute("cartDTO", cartDTO);
-
-            if (success) {
-                message = "Thêm vào giỏ hàng thành công";
-            } else {
-                message = "Thêm vào giỏ hàng thất bại";
-            }
+            cartService.insert(cartDTO.add(product, 0,accountDTO.getAccountId(), quantity));
+            req.setAttribute("cartDTO", cartDTO);
+            message = "Thêm vào giỏ hàng thành công";
         } catch (Exception e) {
             message = "Lỗi thêm sản phẩm: " + e.getMessage();
         }
@@ -139,6 +125,8 @@ public class CartController extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/product?action=shop");
         }
     }
+
+
 
 
     private void handleRemoveFromCart(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

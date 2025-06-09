@@ -191,7 +191,7 @@
                                         <td>
                                             <div class="media">
                                                 <div class="d-flex">
-                                                    <img src="${pageContext.servletContext.contextPath}/assests/img/${item.productImg}"
+                                                    <img src="${pageContext.request.contextPath}/admin/productImage?productId=${item.productId}"
                                                          alt="${item.productName}" style="width: 100px;">
                                                 </div>
                                                 <div class="media-body">
