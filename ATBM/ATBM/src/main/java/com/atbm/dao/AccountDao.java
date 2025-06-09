@@ -75,6 +75,7 @@ public class AccountDao implements IDao<Account, Long> {
         String query = "SELECT * FROM Account WHERE username = ?";
         try (ResultSet rs = ExecuteSQLUtil.ExecuteQuery(query, username)) {
             if (rs != null && rs.next()) {
+                System.out.println(rs.getLong("accountId"));
                 return new Account(
                         rs.getLong("accountId"),
                         rs.getString("username"),

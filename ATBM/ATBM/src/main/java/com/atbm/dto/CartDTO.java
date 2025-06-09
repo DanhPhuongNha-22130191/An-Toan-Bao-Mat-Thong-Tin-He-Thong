@@ -28,7 +28,7 @@ public class CartDTO {
         return builder.toString();
     }
 
-    public CartItem add(Product product, long cartItemId, int quantity) {
+    public CartItem add(Product product, long cartItemId,long accountId, int quantity) {
         if (product.getStock() < quantity) {
             throw new IllegalStateException("Số lượng sản phẩm trong kho không đủ");
         }
@@ -55,7 +55,9 @@ public class CartDTO {
             );
             items.add(newItem);
         }
-        return new CartItem(cartItemId, product.getProductId(), quantity);
+        CartItem item = new CartItem(cartItemId, product.getProductId(), quantity);
+        item.setAccountId(accountId);
+        return item;
     }
 
     public CartItem updateQuantity(long productId, int quantity) {
@@ -67,7 +69,7 @@ public class CartDTO {
         if (quantity <= 0) {
             items.remove(item);
         } else {
-            item.setQuantity(quantity);
+            item.setQuantity(quantity+item.getQuantity());
         }
         return new CartItem(item.getCartItemId(), item.getProductId(), item.getQuantity());
     }
@@ -201,15 +203,13 @@ public class CartDTO {
         private long cartItemId;
         private long productId;
         private String productName;
-        private String productImg;
+        private byte[] productImg;
         private double productPrice;
         private int quantity;
 
-        public CartItemDTO(long cartItemId, long productId, String name, byte[] image, double price, int quantity) {
-        }
         public CartItemDTO() {
         }
-        public CartItemDTO(long cartItemId, long productId, String productName, String productImg,
+        public CartItemDTO(long cartItemId, long productId, String productName, byte[] productImg,
                            double productPrice, int quantity) {
             this.cartItemId = cartItemId;
             this.productId = productId;
@@ -247,11 +247,11 @@ public class CartDTO {
             this.productName = productName;
         }
 
-        public String getProductImg() {
+        public byte[] getProductImg() {
             return productImg;
         }
 
-        public void setProductImg(String productImg) {
+        public void setProductImg(byte[] productImg) {
             this.productImg = productImg;
         }
 

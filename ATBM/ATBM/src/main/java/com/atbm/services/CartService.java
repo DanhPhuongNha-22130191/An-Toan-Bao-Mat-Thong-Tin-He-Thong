@@ -55,7 +55,7 @@ public class CartService implements IService<CartItem, Long> {
                 continue;
             }
             try {
-                dto.add(product, cartItem.getCartItemId(), cartItem.getQuantity());
+                dto.add(product, cartItem.getCartItemId(),accountId, cartItem.getQuantity());
                 LOGGER.info("Added CartItem: productId=" + cartItem.getProductId() + ", quantity=" + cartItem.getQuantity() + ", price=" + product.getPrice());
             } catch (IllegalStateException e) {
                 LOGGER.warning("Failed to add CartItem for productId: " + cartItem.getProductId() + ": " + e.getMessage());
@@ -86,7 +86,7 @@ public class CartService implements IService<CartItem, Long> {
                 continue;
             }
             try {
-                dto.add(product, cartItem.getCartItemId(), cartItem.getQuantity());
+                dto.add(product, cartItem.getCartItemId(),cartItem.getAccountId(), cartItem.getQuantity());
                 LOGGER.info("Added CartItem: productId=" + cartItem.getProductId() + ", quantity=" + cartItem.getQuantity() + ", price=" + product.getPrice());
             } catch (IllegalStateException e) {
                 LOGGER.warning("Failed to add CartItem for productId: " + cartItem.getProductId() + " in orderId: " + orderId + ": " + e.getMessage());

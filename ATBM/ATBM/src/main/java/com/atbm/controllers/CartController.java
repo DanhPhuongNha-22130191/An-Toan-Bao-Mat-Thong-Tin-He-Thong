@@ -108,7 +108,8 @@ public class CartController extends HttpServlet {
             }
 
             CartDTO cartDTO = getOrCreateCart(req);
-            cartService.insert(cartDTO.add(product, 0, quantity));
+            AccountDTO accountDTO = (AccountDTO) req.getSession().getAttribute("user");
+            cartService.insert(cartDTO.add(product, 0,accountDTO.getAccountId(), quantity));
             req.setAttribute("cartDTO", cartDTO);
             message = "Thêm vào giỏ hàng thành công";
         } catch (Exception e) {

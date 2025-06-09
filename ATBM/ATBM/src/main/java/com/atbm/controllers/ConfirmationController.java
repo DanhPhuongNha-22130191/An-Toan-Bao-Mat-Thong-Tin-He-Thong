@@ -80,6 +80,6 @@ public class ConfirmationController extends HttpServlet {
             e.printStackTrace();
             req.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
         }
-        resp.sendRedirect(req.getContextPath() + "/user/order/confirmation/" + orderId);
+        resp.sendRedirect(req.getContextPath() + "/user/order/confirmation?orderId=" + orderId);
     }
 }
