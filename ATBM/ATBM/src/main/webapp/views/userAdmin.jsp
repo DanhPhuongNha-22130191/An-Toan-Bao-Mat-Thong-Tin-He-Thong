@@ -12,142 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f6f9;
-        }
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px 0;
-            position: fixed;
-            height: 100%;
-        }
-        .sidebar-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        .sidebar-header h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        .sidebar-header p {
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-        .nav-menu {
-            padding: 0 10px;
-        }
-        .nav-item {
-            margin-bottom: 10px;
-        }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background-color: #34495e;
-        }
-        .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        .badge {
-            background-color: #e74c3c;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            margin-left: auto;
-        }
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            margin-left: 250px;
-            background-color: #f4f6f9;
-        }
-        .table-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        .table-fixed {
-            table-layout: fixed;
-            width: 100%;
-            min-width: 800px;
-        }
-        .table-fixed th, .table-fixed td {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 12px;
-        }
-        .table-fixed th:nth-child(1), .table-fixed td:nth-child(1) { width: 10%; }
-        .table-fixed th:nth-child(2), .table-fixed td:nth-child(2) { width: 20%; }
-        .table-fixed th:nth-child(3), .table-fixed td:nth-child(3) { width: 25%; }
-        .table-fixed th:nth-child(4), .table-fixed td:nth-child(4) { width: 15%; }
-        .table-fixed th:nth-child(5), .table-fixed td:nth-child(5) { width: 30%; }
-        .pagination-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding: 15px 0;
-            border-top: 1px solid #e9ecef;
-        }
-        .animate-slide-left {
-            animation: slide-left 0.3s ease;
-        }
-        .animate-fade-up {
-            animation: fade-up 0.3s ease;
-        }
-        @keyframes slide-left {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        @keyframes fade-up {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: #3498db;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/userAdmin.css">
 </head>
 <body>
 <div class="dashboard">
@@ -161,24 +26,28 @@
         </div>
         <nav class="nav-menu">
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </div>
-            <div class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/users" class="nav-link active">
-                    <i class="fas fa-users"></i> Người dùng
+                    <i class="fas fa-users"></i>
+                    Người dùng
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link">
-                    <i class="fas fa-shopping-cart"></i> Đơn hàng
+                <a href="${pageContext.request.contextPath}/admin/order" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Đơn hàng
                     <span class="badge">5</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/products" class="nav-link">
-                    <i class="fas fa-box"></i> Sản phẩm
+                <a href="${pageContext.request.contextPath}/admin/product" class="nav-link ">
+                    <i class="fas fa-box"></i>
+                    Sản phẩm
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link">
+                    <i class="fas fa-ticket-alt"></i>
+                    Voucher
                 </a>
             </div>
         </nav>

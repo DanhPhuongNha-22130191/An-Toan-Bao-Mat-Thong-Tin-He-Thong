@@ -23,14 +23,5 @@ public class DBConnection {
         }
         return connection;
     }
-    public static void main(String[] args) {
-        System.out.println(123);
-        if(DBConnection.getConnection()!=null) {
-            System.out.println("S");
-        }else {
-            System.out.println("F");
-        }
-    }
-
 }
 

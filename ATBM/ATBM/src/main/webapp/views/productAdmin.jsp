@@ -38,26 +38,26 @@
         <!-- MENU ĐIỀU HƯỚNG CHỨC NĂNG -->
         <nav class="nav-menu">
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/userAdmin.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
                     <i class="fas fa-users"></i>
                     Người dùng
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/orders.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/order" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                     Đơn hàng
                     <span class="badge">5</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/productAdmin.jsp" class="nav-link active">
+                <a href="${pageContext.request.contextPath}/admin/product" class="nav-link active">
                     <i class="fas fa-box"></i>
                     Sản phẩm
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/voucherAdmin.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link">
                     <i class="fas fa-ticket-alt"></i>
                     Voucher
                 </a>
