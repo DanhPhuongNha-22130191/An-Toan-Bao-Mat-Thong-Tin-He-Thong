@@ -10,67 +10,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assests/css/voucherAdmin.css">
-    <style>
-        .alert {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            margin: 16px 0;
-            border-radius: 8px;
-            font-weight: 500;
-            position: relative;
-            border-left: 4px solid;
-        }
-
-        .alert-success {
-            background-color: #f0f9ff;
-            color: #0f766e;
-            border-left-color: #10b981;
-        }
-
-        .alert-error {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border-left-color: #ef4444;
-        }
-
-        .alert i {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .alert-close {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            margin-left: auto;
-            padding: 4px;
-            border-radius: 4px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-
-        .alert-close:hover {
-            opacity: 1;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-    </style>
 </head>
 <body>
 <div class="dashboard">
@@ -86,47 +25,28 @@
 
         <nav class="nav-menu">
             <div class="nav-item">
-                <a href="index.jsp" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                    <span class="badge">2</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/userAdmin.jsp" class="nav-link ">
+                <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
                     <i class="fas fa-users"></i>
                     Người dùng
                 </a>
             </div>
             <div class="nav-item">
-                <a href="orders.jsp" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/order" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                     Đơn hàng
                     <span class="badge">5</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/productAdmin.jsp" class="nav-link ">
+                <a href="${pageContext.request.contextPath}/admin/product" class="nav-link ">
                     <i class="fas fa-box"></i>
                     Sản phẩm
                 </a>
             </div>
             <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/views/voucherAdmin.jsp" class="nav-link active">
+                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link active">
                     <i class="fas fa-ticket-alt"></i>
                     Voucher
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="statistics.jsp" class="nav-link">
-                    <i class="fas fa-chart-bar"></i>
-                    Thống kê
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="settings.jsp" class="nav-link">
-                    <i class="fas fa-cog"></i>
-                    Cài đặt
                 </a>
             </div>
         </nav>
