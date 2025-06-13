@@ -3,10 +3,7 @@ package com.atbm.controllers;
 import com.atbm.dto.AccountDTO;
 import com.atbm.models.Order;
 import com.atbm.models.OrderSecurity;
-import com.atbm.services.AccountService;
-import com.atbm.services.CartService;
-import com.atbm.services.OrderService;
-import com.atbm.services.VoucherService;
+import com.atbm.services.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,6 +19,7 @@ public class ConfirmationController extends HttpServlet {
     private CartService cartService;
     private VoucherService voucherService;
     private AccountService accountService;
+    private OrderSecurityService orderSecurityService;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     String message = "";
 
@@ -31,6 +29,7 @@ public class ConfirmationController extends HttpServlet {
         orderService = new OrderService();
         cartService = new CartService();
         voucherService = new VoucherService();
+        orderSecurityService = new OrderSecurityService();
     }
 
     @Override
@@ -50,6 +49,10 @@ public class ConfirmationController extends HttpServlet {
                 order.setCartDTO(cartService.convertToDTO(orderId));
                 if (order.getCartDTO() != null && order.getVoucherId() != null)
                     order.getCartDTO().setVoucher(voucherService.getById(order.getVoucherId()));
+
+                boolean isTampered = orderSecurityService.isOrderTampered(order);
+                req.setAttribute("isTampered", isTampered);
+
                 req.setAttribute("order", order);
                 req.setAttribute("orderSecurity", orderSecurity);
                 req.setAttribute("orderDetail", order.getOrderDetail());
