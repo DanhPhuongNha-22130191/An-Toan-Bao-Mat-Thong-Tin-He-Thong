@@ -28,14 +28,14 @@ GO
 
 -- Bảng Brand
 CREATE TABLE Brand (
-                       brandId BIGINT IDENTITY(1,1) PRIMARY KEY,
+                       brandId INT IDENTITY(1,1) PRIMARY KEY,
                        name NVARCHAR(100) NOT NULL
 );
 GO
 
 -- Bảng Strap
 CREATE TABLE Strap (
-                       strapId BIGINT IDENTITY(1,1) PRIMARY KEY,
+                       strapId INT IDENTITY(1,1) PRIMARY KEY,
                        color NVARCHAR(50),
                        material NVARCHAR(100),
                        length DECIMAL(5,2)
@@ -44,7 +44,7 @@ GO
 
 -- Bảng Product
 CREATE TABLE Product (
-                         productId BIGINT IDENTITY(1,1) PRIMARY KEY,
+                         productId INT IDENTITY(1,1) PRIMARY KEY,
                          name NVARCHAR(100) NOT NULL,
                          price DECIMAL(10,2) NOT NULL,
                          description NVARCHAR(MAX),
@@ -53,8 +53,8 @@ CREATE TABLE Product (
                          haveTrending BIT NOT NULL DEFAULT 0,
                          size DECIMAL(5,2) NULL,
                          waterResistance BIT NOT NULL DEFAULT 0,
-                         brandId BIGINT NULL,
-                         strapId BIGINT NULL,
+                         brandId INT NULL,
+                         strapId INT NULL,
                          status NVARCHAR(50) NOT NULL DEFAULT N'Còn hàng',
                          isDeleted BIT NOT NULL DEFAULT 0,
                          CONSTRAINT FK_Product_Brand FOREIGN KEY (brandId) REFERENCES Brand(brandId),
@@ -84,10 +84,11 @@ GO
 -- Bảng Voucher
 CREATE TABLE Voucher (
                          voucherId INT IDENTITY(1,1) PRIMARY KEY,
-                         code NVARCHAR(50) NOT NULL UNIQUE,
-                         description NVARCHAR(255),
-                         discountAmount DECIMAL(10,2) NOT NULL,
-                         isUsed BIT NOT NULL DEFAULT 0
+                         code NVARCHAR(50) UNIQUE NOT NULL,
+                         expirationTime DATE NOT NULL,
+                         percentDecrease FLOAT NOT NULL,
+                         name NVARCHAR(100) NOT NULL,
+                         quantity INT NOT NULL
 );
 GO
 
@@ -96,9 +97,10 @@ CREATE TABLE [Order] (
                          orderId INT IDENTITY(1,1) PRIMARY KEY,
     accountId INT NOT NULL,
     orderDate DATETIME NOT NULL DEFAULT GETDATE(),
-    totalAmount DECIMAL(10,2) NOT NULL,
     status NVARCHAR(50) NOT NULL DEFAULT N'Mới tạo',
     voucherId INT NULL,
+    shipping DECIMAL(10, 2) NOT NULL,
+    paymentMethod NVARCHAR(50) NOT NULL
     CONSTRAINT FK_Order_Account FOREIGN KEY (accountId) REFERENCES Account(accountId),
     CONSTRAINT FK_Order_Voucher FOREIGN KEY (voucherId) REFERENCES Voucher(voucherId)
     );
@@ -106,41 +108,43 @@ GO
 
 -- Bảng OrderSecurity
 CREATE TABLE OrderSecurity (
-                               orderSecurityId INT IDENTITY(1,1) PRIMARY KEY,
-                               orderId INT NOT NULL,
-                               token NVARCHAR(255) NOT NULL,
-                               isUsed BIT NOT NULL DEFAULT 0,
-                               CONSTRAINT FK_OrderSecurity_Order FOREIGN KEY (orderId) REFERENCES [Order](orderId)
+                               orderId INT PRIMARY KEY,
+                               signature NVARCHAR(MAX) NOT NULL,
+                               publicKey NVARCHAR(MAX) NOT NULL,
+                               FOREIGN KEY (orderId) REFERENCES [Order](orderId)
 );
 GO
 
 -- Bảng CartItem
 CREATE TABLE CartItem (
                           cartItemId INT IDENTITY(1,1) PRIMARY KEY,
-                          accountId INT NOT NULL,
-                          productId BIGINT NOT NULL,
+                          accountId INT,
+                          productId INT,
+                          orderId INT NULL,
                           quantity INT NOT NULL,
-                          CONSTRAINT FK_CartItem_Account FOREIGN KEY (accountId) REFERENCES Account(accountId),
-                          CONSTRAINT FK_CartItem_Product FOREIGN KEY (productId) REFERENCES Product(productId)
+                          FOREIGN KEY (accountId) REFERENCES Account(accountId),
+                          FOREIGN KEY (productId) REFERENCES Product(productId),
+                          FOREIGN KEY (orderId) REFERENCES [Order](orderId)
 );
 GO
 
 -- Bảng OrderDetail
 CREATE TABLE OrderDetail (
                              orderDetailId INT IDENTITY(1,1) PRIMARY KEY,
-                             orderId INT NOT NULL,
-                             productId BIGINT NOT NULL,
-                             quantity INT NOT NULL,
-                             price DECIMAL(10,2) NOT NULL,
-                             CONSTRAINT FK_OrderDetail_Order FOREIGN KEY (orderId) REFERENCES [Order](orderId),
-                             CONSTRAINT FK_OrderDetail_Product FOREIGN KEY (productId) REFERENCES Product(productId)
+                             orderId INT,
+                             fullName NVARCHAR(100) NOT NULL,
+                             phone NVARCHAR(20) NOT NULL,
+                             email NVARCHAR(100) NOT NULL,
+                             address NVARCHAR(255) NOT NULL,
+                             orderNote NVARCHAR(MAX),
+                             FOREIGN KEY (orderId) REFERENCES [Order](orderId)
 );
 GO
 
 -- Bảng ProductSpecification
 CREATE TABLE ProductSpecification (
                                       specificationId INT IDENTITY(1,1) PRIMARY KEY,
-                                      productId BIGINT NOT NULL,
+                                      productId INT NOT NULL,
                                       keySpec NVARCHAR(100) NOT NULL,
                                       valueSpec NVARCHAR(255) NOT NULL,
                                       CONSTRAINT FK_ProductSpecification_Product FOREIGN KEY (productId) REFERENCES Product(productId)
@@ -201,50 +205,6 @@ INSERT INTO Account (username, password, email, publicKeyActive, genderId) VALUE
 (N'robert_johnson', N'hashed_password_3', N'robert.johnson@example.com', NULL, 1),
 (N'susan_wilson', N'hashed_password_4', N'susan.wilson@example.com', NULL, 2),
 (N'mike_brown', N'hashed_password_5', N'mike.brown@example.com', NULL, 1);
-GO
-
--- Insert Vouchers
-INSERT INTO Voucher (code, description, discountAmount, isUsed) VALUES
-(N'WELCOME10', N'Welcome Discount', 10.00, 0),
-(N'SUMMER25', N'Summer Sale', 25.00, 0),
-(N'VIP15', N'VIP Discount', 15.00, 0),
-(N'FLASH50', N'Flash Sale', 50.00, 0);
-GO
-
--- Insert Orders
-INSERT INTO [Order] (accountId, orderDate, totalAmount, status, voucherId) VALUES
-(1, '2025-05-30', 9650.00, N'Pending', 1),
-(2, '2025-05-29', 5500.00, N'Shipped', NULL),
-(3, '2025-05-28', 450.00, N'Cancelled', 2),
-(1, '2025-05-27', 25000.00, N'Completed', NULL),
-(4, '2025-05-26', 150.00, N'Pending', 3);
-GO
-
--- Insert OrderSecurity
-INSERT INTO OrderSecurity (orderId, token, isUsed) VALUES
-(1, N'sample_token_1', 0),
-(2, N'sample_token_2', 0),
-(3, N'sample_token_3', 0),
-(4, N'sample_token_4', 0),
-(5, N'sample_token_5', 0);
-GO
-
--- Insert CartItems
-INSERT INTO CartItem (accountId, productId, quantity) VALUES
-(1, 1, 1),
-(1, 3, 2),
-(2, 2, 1),
-(3, 4, 1),
-(4, 6, 3);
-GO
-
--- Insert OrderDetails
-INSERT INTO OrderDetail (orderId, productId, quantity, price) VALUES
-(1, 1, 1, 9500.00),
-(1, 3, 2, 450.00),
-(2, 2, 1, 5500.00),
-(3, 4, 1, 25000.00),
-(5, 6, 3, 150.00);
 GO
 
 -- Insert ProductSpecifications

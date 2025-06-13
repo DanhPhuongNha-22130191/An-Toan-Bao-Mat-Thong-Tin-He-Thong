@@ -1,22 +1,22 @@
 /**
- * Tạo và cấu hình modal cho form thêm/sửa sản phẩm
- * @param {string} containerId - ID của container chứa form
- * @param {string} formType - Loại form ('add' hoặc 'edit')
- * @returns {Object} Đối tượng chứa modalOverlay, form và closeButton
+ * TẠO VÀ CẤU HÌNH MODAL CHO FORM THÊM/CHỈNH SỬA SẢN PHẨM
+ * @param {string} containerId - ID CỦA CONTAINER CHỨA FORM
+ * @param {string} formType - LOẠI FORM ('add' HOẶC 'edit')
+ * @returns {Object} ĐỐI TƯỢNG CHỨA modalOverlay, form VÀ closeButton
  */
 function createModal(containerId, formType) {
     const container = document.getElementById(containerId);
     const form = container.querySelector('form');
 
-    // Tạo overlay nền mờ
+    // TẠO LỚP NỀN MỜ PHỦ TOÀN MÀN HÌNH
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
 
-    // Tạo nội dung modal
+    // TẠO NỘI DUNG CỦA MODAL
     const modalContent = document.createElement('div');
     modalContent.className = 'modal-content';
 
-    // Tạo nút đóng modal
+    // TẠO NÚT ĐÓNG MODAL
     const closeButton = document.createElement('button');
     closeButton.className = 'close-modal';
     closeButton.innerHTML = '×';
@@ -24,7 +24,7 @@ function createModal(containerId, formType) {
     closeButton.style.top = '10px';
     closeButton.style.right = '15px';
 
-    // Gắn form vào modal content
+    // ĐƯA FORM VÀO NỘI DUNG MODAL
     modalContent.appendChild(closeButton);
     modalContent.appendChild(form);
     modalOverlay.appendChild(modalContent);
@@ -34,25 +34,25 @@ function createModal(containerId, formType) {
 }
 
 /**
- * Thiết lập sự kiện đóng modal
- * @param {HTMLElement} modalOverlay - Phần tử overlay của modal
- * @param {HTMLElement} closeButton - Nút đóng modal
- * @param {string} cancelButtonId - ID của nút hủy (nếu có)
+ * THIẾT LẬP SỰ KIỆN ĐÓNG MODAL
+ * @param {HTMLElement} modalOverlay - LỚP NỀN MODAL
+ * @param {HTMLElement} closeButton - NÚT ĐÓNG MODAL
+ * @param {string} cancelButtonId - ID CỦA NÚT "HỦY" (NẾU CÓ)
  */
 function setupCloseEvents(modalOverlay, closeButton, cancelButtonId) {
-    // Đóng modal khi nhấn nút đóng
+    // ĐÓNG MODAL KHI NHẤN NÚT ĐÓNG
     closeButton.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
     });
 
-    // Đóng modal khi nhấn bên ngoài
+    // ĐÓNG MODAL KHI NHẤN VÀO VÙNG NỀN NGOÀI MODAL
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
             modalOverlay.classList.remove('active');
         }
     });
 
-    // Đóng modal khi nhấn nút hủy (nếu có)
+    // ĐÓNG MODAL KHI NHẤN NÚT HỦY (NẾU TỒN TẠI)
     if (cancelButtonId) {
         document.getElementById(cancelButtonId).addEventListener('click', () => {
             modalOverlay.classList.remove('active');
@@ -61,9 +61,9 @@ function setupCloseEvents(modalOverlay, closeButton, cancelButtonId) {
 }
 
 /**
- * Thiết lập preview ảnh khi chọn file
- * @param {HTMLInputElement} inputElement - Input file
- * @param {string} previewId - ID của phần tử preview ảnh
+ * HIỂN THỊ ẢNH XEM TRƯỚC KHI CHỌN FILE ẢNH
+ * @param {HTMLInputElement} inputElement - INPUT CHỌN FILE
+ * @param {string} previewId - ID CỦA PHẦN TỬ IMG HIỂN THỊ PREVIEW
  */
 function setupImagePreview(inputElement, previewId) {
     inputElement.addEventListener('change', function () {
@@ -81,9 +81,9 @@ function setupImagePreview(inputElement, previewId) {
 }
 
 /**
- * Gán dữ liệu vào form chỉnh sửa
- * @param {HTMLFormElement} form - Form chỉnh sửa
- * @param {Object} dataset - Dữ liệu sản phẩm
+ * ĐỔ DỮ LIỆU SẢN PHẨM VÀO FORM CHỈNH SỬA
+ * @param {HTMLFormElement} form - FORM CHỈNH SỬA
+ * @param {Object} dataset - DỮ LIỆU SẢN PHẨM TỪ data-* ATTRIBUTE
  */
 function populateEditForm(form, dataset) {
     form.querySelector('input[name="productId"]').value = dataset.productId;
@@ -94,7 +94,7 @@ function populateEditForm(form, dataset) {
     form.querySelector('#brandId').value = dataset.brandId;
     form.querySelector('#status').value = dataset.status;
 
-    // Xử lý ảnh hiện tại
+    // HIỂN THỊ ẢNH HIỆN TẠI (NẾU CÓ)
     const preview = form.querySelector('#currentImagePreview');
     if (dataset.image) {
         preview.src = dataset.image;
@@ -103,15 +103,15 @@ function populateEditForm(form, dataset) {
         preview.style.display = 'none';
     }
 
-    // Reset preview ảnh mới
+    // RESET ẢNH PREVIEW MỚI
     const newPreview = document.getElementById('newImagePreview');
     newPreview.src = '';
     newPreview.style.display = 'none';
 }
 
 /**
- * Xác nhận xóa sản phẩm
- * @param {string} productId - ID của sản phẩm cần xóa
+ * HÀM XÁC NHẬN VÀ THỰC HIỆN XOÁ SẢN PHẨM
+ * @param {string} productId - ID SẢN PHẨM CẦN XOÁ
  */
 function confirmDelete(productId) {
     if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
@@ -119,28 +119,28 @@ function confirmDelete(productId) {
     }
 }
 
-// Khởi tạo khi DOM được tải
+// KHI DOM ĐÃ SẴN SÀNG
 document.addEventListener('DOMContentLoaded', () => {
-    // Khởi tạo modal thêm sản phẩm
+    // KHỞI TẠO MODAL THÊM SẢN PHẨM
     const addModal = createModal('addFormContainer', 'add');
     setupCloseEvents(addModal.modalOverlay, addModal.closeButton, 'cancelAddForm');
 
-    // Gắn sự kiện mở modal thêm sản phẩm
+    // MỞ MODAL THÊM KHI CLICK NÚT "THÊM"
     document.querySelector('button.btn-primary').addEventListener('click', () => {
         addModal.modalOverlay.classList.add('active');
     });
 
-    // Thiết lập preview ảnh thêm sản phẩm
+    // THIẾT LẬP XEM TRƯỚC ẢNH KHI THÊM
     setupImagePreview(
         document.getElementById('add-image'),
         'addImagePreview'
     );
 
-    // Khởi tạo modal chỉnh sửa sản phẩm
+    // KHỞI TẠO MODAL CHỈNH SỬA SẢN PHẨM
     const editModal = createModal('editFormContainer', 'edit');
     setupCloseEvents(editModal.modalOverlay, editModal.closeButton);
 
-    // Thiết lập sự kiện cho các nút chỉnh sửa
+    // GẮN SỰ KIỆN CHO NÚT "CHỈNH SỬA"
     document.querySelectorAll('button.btn-warning').forEach(button => {
         button.addEventListener('click', () => {
             populateEditForm(editModal.form, button.dataset);
@@ -148,12 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Thiết lập preview ảnh chỉnh sửa
+    // THIẾT LẬP XEM TRƯỚC ẢNH KHI CHỈNH SỬA
     setupImagePreview(
         editModal.form.querySelector('#image'),
         'newImagePreview'
     );
 });
 
-// Context path từ server
+// CONTEXT PATH LẤY TỪ SERVER (JSP)
 const contextPath = '<%= request.getContextPath() %>';

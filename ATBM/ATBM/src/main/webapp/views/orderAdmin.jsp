@@ -34,20 +34,20 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link active">
+                <a href="${pageContext.request.contextPath}/admin/order" class="nav-link active">
                     <i class="fas fa-shopping-cart"></i>
                     Đơn hàng
-                    <span class="badge">12</span>
+                    <span class="badge">5</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/product" class="nav-link ">
                     <i class="fas fa-box"></i>
                     Sản phẩm
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link">
                     <i class="fas fa-ticket-alt"></i>
                     Voucher
                 </a>
@@ -67,29 +67,6 @@
                     </div>
                     <div class="user-avatar">AD</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="stats-grid animate-fade-up">
-            <div class="stat-card">
-                <i class="fas fa-shopping-cart"></i>
-                <h3 id="totalOrders">245</h3>
-                <p>Tổng đơn hàng</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-clock"></i>
-                <h3 id="pendingOrders">18</h3>
-                <p>Chờ xử lý</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-check-circle"></i>
-                <h3 id="completedOrders">198</h3>
-                <p>Hoàn thành</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-dollar-sign"></i>
-                <h3 id="totalRevenue">2.4B</h3>
-                <p>Doanh thu (₫)</p>
             </div>
         </div>
 
@@ -138,9 +115,9 @@
                         <tr>
                             <td>${order.orderId}</td>
                             <td>${order.orderDetail.fullName}</td>
-                            <td><fmt:formatDate value="${order.orderDateAsDate}" pattern="dd-MM-yyyy HH:mm" /></td>
+                            <td><fmt:formatDate value="${order.orderDateAsDate}" pattern="dd-MM-yyyy HH:mm"/></td>
                             <td><span class="payment-method">${order.paymentMethod}</span></td>
-                            <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫" /></td>
+                            <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="₫"/></td>
                             <td>
                                 <span class="status ${order.status}">
                                     <c:choose>
@@ -174,7 +151,7 @@
         <span class="close" onclick="closeStatusModal()">&times;</span>
         <h3>Cập nhật trạng thái đơn hàng</h3>
         <form action="${pageContext.request.contextPath}/admin/updateState" method="post">
-            <input type="hidden" name="orderId" id="modalOrderId" />
+            <input type="hidden" name="orderId" id="modalOrderId"/>
             <label for="statusSelect">Trạng thái:</label>
             <select name="status" id="statusSelect" required>
                 <option value="PENDING">Chờ xử lý</option>
@@ -192,24 +169,40 @@
 
 <style>
     .modal {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         background-color: rgba(0, 0, 0, 0.4);
-        z-index: 9999; display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .modal-content {
-        background: #fff; padding: 20px; border-radius: 8px;
-        width: 300px; position: relative;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        position: relative;
     }
 
     .close {
-        position: absolute; top: 10px; right: 15px; cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
         font-size: 20px;
     }
 
     .btn-success {
-        background-color: #28a745; color: white;
-        padding: 8px 16px; border: none; border-radius: 4px;
+        background-color: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
         cursor: pointer;
     }
 </style>
@@ -226,7 +219,7 @@
     }
 
     // Close modal when clicking outside
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         const modal = document.getElementById("statusModal");
         if (event.target === modal) {
             closeStatusModal();
