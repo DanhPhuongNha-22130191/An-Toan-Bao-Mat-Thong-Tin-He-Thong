@@ -28,7 +28,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="#">Trang Cá Nhân</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/product/category">Trang Chủ</a>
         <button class="btn btn-light" onclick="goBack()">
             <i class="bi bi-arrow-left"></i> Quay lại
         </button>
@@ -95,21 +95,20 @@
                 <h4 class="text-primary mb-4">Lịch sử mua hàng</h4>
                 <c:choose>
                     <c:when test="${orders != null && not empty orders}">
-                        <c:forEach var="order" items="${orders}">
-                            <div class="order-item mb-3 p-3 border rounded" onclick="showOrderDetails(
-                                    '${order.orderId}',
-                                    '${order.orderDate}',
-                                    '${order.totalAmount}',
-                                    '${order.paymentMethod}',
-                                    '${order.status}',
-                                    '${order.orderDetail != null ? order.orderDetail.fullName : ''}',
-                                    '${order.orderDetail != null ? order.orderDetail.phone : ''}',
-                                    '${order.orderDetail != null ? order.orderDetail.email : ''}',
-                                    '${order.orderDetail != null ? order.orderDetail.address : ''}',
-                                    '${order.orderDetail != null ? order.orderDetail.orderNote : ''}'
-                                    )">
-                                <h5>Đơn hàng #${order.orderId}</h5>
-                                <p><strong>Account ID:</strong> ${order.accountId}</p>
+                        <c:forEach var="order" items="${orders}" varStatus="status">
+                            <div class="order-item mb-3 p-3 border rounded">
+                                <h5>
+                                    <a href="${pageContext.request.contextPath}/user/order/confirmation?orderId=${order.orderId}">
+                                        Đơn hàng #${order.orderId}
+                                    </a>
+                                    <c:if test="${tamperStatuses[status.index]}">
+                            <span class="badge bg-danger ms-2">
+                                <i class="fas fa-exclamation-triangle"></i> Đã bị thay đổi
+                            </span>
+                                    </c:if>
+                                </h5>
+                                <p><strong>Ngày đặt:</strong> ${order.orderDate}</p>
+                                <p><strong>Tổng tiền:</strong> ${order.totalAmount}đ</p>
                                 <p><strong>Trạng thái:</strong> ${order.status}</p>
                             </div>
                         </c:forEach>
@@ -189,29 +188,6 @@
     </div>
 </div>
 
-<!-- Modal chi tiết đơn hàng -->
-<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="modalOrderDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
-                <p><strong>Ngày mua:</strong> <span id="modalOrderDate"></span></p>
-                <p><strong>Tổng tiền:</strong> <span id="modalTotalAmount"></span>đ</p>
-                <p><strong>Phương thức thanh toán:</strong> <span id="modalPaymentMethod"></span></p>
-                <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
-                <p><strong>Họ tên:</strong> <span id="modalFullName"></span></p>
-                <p><strong>Số điện thoại:</strong> <span id="modalPhone"></span></p>
-                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-                <p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
-                <p><strong>Ghi chú:</strong> <span id="modalOrderNote"></span></p>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="${pageContext.request.contextPath}/assets/vendors/jquery/jquery-3.2.1.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>

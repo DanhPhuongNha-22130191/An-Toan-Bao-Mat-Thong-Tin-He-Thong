@@ -490,8 +490,7 @@
                             <c:choose>
                                 <c:when test="${not empty orderSecurity}">
                                     <div>Chữ ký số:</div>
-                                    <input type="text" value="${orderSecurity.signature}" readonly
-                                           class="signature-image"/>
+                                    <input type="text" value="${orderSecurity.signature}" readonly class="signature-image"/>
                                 </c:when>
                                 <c:otherwise>
                                     <div class="hash-display">
@@ -513,6 +512,12 @@
                                 </c:otherwise>
                             </c:choose>
                         </div>
+                        <!-- Thêm cảnh báo đơn hàng bị thay đổi -->
+                        <c:if test="${isTampered}">
+                            <div class="alert alert-danger" style="margin-top: 15px;">
+                                <i class="fas fa-exclamation-triangle"></i> Đơn hàng đã bị thay đổi so với chữ ký đã ký!
+                            </div>
+                        </c:if>
                     </div>
                 </div>
                 <div class="col-lg-4" style="flex: 1 1 33%; max-width: 33.3333%;">
