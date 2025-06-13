@@ -443,6 +443,11 @@ public class AccountController extends HttpServlet {
                 LOGGER.warning("getOrdersByAccountId returned null for Account ID: " + user.getAccountId());
                 orders = new ArrayList<>();
             }
+            List<Boolean> tamperStatuses = new ArrayList<>();
+            for (Order order : orders) {
+                tamperStatuses.add(orderSecurityService.isOrderTampered(order));
+            }
+            req.setAttribute("tamperStatuses", tamperStatuses);
 
             LOGGER.info("Retrieved " + orders.size() + " orders for Account ID: " + user.getAccountId());
 
