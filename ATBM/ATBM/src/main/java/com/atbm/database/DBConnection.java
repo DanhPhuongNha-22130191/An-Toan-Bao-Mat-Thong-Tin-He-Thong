@@ -1,9 +1,10 @@
 package com.atbm.database;
 
+
+import com.atbm.utils.LogUtils;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-
 
 public class DBConnection {
     static Connection connection;
@@ -15,13 +16,11 @@ public class DBConnection {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("SQL Server JDBC Driver not found.");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return connection;
+        } catch (Exception e) {
+            LogUtils.debug(DBConnection.class, "Lỗi khi kết nối với cơ sở dữ liệu");
+            throw new RuntimeException("Lỗi khi kết nối với cơ sở dữ liệu");
         }
-        return connection;
     }
 }
 
