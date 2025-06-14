@@ -2,6 +2,7 @@ package com.atbm.controllers.auth;
 
 import com.atbm.models.wrapper.request.RegisterRequest;
 import com.atbm.services.AccountService;
+import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.utils.RecaptchaUtil;
 import jakarta.servlet.ServletException;
@@ -36,7 +37,7 @@ public class RegisterController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+        HttpUtils.dispatcher(req, resp, "/views/register.jsp");
     }
 
     /**
@@ -50,8 +51,8 @@ public class RegisterController extends HttpServlet {
         // Kiểm tra người dùng có vượt qua reCAPTCHA hay không
         boolean isRecaptchaValid = RecaptchaUtil.verify(recaptchaResponse);
         if (!isRecaptchaValid) {
-            req.setAttribute("error", "Vui lòng xác nhận bạn không phải là robot.");
-            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
+            HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;
         }
 
@@ -63,8 +64,8 @@ public class RegisterController extends HttpServlet {
         // Kiểm tra đầu vào hợp lệ
         if (username == null || email == null || password == null ||
                 username.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
-            req.setAttribute("error", "Vui lòng nhập đầy đủ thông tin đăng ký.");
-            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ thông tin đăng ký.");
+            HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;
         }
 
@@ -80,13 +81,13 @@ public class RegisterController extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/login");
             } else {
                 // Nếu thất bại (ví dụ tài khoản hoặc email đã tồn tại), hiển thị thông báo lỗi
-                req.setAttribute("error", "Đăng ký thất bại. Tên người dùng hoặc email đã tồn tại.");
-                req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+                HttpUtils.setAttribute(req, "error", "Đăng ký thất bại. Tên người dùng hoặc email đã tồn tại.");
+                HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             }
         } catch (Exception e) {
             LogUtils.debug(RegisterController.class, "Lỗi khi đăng ký: " + e.getMessage());
-            req.setAttribute("error", "Lỗi khi đăng ký: " + e.getMessage());
-            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Lỗi khi đăng ký: " + e.getMessage());
+            HttpUtils.dispatcher(req, resp, "/views/register.jsp");
         }
     }
 }

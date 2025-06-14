@@ -3,6 +3,7 @@ package com.atbm.controllers.auth;
 import com.atbm.models.wrapper.request.LoginRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
+import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.utils.RecaptchaUtil;
 import jakarta.servlet.ServletException;
@@ -38,7 +39,7 @@ public class LoginController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+        HttpUtils.dispatcher(req, resp, "/views/login.jsp");
     }
 
     /**
@@ -51,8 +52,8 @@ public class LoginController extends HttpServlet {
         boolean isRecaptchaValid = RecaptchaUtil.verify(recaptchaResponse);
 
         if (!isRecaptchaValid) {
-            req.setAttribute("error", "Vui lòng xác nhận bạn không phải là robot.");
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
         }
 
@@ -62,8 +63,8 @@ public class LoginController extends HttpServlet {
 
         // Kiểm tra xem người dùng đã nhập đầy đủ chưa
         if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
-            req.setAttribute("error", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
         }
 
@@ -79,13 +80,13 @@ public class LoginController extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/product/category");
             } else {
                 // Nếu thông tin đăng nhập không đúng
-                req.setAttribute("error", "Sai tài khoản hoặc mật khẩu.");
-                req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+                HttpUtils.setAttribute(req, "error", "Sai tài khoản hoặc mật khẩu.");
+                HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             }
         } catch (Exception e) {
             LogUtils.debug(LoginController.class, "Lỗi khi đăng nhập: " + e.getMessage());
-            req.setAttribute("error", "Lỗi khi đăng nhập: " + e.getMessage());
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Lỗi khi đăng nhập: " + e.getMessage());
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
         }
     }
 }

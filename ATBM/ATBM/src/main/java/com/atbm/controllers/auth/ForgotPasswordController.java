@@ -3,6 +3,7 @@ package com.atbm.controllers.auth;
 import com.atbm.models.entity.Account;
 import com.atbm.services.AccountService;
 import com.atbm.utils.EmailUtil;
+import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.utils.RecaptchaUtil;
 import jakarta.servlet.ServletException;
@@ -39,8 +40,8 @@ public class ForgotPasswordController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("showForgotPasswordModal", true);
-        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+        HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
+        HttpUtils.dispatcher(req, resp, "/views/login.jsp");
     }
 
     /**
@@ -52,18 +53,18 @@ public class ForgotPasswordController extends HttpServlet {
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
         boolean isRecaptchaValid = RecaptchaUtil.verify(recaptchaResponse);
         if (!isRecaptchaValid) {
-            req.setAttribute("error", "Vui lòng xác nhận bạn không phải là robot.");
-            req.setAttribute("showForgotPasswordModal", true);
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
+            HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
         }
 
         // Lấy email người dùng nhập
         String email = req.getParameter("email");
         if (email == null || email.trim().isEmpty()) {
-            req.setAttribute("error", "Vui lòng nhập email.");
-            req.setAttribute("showForgotPasswordModal", true);
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Vui lòng nhập email.");
+            HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
         }
 
@@ -82,25 +83,25 @@ public class ForgotPasswordController extends HttpServlet {
                             "Trân trọng,\nWatchShop";
                     boolean emailSent = emailUtil.sendEmail(email, "Khôi phục mật khẩu", emailContent);
                     if (emailSent) {
-                        req.setAttribute("message", "Mật khẩu mới đã được gửi đến email của bạn.");
+                        HttpUtils.setAttribute(req, "message", "Mật khẩu mới đã được gửi đến email của bạn.");
                     } else {
-                        req.setAttribute("error", "Gửi email thất bại. Vui lòng thử lại sau.");
-                        req.setAttribute("showForgotPasswordModal", true);
+                        HttpUtils.setAttribute(req, "error", "Gửi email thất bại. Vui lòng thử lại sau.");
+                        HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
                     }
                 } else {
-                    req.setAttribute("error", "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
-                    req.setAttribute("showForgotPasswordModal", true);
+                    HttpUtils.setAttribute(req, "error", "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
+                    HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
                 }
             } else {
-                req.setAttribute("error", "Email không tồn tại trong hệ thống.");
-                req.setAttribute("showForgotPasswordModal", true);
+                HttpUtils.setAttribute(req, "error", "Email không tồn tại trong hệ thống.");
+                HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
             }
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
         } catch (Exception e) {
             LogUtils.debug(ForgotPasswordController.class, "Lỗi khi xử lý yêu cầu khôi phục mật khẩu: " + e.getMessage());
-            req.setAttribute("error", "Lỗi khi gửi yêu cầu khôi phục: " + e.getMessage());
-            req.setAttribute("showForgotPasswordModal", true);
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            HttpUtils.setAttribute(req, "error", "Lỗi khi gửi yêu cầu khôi phục: " + e.getMessage());
+            HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
+            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
         }
     }
 }
