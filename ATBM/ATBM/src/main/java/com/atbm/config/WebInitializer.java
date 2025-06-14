@@ -5,9 +5,11 @@ import com.atbm.filter.AuthorizationFilter;
 import com.atbm.filter.EncodingFilter;
 import com.atbm.filter.ExceptionHandlerFilter;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebListener;
 
 import java.util.EnumSet;
 
+@WebListener
 public class WebInitializer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
