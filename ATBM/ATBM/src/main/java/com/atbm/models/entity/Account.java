@@ -7,31 +7,29 @@ public class Account {
     private String username;
     private String password;
     private String email;
-    private String publicKey;
+    private String publicKeyActive;
     private Role role;
-
-    /**
-     * Constructor dùng tạo tài khoản
-     */
-    public Account(String email, String password, String username) {
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.role = Role.USER;
-    }
 
     public Account() {
     }
-
+    /**
+     * Constructor dùng tạo tài khoản
+     */
+    public Account(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = Role.USER;
+    }
     /**
      * Constructor dùng lấy dữ liệu
      */
-    public Account(long accountId, String username, String password, String email, String publicKey, Role role) {
+    public Account(long accountId, String username, String password, String email, String publicKeyActive, Role role) {
         this.accountId = accountId;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.publicKey = publicKey;
+        this.publicKeyActive = publicKeyActive;
         this.role = role;
     }
 
@@ -67,12 +65,12 @@ public class Account {
         this.email = email;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getPublicKeyActive() {
+        return publicKeyActive;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setPublicKeyActive(String publicKeyActive) {
+        this.publicKeyActive = publicKeyActive;
     }
 
     public Role getRole() {
