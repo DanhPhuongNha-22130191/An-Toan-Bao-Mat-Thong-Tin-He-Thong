@@ -1,4 +1,6 @@
-import gui.KeyManagementGUI;
+package app;
+
+import gui.GUI;
 
 import javax.swing.*;
 
@@ -7,7 +9,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                new KeyManagementGUI().setVisible(true);
+                new GUI().setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }

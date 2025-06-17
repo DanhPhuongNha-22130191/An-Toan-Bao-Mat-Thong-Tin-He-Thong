@@ -2,7 +2,7 @@ package util;
 
 import java.util.Base64;
 
-public class Base64Util {
+public class Base64Utils {
 
     public static String encode(String data) {
         return Base64.getEncoder().encodeToString(data.getBytes());
