@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImpl implements ProductDao {
+    private final String TABLE_NAME = "Product";
     private final String PRODUCT_ID = "productId";
     private final String NAME = "name";
     private final String PRICE = "price";
@@ -28,7 +29,7 @@ public class ProductDaoImpl implements ProductDao {
     public Product getProductById(long productId) {
         String query = "SELECT * FROM Product WHERE productId = ?";
         try {
-            return createProduct(ExecuteSQLUtils.ExecuteQuery(query, productId));
+            return createProduct(ExecuteSQLUtils.executeQuery(query, productId));
         } catch (SQLException e) {
             LogUtils.debug(ProductDaoImpl.class, e.getMessage());
             throw new RuntimeException("Lấy Product lỗi");
@@ -38,7 +39,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<Product> getProducts() {
         String query = "SELECT * FROM Product WHERE isDeleted = false ORDER BY price ";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
             List<Product> products = new ArrayList<>();
             while (rs.next()) {
                 products.add(createProduct(rs));
@@ -52,7 +53,8 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean insert(Product product) {
-        String query = "INSERT INTO Product (name, price, description, stock, image, isTrending, size, waterResistance, brandId, strapId, isDeleted) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        List<String> fieldNames = List.of(PRODUCT_ID, NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
         return ExecuteSQLUtils.executeUpdate(
                 query,
                 product.getName(),
@@ -71,7 +73,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean update(Product product) {
-        String query = "UPDATE Product SET name=?, price=?, description=?, stock=?, image=?, isTrending=?, size=?, waterResistance=?, brandId=?, strapId=?, isDeleted=? WHERE productId=?";
+        List<String> updateFields = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> conditionFields = List.of(PRODUCT_ID);
+        String query = ExecuteSQLUtils.createUpdateQuery(TABLE_NAME, updateFields, conditionFields);
         return ExecuteSQLUtils.executeUpdate(
                 query,
                 product.getName(),

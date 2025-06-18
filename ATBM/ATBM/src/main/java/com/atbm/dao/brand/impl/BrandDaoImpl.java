@@ -16,7 +16,7 @@ public class BrandDaoImpl implements BrandDao {
     public Brand getBrandById(long brandId) {
         String query = "SELECT * FROM Brand WHERE brandId = ?";
         try {
-            return createBrand(ExecuteSQLUtils.ExecuteQuery(query, brandId));
+            return createBrand(ExecuteSQLUtils.executeQuery(query, brandId));
         } catch (SQLException e) {
             LogUtils.debug(BrandDaoImpl.class, e.getMessage());
             throw new RuntimeException("Lấy brand lỗi");

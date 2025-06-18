@@ -18,7 +18,7 @@ public class StrapDaoImpl implements StrapDao {
     public Strap getStrapById(long strapId) {
         String query = "SELECT * FROM Strap WHERE strapId = ?";
         try {
-            return createStrap(ExecuteSQLUtils.ExecuteQuery(query, strapId));
+            return createStrap(ExecuteSQLUtils.executeQuery(query, strapId));
         } catch (SQLException e) {
             LogUtils.debug(StrapDaoImpl.class, e.getMessage());
             throw new RuntimeException("Lấy Strap lỗi");

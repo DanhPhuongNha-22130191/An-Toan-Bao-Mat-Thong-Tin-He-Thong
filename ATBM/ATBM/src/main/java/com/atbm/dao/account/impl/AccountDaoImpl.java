@@ -59,7 +59,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountById(long accountId) {
         String query = "SELECT * FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query, accountId)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -72,7 +72,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountByUsername(String username) {
         String query = "SELECT * FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query, username)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -85,7 +85,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountByEmail(String email) {
         String query = "SELECT * FROM Account WHERE email = ?";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query, email)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, email)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -98,7 +98,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public boolean existsByUsername(String username) {
         String query = "SELECT 1 FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query, username)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
             return rs != null && rs.next();
         } catch (SQLException e) {
             throw new RuntimeException("Lỗi khi kiểm tra username: " + e.getMessage());
@@ -108,7 +108,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public String getPublicKeyActive(long accountId) {
         String query = "SELECT publicKeyActive FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.ExecuteQuery(query, accountId)) {
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
             if (rs != null && rs.next()) {
                 return rs.getString("publicKeyActive");
             }

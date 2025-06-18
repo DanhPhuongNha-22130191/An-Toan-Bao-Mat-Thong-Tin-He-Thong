@@ -7,7 +7,6 @@ import com.atbm.dao.product.impl.ProductDaoImpl;
 import com.atbm.dao.strap.StrapDao;
 import com.atbm.dao.strap.impl.StrapDaoImpl;
 import com.atbm.models.entity.Brand;
-import com.atbm.models.entity.Category;
 import com.atbm.models.entity.Product;
 import com.atbm.models.entity.Strap;
 import com.atbm.models.wrapper.request.FilterProductRequest;
