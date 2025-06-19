@@ -1,7 +1,6 @@
-package com.atbm.controllers.admin;
+package com.atbm.controllers.admin.product;
 
 import com.atbm.services.ProductService;
-import com.atbm.utils.HttpUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

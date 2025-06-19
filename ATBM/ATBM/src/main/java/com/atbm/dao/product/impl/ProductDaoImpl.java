@@ -56,7 +56,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean insert(Product product) {
-        List<String> fieldNames = List.of(PRODUCT_ID, NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> fieldNames = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
         String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
         return ExecuteSQLUtils.executeUpdate(
                 query,

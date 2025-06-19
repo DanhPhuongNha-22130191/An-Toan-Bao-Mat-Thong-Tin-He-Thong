@@ -9,6 +9,8 @@ import com.atbm.dao.strap.impl.StrapDaoImpl;
 import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 import com.atbm.models.entity.Strap;
+import com.atbm.models.wrapper.request.AddProductRequest;
+import com.atbm.models.wrapper.request.EditProductRequest;
 import com.atbm.models.wrapper.request.FilterProductRequest;
 import com.atbm.models.wrapper.response.ProductResponse;
 
@@ -78,8 +80,62 @@ public class ProductService {
         return productDao.delete(productId);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new ProductService().deleteProductById(1) );
+    // Taọ sản phẩm mới
+    public boolean addProduct(AddProductRequest addProductRequest) {
+        Product product = new Product(
+                0L,
+                addProductRequest.name(),
+                addProductRequest.price(),
+                addProductRequest.description(),
+                addProductRequest.stock(),
+                addProductRequest.image(),
+                false,
+                addProductRequest.size(),
+                addProductRequest.waterResistance(),
+                addProductRequest.brandId(),
+                addProductRequest.strapId()
+        );
+        return productDao.insert(product);
     }
+    // Cập nhật sản phẩm theo id
+    public boolean editProduct(EditProductRequest editRequest) {
+        Product existingProduct = productDao.getProductById(editRequest.productId());
+        if (existingProduct == null) {
+            return false;
+        }
+        existingProduct.setName(editRequest.name());
+        existingProduct.setPrice(editRequest.price());
+        existingProduct.setDescription(editRequest.description());
+        existingProduct.setStock(editRequest.stock());
+        existingProduct.setBrandId(editRequest.brandId());
+        if (editRequest.image() != null && editRequest.image().length > 0) {
+            existingProduct.setImage(editRequest.image());
+        }
+        return productDao.update(existingProduct);
+    }
+
+    public static void main(String[] args) {
+        ProductService productService = new ProductService();
+
+        // Giả lập ảnh nhị phân mới (ví dụ một mảng byte đơn giản)
+        byte[] newImageBytes = new byte[] { (byte)0x89, (byte)0x50, (byte)0x4E, (byte)0x47 }; // ví dụ dữ liệu ảnh PNG đầu file
+
+        // Giả lập dữ liệu đầu vào để chỉnh sửa sản phẩm đã tồn tại
+        EditProductRequest editRequest = new EditProductRequest(
+                1L, // productId cần sửa, giả sử sản phẩm có ID = 1
+                "AAAAA",
+                1700000.0,
+                "Đồng hồ chống nước, dây da thật, phiên bản mới",
+                15,
+                newImageBytes, // ảnh nhị phân mới
+                1L // brandId giả định
+        );
+
+        boolean result = productService.editProduct(editRequest);
+        System.out.println("Cập nhật sản phẩm " + (result ? "THÀNH CÔNG" : "THẤT BẠI"));
+    }
+
+
+
 
 }
