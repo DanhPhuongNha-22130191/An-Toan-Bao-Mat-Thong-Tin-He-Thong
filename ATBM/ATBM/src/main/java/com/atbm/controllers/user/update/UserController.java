@@ -3,6 +3,7 @@ package com.atbm.controllers.user.update;
 import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdateProfileRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
+import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
@@ -44,16 +45,20 @@ public class UserController extends HttpServlet {
                 String username = req.getParameter("username");
                 String email = req.getParameter("email");
                 UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest(username.trim(), email.trim());
-                accountService.updateProfile(accountId, updateProfileRequest);
-                HttpUtils.setAttribute(req, "message", "Cập nhật hồ sơ thành công.");
-
+                // Kiểm tra không thay đổi
+                AccountResponse currentAccount = accountService.getUserInfo(accountId);
+                if (currentAccount.username().equals(username.trim()) && currentAccount.email().equals(email.trim())) {
+                    HttpUtils.setAttribute(req, "message", "Không có thay đổi nào để cập nhật.");
+                } else {
+                    accountService.updateProfile(accountId, updateProfileRequest);
+                    HttpUtils.setAttribute(req, "message", "Cập nhật hồ sơ thành công.");
+                }
             } else if ("changePassword".equals(action)) {
                 String oldPassword = req.getParameter("oldPassword");
                 String newPassword = req.getParameter("newPassword");
                 ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(oldPassword.trim(), newPassword.trim());
                 accountService.changePassword(accountId, changePasswordRequest);
                 HttpUtils.setAttribute(req, "message", "Đổi mật khẩu thành công.");
-
             } else if ("uploadPublicKey".equals(action)) {
                 String publicKeyText = req.getParameter("publicKeyText");
                 Part filePart = req.getPart("publicKeyFile");
@@ -61,7 +66,6 @@ public class UserController extends HttpServlet {
                 UpdatePublicKeyRequest updatePublicKeyRequest = new UpdatePublicKeyRequest(publicKey);
                 accountService.updatePublicKey(accountId, updatePublicKeyRequest);
                 HttpUtils.setAttribute(req, "message", "Cập nhật khóa công khai thành công.");
-
             } else if ("revokePublicKey".equals(action)) {
                 accountService.revokePublicKey(accountId);
                 HttpUtils.setAttribute(req, "message", "Thu hồi khóa công khai thành công.");

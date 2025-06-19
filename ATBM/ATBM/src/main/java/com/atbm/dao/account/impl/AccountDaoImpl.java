@@ -14,25 +14,11 @@ public class AccountDaoImpl implements AccountDao {
     private static final String ROLES = "roles";
     private static final String ACCOUNT_ID = "accountId";
     private static final String PUBLIC_KEY_ACTIVE = "publicKeyActive";
+    private static final String IS_DELETE = "isDelete";
 
     @Override
     public boolean insert(Account account) {
-        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive) VALUES (?, ?, ?, ?, ?)";
-        try {
-            return ExecuteSQLUtils.executeUpdate(query,
-                    account.getUsername(),
-                    account.getPassword(),
-                    account.getEmail(),
-                    account.getRole().toString(),
-                    account.getPublicKeyActive());
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thêm tài khoản: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public boolean update(Account account) {
-        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ? WHERE accountId = ?";
+        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive, isDelete) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             return ExecuteSQLUtils.executeUpdate(query,
                     account.getUsername(),
@@ -40,6 +26,23 @@ public class AccountDaoImpl implements AccountDao {
                     account.getEmail(),
                     account.getRole().toString(),
                     account.getPublicKeyActive(),
+                    account.isDelete());
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi thêm tài khoản: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean update(Account account) {
+        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ?, isDelete = ? WHERE accountId = ?";
+        try {
+            return ExecuteSQLUtils.executeUpdate(query,
+                    account.getUsername(),
+                    account.getPassword(),
+                    account.getEmail(),
+                    account.getRole().toString(),
+                    account.getPublicKeyActive(),
+                    account.isDelete(),
                     account.getAccountId());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi cập nhật tài khoản: " + e.getMessage());
@@ -47,19 +50,19 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public boolean delete(long accountId) {
-        String query = "DELETE FROM Account WHERE accountId = ?";
+    public boolean softDelete(long accountId) {
+        String query = "UPDATE Account SET isDelete = ? WHERE accountId = ?";
         try {
-            return ExecuteSQLUtils.executeUpdate(query, accountId);
+            return ExecuteSQLUtils.executeUpdate(query, true, accountId);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi xóa tài khoản: " + e.getMessage());
+            throw new RuntimeException("Lỗi khi vô hiệu hóa tài khoản: " + e.getMessage());
         }
     }
 
     @Override
     public Account getAccountById(long accountId) {
-        String query = "SELECT * FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+        String query = "SELECT * FROM Account WHERE accountId = ? AND isDelete = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId, false)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -71,8 +74,8 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public Account getAccountByUsername(String username) {
-        String query = "SELECT * FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
+        String query = "SELECT * FROM Account WHERE username = ? AND isDelete = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username, false)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -84,8 +87,8 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public Account getAccountByEmail(String email) {
-        String query = "SELECT * FROM Account WHERE email = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, email)) {
+        String query = "SELECT * FROM Account WHERE email = ? AND isDelete = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, email, false)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -97,8 +100,8 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean existsByUsername(String username) {
-        String query = "SELECT 1 FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
+        String query = "SELECT 1 FROM Account WHERE username = ? AND isDelete = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username, false)) {
             return rs != null && rs.next();
         } catch (SQLException e) {
             throw new RuntimeException("Lỗi khi kiểm tra username: " + e.getMessage());
@@ -107,8 +110,8 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public String getPublicKeyActive(long accountId) {
-        String query = "SELECT publicKeyActive FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+        String query = "SELECT publicKeyActive FROM Account WHERE accountId = ? AND isDelete = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId, false)) {
             if (rs != null && rs.next()) {
                 return rs.getString("publicKeyActive");
             }
@@ -125,7 +128,8 @@ public class AccountDaoImpl implements AccountDao {
                 rs.getString(PASSWORD),
                 rs.getString(EMAIL),
                 rs.getString(PUBLIC_KEY_ACTIVE),
-                Role.valueOf(rs.getString(ROLES))
+                Role.valueOf(rs.getString(ROLES)),
+                rs.getBoolean(IS_DELETE)
         );
     }
 }

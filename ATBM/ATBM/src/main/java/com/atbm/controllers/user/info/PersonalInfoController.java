@@ -33,6 +33,14 @@ public class PersonalInfoController extends HttpServlet {
         try {
             AccountResponse account = accountService.getUserInfo(accountId);
             HttpUtils.setAttribute(req, "account", account);
+
+            // Giữ trạng thái tab
+            String activeTab = req.getParameter("tab");
+            if (activeTab == null || activeTab.isEmpty()) {
+                activeTab = "profile";
+            }
+            HttpUtils.setAttribute(req, "activeTab", activeTab);
+
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
         } catch (RuntimeException e) {
             HttpUtils.setAttribute(req, "error", e.getMessage());

@@ -27,6 +27,9 @@ public class AccountService {
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
         }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
+        }
         return new AccountResponse(
                 account.getAccountId(),
                 account.getUsername(),
@@ -68,6 +71,9 @@ public class AccountService {
         if (account == null) {
             throw new RuntimeException("Sai tài khoản hoặc mật khẩu.");
         }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
+        }
         if (!SignatureUtils.hash(password).equals(account.getPassword())) {
             throw new RuntimeException("Sai tài khoản hoặc mật khẩu.");
         }
@@ -85,6 +91,9 @@ public class AccountService {
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
         }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
+        }
         String newUsername = updateProfileRequest.username().trim();
         String newEmail = updateProfileRequest.email().trim();
         if (newUsername.isEmpty() || newEmail.isEmpty()) {
@@ -95,6 +104,10 @@ public class AccountService {
         }
         if (accountDao.getAccountByEmail(newEmail) != null && !newEmail.equals(account.getEmail())) {
             throw new RuntimeException("Email đã được sử dụng.");
+        }
+        // Kiểm tra nếu không có thay đổi
+        if (newUsername.equals(account.getUsername()) && newEmail.equals(account.getEmail())) {
+            throw new RuntimeException("Không có thay đổi nào để cập nhật.");
         }
         account.setUsername(newUsername);
         account.setEmail(newEmail);
@@ -109,6 +122,9 @@ public class AccountService {
         Account account = accountDao.getAccountById(accountId);
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
+        }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
         }
         String oldPassword = request.oldPassword().trim();
         String newPassword = request.newPassword().trim();
@@ -134,6 +150,9 @@ public class AccountService {
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
         }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
+        }
         if (newPassword.trim().isEmpty()) {
             throw new RuntimeException("Mật khẩu mới không được để trống.");
         }
@@ -150,6 +169,9 @@ public class AccountService {
             Account account = accountDao.getAccountByEmail(email.trim());
             if (account == null) {
                 throw new RuntimeException("Email không tồn tại trong hệ thống.");
+            }
+            if (account.isDelete()) {
+                throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
             }
             return account;
         } catch (RuntimeException e) {
@@ -175,6 +197,9 @@ public class AccountService {
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
         }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
+        }
         String publicKey = updatePublicKeyRequest.publicKey().trim();
         if (publicKey.isEmpty()) {
             throw new RuntimeException("Vui lòng nhập hoặc tải lên khóa công khai.");
@@ -191,6 +216,9 @@ public class AccountService {
         Account account = accountDao.getAccountById(accountId);
         if (account == null) {
             throw new RuntimeException("Tài khoản không tồn tại.");
+        }
+        if (account.isDelete()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
         }
         account.setPublicKeyActive(null);
         try {
