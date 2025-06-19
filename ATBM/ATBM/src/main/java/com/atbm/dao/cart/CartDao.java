@@ -1,5 +1,6 @@
 package com.atbm.dao.cart;
 
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.models.entity.Cart;
 import com.atbm.models.entity.CartItem;
 import com.atbm.models.entity.Product;
@@ -15,11 +16,15 @@ public interface CartDao {
 
     List<CartItem> getCartItemsByCartId(long cartId);
 
-    void updateQuantity(long accountId, long cartItemId, int newQuantity);
+    CartItem getCartItemById(long cartItemId);
 
-    void addProductToCart(long accountId, Product product, int quantity);
+    SQLTransactionStep<Boolean> updateTotalPrice(long accountId, double newTotalPrice);
 
-    void removeProductFromCart(long accountId, long cartItemId);
+    SQLTransactionStep<Boolean> updateQuantity(long cartId, long cartItemId, int newQuantity);
 
-    void clearCart(long accountId);
+    SQLTransactionStep<Boolean> addProductToCart(long cartId, Product product, int quantity);
+
+    SQLTransactionStep<Boolean> removeProductFromCart(long cartId, long cartItemId);
+
+    SQLTransactionStep<Boolean> clearCart(long cartId);
 }

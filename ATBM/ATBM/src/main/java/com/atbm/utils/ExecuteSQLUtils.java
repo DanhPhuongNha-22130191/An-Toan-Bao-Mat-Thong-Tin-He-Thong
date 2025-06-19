@@ -2,14 +2,13 @@ package com.atbm.utils;
 
 
 import com.atbm.database.DBConnection;
+import com.atbm.database.SQLTransactionStep;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * @author minhhien
@@ -23,9 +22,7 @@ public class ExecuteSQLUtils {
 
     public static String createUpdateQuery(String tableName, List<String> updateFields, List<String> conditionFields) {
         String setClause = String.join(", ", updateFields.stream().map(f -> f + "=?").toArray(String[]::new));
-
         String whereClause = String.join(" AND ", conditionFields.stream().map(f -> f + "=?").toArray(String[]::new));
-
         return "UPDATE " + tableName + " SET " + setClause + " WHERE " + whereClause;
     }
 
@@ -45,20 +42,6 @@ public class ExecuteSQLUtils {
             return preStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LogUtils.debug(ExecuteSQLUtils.class, e.getMessage());
-            throw new RuntimeException("Lỗi khi thực hiện thay đổi");
-        }
-    }
-
-    /**
-     * Hàm thực hiện update trong 1 transaction
-     */
-    public static boolean executeUpdate(Connection conn, String query, Object... params) {
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            for (int i = 0; i < params.length; i++) {
-                stmt.setObject(i + 1, params[i]);
-            }
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
             throw new RuntimeException("Lỗi khi thực hiện thay đổi");
         }
     }
@@ -84,23 +67,52 @@ public class ExecuteSQLUtils {
     }
 
     /**
-     * Phương thức hỗ thực hiện nhóm lệnh update trong 1 transaction
-     * @param actions các function update được tạo ra bằng hàm @see {@link ExecuteSQLUtils#executeUpdate(Connection, String, Object[])}
+     * Phương thức thực hiện lệnh update, insert, delete
+     *
+     * @param query lệnh query
+     * @return true nếu thành công, ngược lại false
      */
-    public static void executeUpdateInTransaction(List<Function<Connection, Boolean>> actions) {
+    public static SQLTransactionStep<Boolean> buildUpdateStep(String query, Object... params) {
+        return connection -> {
+            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setObject(i + 1, params[i]);
+                }
+                return stmt.executeUpdate() > 0;
+            } catch (SQLException e) {
+                throw new RuntimeException("Lỗi khi thực hiện thay đổi");
+            }
+        };
+    }
+
+    /**
+     * Phương thức thực hiện một danh sách các bước thao tác với cơ sở dữ liệu trong cùng một giao dịch (transaction).
+     * Nếu bất kỳ bước nào thất bại (trả về null hoặc ném exception), toàn bộ transaction sẽ bị rollback.
+     *
+     * @param steps Danh sách các bước thao tác với kiểu SQLTransactionStep<?> (có thể trả về giá trị)
+     * @return true nếu tất cả các bước thành công và transaction được commit
+     */
+    public static boolean executeStepsInTransaction(List<SQLTransactionStep<?>> steps) {
         Connection conn = DBConnection.getConnection();
         try {
             conn.setAutoCommit(false);
-            boolean result = actions.stream().allMatch(action -> action.apply(conn));
-            if (result) {
-                conn.commit();
-            } else {
-                conn.rollback();
-                throw new RuntimeException("Lỗi khi cập nhật dữ liệu");
+            for (SQLTransactionStep<?> step : steps) {
+                Object result = step.apply(conn);
+                if (result == null) {
+                    conn.rollback();
+                    return false;
+                }
             }
-        } catch (SQLException e) {
+            conn.commit();
+            return true;
+        } catch (Exception e) {
             LogUtils.debug(ExecuteSQLUtils.class, e.getMessage());
-            throw new RuntimeException("Lỗi khi cập nhật dữ liệu");
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback failed: " + ex.getMessage());
+            }
+            throw new RuntimeException("Transaction failed: " + e.getMessage());
         }
     }
 }
