@@ -1,13 +1,13 @@
-package com.atbm.utils;
+package com.atbm.services;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.atbm.utils.ConfigUtils;
+import com.atbm.utils.LogUtils;
 
-public class RecaptchaUtil {
-    private static final String RECAPTCHA_SECRET_KEY = "6LcooTwrAAAAADsuwNgS3T4IsD9Cu1jmmSbJ5p1Y";
+import java.io.*;
+import java.net.*;
+
+public class Recaptcha {
+    private static final String RECAPTCHA_SECRET_KEY = ConfigUtils.get("recaptcha.secret");
 
     public static boolean verify(String recaptchaResponse) {
         try {
@@ -30,7 +30,7 @@ public class RecaptchaUtil {
                 return response.toString().contains("\"success\": true");
             }
         } catch (Exception e) {
-            LogUtils.debug(RecaptchaUtil.class, "Lỗi khi xác minh reCAPTCHA: " + e.getMessage());
+            LogUtils.debug(Recaptcha.class, "Lỗi khi xác minh reCAPTCHA: " + e.getMessage());
             return false;
         }
     }
