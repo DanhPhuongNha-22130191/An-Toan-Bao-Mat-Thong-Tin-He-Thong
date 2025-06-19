@@ -98,7 +98,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean delete(long productId) {
-        String query = "UPDATE Product SET isDeleted=true WHERE productId=?";
+        String query = "UPDATE Product SET isDeleted=1 WHERE productId=?";
         return ExecuteSQLUtils.executeUpdate(query, productId);
     }
 
@@ -123,7 +123,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     public static void main(String[] args) {
-        System.out.println(new ProductDaoImpl().getProducts() );
+        System.out.println(new ProductDaoImpl().delete(1));
 
     }
 }

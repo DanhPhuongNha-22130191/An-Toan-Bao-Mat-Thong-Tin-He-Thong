@@ -73,8 +73,13 @@ public class ProductService {
         return productResponses;
     }
 
+    // Xóa sản phầm theo id
+    public boolean deleteProductById(long productId) {
+        return productDao.delete(productId);
+    }
+
     public static void main(String[] args) {
-        System.out.println(new ProductService().getProducts() );
+        System.out.println(new ProductService().deleteProductById(1) );
     }
 
 }
