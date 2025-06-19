@@ -38,11 +38,14 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> getProducts() {
-        String query = "SELECT * FROM Product WHERE isDeleted = false ORDER BY price ";
+        String query = "SELECT * FROM Product WHERE isDeleted = 0 ORDER BY price ";
         try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
             List<Product> products = new ArrayList<>();
             while (rs.next()) {
-                products.add(createProduct(rs));
+                Product product = createProduct(rs);
+                if (product != null) {
+                    products.add(product);
+                }
             }
             return products;
         } catch (SQLException e) {
@@ -117,5 +120,10 @@ public class ProductDaoImpl implements ProductDao {
             );
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new ProductDaoImpl().getProducts() );
+
     }
 }
