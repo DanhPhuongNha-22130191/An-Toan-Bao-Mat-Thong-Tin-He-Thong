@@ -1,18 +1,17 @@
 package com.atbm.dao.cart.impl;
 
 import com.atbm.dao.cart.CartDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.models.entity.Cart;
 import com.atbm.models.entity.CartItem;
 import com.atbm.models.entity.Product;
 import com.atbm.utils.ExecuteSQLUtils;
 import com.atbm.utils.LogUtils;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class CartDaoImpl implements CartDao {
     public static final String CART_TABLE_NAME = "Cart";
@@ -73,79 +72,37 @@ public class CartDaoImpl implements CartDao {
 
 
     @Override
-    public void updateQuantity(long accountId, long cartItemId, int newQuantity) {
-        // Đồng bộ lại dữ liệu với database để tránh tình trạng dữ liệu không nhất quán
-        Cart cart = getCartByAccountId(accountId);
-        CartItem targetItem = findCartItemById(cartItemId);
-        int oldQuantity = targetItem.getQuantity();
-        boolean increase = newQuantity > oldQuantity;
-
-        int quantityDelta = Math.abs(newQuantity - oldQuantity);
-        double priceDelta = quantityDelta * targetItem.getPriceSnapshot();
-        double newTotalPrice = increase
-                ? cart.getTotalPrice() + priceDelta
-                : cart.getTotalPrice() - priceDelta;
-
+    public SQLTransactionStep<Boolean> updateQuantity(long cartId, long cartItemId, int newQuantity) {
         String query = ExecuteSQLUtils.createUpdateQuery(CART_ITEM_TABLE_NAME, List.of(QUANTITY), List.of(CART_ITEM_ID, CART_ID));
-        ExecuteSQLUtils.executeUpdateInTransaction(List.of(
-                connection ->
-                        ExecuteSQLUtils.executeUpdate(connection, query, newQuantity, cartItemId, cart.getCartId()),
-                connection ->
-                        updateTotalPrice(accountId, newTotalPrice).apply(connection)
-        ));
+        return ExecuteSQLUtils.buildUpdateStep(query, newQuantity, cartItemId, cartId);
     }
 
     @Override
-    public void addProductToCart(long accountId, Product product, int quantity) {
-        long cartId = getCartIdByAccountId(accountId);
+    public SQLTransactionStep<Boolean> addProductToCart(long cartId, Product product, int quantity) {
         String query = ExecuteSQLUtils.createInsertQuery(CART_ITEM_TABLE_NAME, List.of(PRODUCT_ID, CART_ID, QUANTITY, PRICE_SNAPSHOT, NAME_SNAPSHOT, IMAGE_SNAPSHOT));
-        ExecuteSQLUtils.executeUpdateInTransaction(List.of(
-                connection ->
-                        ExecuteSQLUtils.executeUpdate(connection, query, product.getProductId(), cartId, quantity,
-                                product.getPrice(), product.getName(), product.getImage()),
-                connection ->
-                        updateTotalPrice(accountId, product.getPrice()).apply(connection)
-        ));
+        return ExecuteSQLUtils.buildUpdateStep(query, product.getProductId(), cartId, quantity, product.getPrice(), product.getName(), product.getImage());
     }
 
     @Override
-    public void removeProductFromCart(long accountId, long cartItemId) {
-        // Đồng bộ lại dữ liệu với database để tránh tình trạng dữ liệu không nhất quán
-        Cart cart = getCartByAccountId(accountId);
-        CartItem targetItem = findCartItemById(cartItemId);
-
-        double productAmount = targetItem.getPriceSnapshot() * targetItem.getQuantity();
-        double newTotalPrice = cart.getTotalPrice() - productAmount;
-
+    public SQLTransactionStep<Boolean> removeProductFromCart(long cartId, long cartItemId) {
         String query = "DELETE FROM CartItem WHERE cartId=? AND cartItemId=?";
-        ExecuteSQLUtils.executeUpdateInTransaction(List.of(
-                connection ->
-                        ExecuteSQLUtils.executeUpdate(connection, query, cart.getCartId(), cartItemId),
-                connection ->
-                        updateTotalPrice(accountId, newTotalPrice).apply(connection)
-        ));
+        return ExecuteSQLUtils.buildUpdateStep(query, cartId, cartItemId);
     }
 
     @Override
-    public void clearCart(long accountId) {
-        long cartId = getCartIdByAccountId(accountId);
+    public SQLTransactionStep<Boolean> clearCart(long cartId) {
         String deleteCartItem = "DELETE FROM CartItem WHERE cartId=?";
-        ExecuteSQLUtils.executeUpdateInTransaction(List.of(
-                connection ->
-                        ExecuteSQLUtils.executeUpdate(connection, deleteCartItem, cartId)
-                ,
-                connection ->
-                        updateTotalPrice(accountId, 0).apply(connection)
-        ));
+        return ExecuteSQLUtils.buildUpdateStep(deleteCartItem, cartId);
     }
 
-
-    private Function<Connection, Boolean> updateTotalPrice(long accountId, double totalPrice) {
+    @Override
+    public SQLTransactionStep<Boolean> updateTotalPrice(long accountId, double newTotalPrice) {
         String query = ExecuteSQLUtils.createUpdateQuery(CART_TABLE_NAME, List.of(TOTAL_PRICE, UPDATED_AT), List.of(ACCOUNT_ID));
-        return con -> ExecuteSQLUtils.executeUpdate(con, query, totalPrice, Date.valueOf(java.time.LocalDate.now()), accountId);
+        return ExecuteSQLUtils.buildUpdateStep(query, newTotalPrice, Date.valueOf(java.time.LocalDate.now()), accountId);
     }
 
-    private CartItem findCartItemById(long cartItemId) {
+    @Override
+    public CartItem getCartItemById(long cartItemId) {
         String query = "SELECT * FROM cartItem WHERE cartItemId = ?";
         try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, cartItemId)) {
             return createCartItem(rs);
@@ -156,22 +113,11 @@ public class CartDaoImpl implements CartDao {
     }
 
     private Cart createCart(ResultSet rs) throws Exception {
-        return new Cart(rs.getLong(CART_ID),
-                rs.getLong(ACCOUNT_ID),
-                rs.getDouble(TOTAL_PRICE),
-                rs.getDate(UPDATED_AT).toLocalDate()
-        );
+        return new Cart(rs.getLong(CART_ID), rs.getLong(ACCOUNT_ID), rs.getDouble(TOTAL_PRICE), rs.getDate(UPDATED_AT).toLocalDate());
     }
 
     private CartItem createCartItem(ResultSet rs) throws Exception {
-        return new CartItem(rs.getLong(CART_ITEM_ID),
-                rs.getLong(CART_ID),
-                rs.getLong(PRODUCT_ID),
-                rs.getInt(QUANTITY),
-                rs.getDouble(PRICE_SNAPSHOT),
-                rs.getNString(NAME_SNAPSHOT),
-                rs.getBytes(IMAGE_SNAPSHOT)
-        );
+        return new CartItem(rs.getLong(CART_ITEM_ID), rs.getLong(CART_ID), rs.getLong(PRODUCT_ID), rs.getInt(QUANTITY), rs.getDouble(PRICE_SNAPSHOT), rs.getNString(NAME_SNAPSHOT), rs.getBytes(IMAGE_SNAPSHOT));
     }
 
 

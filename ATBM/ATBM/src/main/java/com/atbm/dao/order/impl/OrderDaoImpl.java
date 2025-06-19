@@ -1,0 +1,77 @@
+package com.atbm.dao.order.impl;
+
+import com.atbm.dao.order.OrderDao;
+import com.atbm.database.SQLTransactionStep;
+import com.atbm.models.entity.Order;
+import com.atbm.models.enums.OrderStatus;
+import com.atbm.models.enums.PaymentMethod;
+import com.atbm.utils.ExecuteSQLUtils;
+
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+public class OrderDaoImpl implements OrderDao {
+    private static final String TABLE_NAME = "Orders";
+    private static final String ORDER_ID = "orderId";
+    private static final String ACCOUNT_ID = "accountId";
+    private static final String STATUS = "status";
+    private static final String TOTAL_PRICE = "totalPrice";
+    private static final String ORDER_AT = "orderAt";
+    private static final String PAYMENT_METHOD = "paymentMethod";
+    private static final String SHIPPING_INFO_ID = "shippingInfoId";
+    private static final String ORDER_SECURITY_ID = "orderSecurityId";
+
+    @Override
+    public SQLTransactionStep<Boolean> insert(Order order) {
+        List<String> fieldNames = List.of(ACCOUNT_ID, ORDER_SECURITY_ID, SHIPPING_INFO_ID, STATUS, TOTAL_PRICE, ORDER_AT, PAYMENT_METHOD);
+        String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
+        return ExecuteSQLUtils.buildUpdateStep(query, order.getAccountId(), order.getOrderSecurityId(), order.getShippingInfoId(), order.getStatus(), order.getTotalPrice(), order.getOrderAt(), order.getPaymentMethod());
+    }
+
+    @Override
+    public List<Order> getOrdersByAccountId(long accountId) {
+        String query = "SELECT * FROM Orders WHERE accountId = ?";
+        List<Order> result = new ArrayList<>();
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+            while (rs.next()) {
+                result.add(createOrder(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Order getOrderById(long orderId) {
+        String query = "SELECT * FROM Orders WHERE orderId = ?";
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, orderId)) {
+            if (rs.next())
+                return createOrder(rs);
+            else
+                throw new RuntimeException("Không tìm thấy đơn hàng");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateStatus(long accountId, long orderId, String status) {
+        String query = "UPDATE Orders SET status=? WHERE accountId=? AND orderId=?";
+        ExecuteSQLUtils.executeUpdate(query, status, accountId, orderId);
+    }
+
+    private Order createOrder(ResultSet resultSet) throws Exception {
+        return new Order(
+                resultSet.getLong(ORDER_ID),
+                resultSet.getLong(ACCOUNT_ID),
+                resultSet.getLong(ORDER_SECURITY_ID),
+                resultSet.getLong(SHIPPING_INFO_ID),
+                resultSet.getDouble(TOTAL_PRICE),
+                OrderStatus.valueOf(resultSet.getString(STATUS)),
+                PaymentMethod.valueOf(resultSet.getString(PAYMENT_METHOD)),
+                resultSet.getTimestamp(ORDER_AT).toLocalDateTime()
+        );
+    }
+}
