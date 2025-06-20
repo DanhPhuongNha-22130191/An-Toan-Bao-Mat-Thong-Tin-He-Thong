@@ -97,6 +97,7 @@ public class ProductService {
         );
         return productDao.insert(product);
     }
+
     // Cập nhật sản phẩm theo id
     public boolean editProduct(EditProductRequest editRequest) {
         Product existingProduct = productDao.getProductById(editRequest.productId());
@@ -113,29 +114,4 @@ public class ProductService {
         }
         return productDao.update(existingProduct);
     }
-
-    public static void main(String[] args) {
-        ProductService productService = new ProductService();
-
-        // Giả lập ảnh nhị phân mới (ví dụ một mảng byte đơn giản)
-        byte[] newImageBytes = new byte[] { (byte)0x89, (byte)0x50, (byte)0x4E, (byte)0x47 }; // ví dụ dữ liệu ảnh PNG đầu file
-
-        // Giả lập dữ liệu đầu vào để chỉnh sửa sản phẩm đã tồn tại
-        EditProductRequest editRequest = new EditProductRequest(
-                1L, // productId cần sửa, giả sử sản phẩm có ID = 1
-                "AAAAA",
-                1700000.0,
-                "Đồng hồ chống nước, dây da thật, phiên bản mới",
-                15,
-                newImageBytes, // ảnh nhị phân mới
-                1L // brandId giả định
-        );
-
-        boolean result = productService.editProduct(editRequest);
-        System.out.println("Cập nhật sản phẩm " + (result ? "THÀNH CÔNG" : "THẤT BẠI"));
-    }
-
-
-
-
 }
