@@ -33,7 +33,7 @@ public class ProductController extends HttpServlet {
         String path = req.getPathInfo();
         List<ProductResponse> listProducts = productService.getProducts();
         HttpUtils.setAttribute(req, "products", listProducts);
-        // HttpUtils.dispatcher(req, resp, "/WEB-INF/views/productAdmin.jsp");
+         HttpUtils.dispatcher(req, resp, "/WEB-INF/views/productAdmin.jsp");
     }
 
     @Override
