@@ -2,6 +2,8 @@ package com.atbm.dao.account;
 
 import com.atbm.models.entity.Account;
 
+import java.util.List;
+
 public interface AccountDao {
     boolean insert(Account account);
     boolean update(Account account);
@@ -11,4 +13,5 @@ public interface AccountDao {
     Account getAccountByEmail(String email);
     boolean existsByUsername(String username);
     String getPublicKeyActive(long accountId);
+    List<Account> getAccounts();
 }
