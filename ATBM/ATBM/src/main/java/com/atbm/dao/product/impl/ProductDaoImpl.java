@@ -43,11 +43,14 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> getProducts() {
-        String query = "SELECT * FROM Product WHERE isDeleted = false ORDER BY price ";
+        String query = "SELECT * FROM Product WHERE isDeleted = 0 ORDER BY price ";
         try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
             List<Product> products = new ArrayList<>();
             while (rs.next()) {
-                products.add(createProduct(rs));
+                Product product = createProduct(rs);
+                if (product != null) {
+                    products.add(product);
+                }
             }
             return products;
         } catch (SQLException e) {
@@ -58,9 +61,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean insert(Product product) {
-        List<String> fieldNames = List.of(PRODUCT_ID, NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> fieldNames = List.of( NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, fieldNames);
-        return executeSQLHelper.executeUpdate(
+        return ExecuteSQLUtils.executeUpdate(
                 query,
                 product.getName(),
                 product.getPrice(),
@@ -100,7 +103,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean delete(long productId) {
-        String query = "UPDATE Product SET isDeleted=true WHERE productId=?";
+        String query = "UPDATE Product SET isDeleted=1 WHERE productId=?";
         return executeSQLHelper.executeUpdate(query, productId);
     }
 

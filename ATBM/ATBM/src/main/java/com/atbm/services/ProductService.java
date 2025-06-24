@@ -6,6 +6,8 @@ import com.atbm.dao.strap.StrapDao;
 import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 import com.atbm.models.entity.Strap;
+import com.atbm.models.wrapper.request.AddProductRequest;
+import com.atbm.models.wrapper.request.EditProductRequest;
 import com.atbm.models.wrapper.request.FilterProductRequest;
 import com.atbm.models.wrapper.response.ProductResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -73,5 +75,45 @@ public class ProductService {
             productResponses.add(createProductResponse(product));
         }
         return productResponses;
+    }
+
+    // Xóa sản phầm theo id
+    public boolean deleteProductById(long productId) {
+        return productDao.delete(productId);
+    }
+
+    // Taọ sản phẩm mới
+    public boolean addProduct(AddProductRequest addProductRequest) {
+        Product product = new Product(
+                0L,
+                addProductRequest.name(),
+                addProductRequest.price(),
+                addProductRequest.description(),
+                addProductRequest.stock(),
+                addProductRequest.image(),
+                false,
+                addProductRequest.size(),
+                addProductRequest.waterResistance(),
+                addProductRequest.brandId(),
+                addProductRequest.strapId()
+        );
+        return productDao.insert(product);
+    }
+
+    // Cập nhật sản phẩm theo id
+    public boolean editProduct(EditProductRequest editRequest) {
+        Product existingProduct = productDao.getProductById(editRequest.productId());
+        if (existingProduct == null) {
+            return false;
+        }
+        existingProduct.setName(editRequest.name());
+        existingProduct.setPrice(editRequest.price());
+        existingProduct.setDescription(editRequest.description());
+        existingProduct.setStock(editRequest.stock());
+        existingProduct.setBrandId(editRequest.brandId());
+        if (editRequest.image() != null && editRequest.image().length > 0) {
+            existingProduct.setImage(editRequest.image());
+        }
+        return productDao.update(existingProduct);
     }
 }
