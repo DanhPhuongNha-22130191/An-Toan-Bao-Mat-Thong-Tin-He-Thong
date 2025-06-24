@@ -6,6 +6,7 @@ import com.atbm.models.enums.Role;
 import com.atbm.utils.ExecuteSQLUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AccountDaoImpl implements AccountDao {
     private static final String USERNAME = "username";
@@ -14,6 +15,7 @@ public class AccountDaoImpl implements AccountDao {
     private static final String ROLES = "roles";
     private static final String ACCOUNT_ID = "accountId";
     private static final String PUBLIC_KEY_ACTIVE = "publicKeyActive";
+    private static final String IS_DELETED = "isDeleted";
 
     @Override
     public boolean insert(Account account) {
@@ -118,6 +120,11 @@ public class AccountDaoImpl implements AccountDao {
         }
     }
 
+    @Override
+    public List<Account> getAccounts() {
+        return List.of();
+    }
+
     private Account createAccount(ResultSet rs) throws SQLException {
         return new Account(
                 rs.getLong(ACCOUNT_ID),
@@ -125,7 +132,8 @@ public class AccountDaoImpl implements AccountDao {
                 rs.getString(PASSWORD),
                 rs.getString(EMAIL),
                 rs.getString(PUBLIC_KEY_ACTIVE),
-                Role.valueOf(rs.getString(ROLES))
+                Role.valueOf(rs.getString(ROLES)),
+                rs.getBoolean(IS_DELETED)
         );
     }
 }
