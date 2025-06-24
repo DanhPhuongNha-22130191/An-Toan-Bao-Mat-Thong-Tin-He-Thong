@@ -5,28 +5,37 @@ public class ShippingInfo {
     private String recipientName;
     private String phoneNumber;
     private String addressLine;
-    private String city;
     private String district;
+    private String province;
     private String ward;
     private String note;
     private String shippingMethod;
-    private String shippingFee;
+    private double shippingFee;
 
-    /**
-     *  Lấy dữ liệu
-     */
-    public ShippingInfo(long shippingInfoId, String recipientName, String phoneNumber, String addressLine, String city, String district, String ward, String note, String shippingMethod, String shippingFee) {
+    private long provinceId;
+    private long districtId;
+    private long wardId;
+
+    public ShippingInfo(long shippingInfoId, String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, double shippingFee, long provinceId, long districtId, long wardId) {
         this.shippingInfoId = shippingInfoId;
         this.recipientName = recipientName;
         this.phoneNumber = phoneNumber;
         this.addressLine = addressLine;
-        this.city = city;
         this.district = district;
+        this.province = province;
         this.ward = ward;
         this.note = note;
         this.shippingMethod = shippingMethod;
         this.shippingFee = shippingFee;
+        this.provinceId = provinceId;
+        this.districtId = districtId;
+        this.wardId = wardId;
     }
+
+    /**
+     *  Lấy dữ liệu
+     */
+
 
     public ShippingInfo() {
     }
@@ -34,17 +43,21 @@ public class ShippingInfo {
     /**
      *  Tạo dữ liệu
      */
-    public ShippingInfo(String shippingFee, String shippingMethod, String note, String ward, String district, String city, String addressLine, String phoneNumber, String recipientName) {
-        this.shippingFee = shippingFee;
-        this.shippingMethod = shippingMethod;
-        this.note = note;
-        this.ward = ward;
-        this.district = district;
-        this.city = city;
-        this.addressLine = addressLine;
-        this.phoneNumber = phoneNumber;
+    public ShippingInfo(String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, double shippingFee, long provinceId, long districtId, long wardId) {
         this.recipientName = recipientName;
+        this.phoneNumber = phoneNumber;
+        this.addressLine = addressLine;
+        this.district = district;
+        this.ward = ward;
+        this.province = province;
+        this.note = note;
+        this.shippingMethod = shippingMethod;
+        this.shippingFee = shippingFee;
+        this.provinceId = provinceId;
+        this.districtId = districtId;
+        this.wardId = wardId;
     }
+
 
     public long getShippingInfoId() {
         return shippingInfoId;
@@ -76,14 +89,6 @@ public class ShippingInfo {
 
     public void setAddressLine(String addressLine) {
         this.addressLine = addressLine;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public String getDistrict() {
@@ -118,11 +123,43 @@ public class ShippingInfo {
         this.shippingMethod = shippingMethod;
     }
 
-    public String getShippingFee() {
+    public double getShippingFee() {
         return shippingFee;
     }
 
-    public void setShippingFee(String shippingFee) {
+    public void setShippingFee(double shippingFee) {
         this.shippingFee = shippingFee;
+    }
+
+    public long getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(long provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(long districtId) {
+        this.districtId = districtId;
+    }
+
+    public long getWardId() {
+        return wardId;
+    }
+
+    public void setWardId(long wardId) {
+        this.wardId = wardId;
     }
 }

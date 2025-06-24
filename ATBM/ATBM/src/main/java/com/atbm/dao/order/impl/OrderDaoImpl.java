@@ -2,16 +2,20 @@ package com.atbm.dao.order.impl;
 
 import com.atbm.dao.order.OrderDao;
 import com.atbm.database.SQLTransactionStep;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Order;
 import com.atbm.models.enums.OrderStatus;
 import com.atbm.models.enums.PaymentMethod;
-import com.atbm.utils.ExecuteSQLUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
+@ApplicationScoped
 public class OrderDaoImpl implements OrderDao {
+    @Inject
+    private ExecuteSQLHelper executeSQLHelper;
     private static final String TABLE_NAME = "Orders";
     private static final String ORDER_ID = "orderId";
     private static final String ACCOUNT_ID = "accountId";
@@ -23,17 +27,17 @@ public class OrderDaoImpl implements OrderDao {
     private static final String ORDER_SECURITY_ID = "orderSecurityId";
 
     @Override
-    public SQLTransactionStep<Boolean> insert(Order order) {
+    public SQLTransactionStep<Long> insert(Order order) {
         List<String> fieldNames = List.of(ACCOUNT_ID, ORDER_SECURITY_ID, SHIPPING_INFO_ID, STATUS, TOTAL_PRICE, ORDER_AT, PAYMENT_METHOD);
-        String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
-        return ExecuteSQLUtils.buildUpdateStep(query, order.getAccountId(), order.getOrderSecurityId(), order.getShippingInfoId(), order.getStatus(), order.getTotalPrice(), order.getOrderAt(), order.getPaymentMethod());
+        String query = executeSQLHelper.createInsertQuery(TABLE_NAME, fieldNames);
+        return executeSQLHelper.buildInsertStepReturningId(query, order.getAccountId(), order.getOrderSecurityId(), order.getShippingInfoId(), order.getStatus(), order.getTotalPrice(), order.getOrderAt(), order.getPaymentMethod());
     }
 
     @Override
     public List<Order> getOrdersByAccountId(long accountId) {
         String query = "SELECT * FROM Orders WHERE accountId = ?";
         List<Order> result = new ArrayList<>();
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId)) {
             while (rs.next()) {
                 result.add(createOrder(rs));
             }
@@ -44,9 +48,9 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Order getOrderById(long orderId) {
-        String query = "SELECT * FROM Orders WHERE orderId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, orderId)) {
+    public Order getOrderById(long accountId, long orderId) {
+        String query = "SELECT * FROM Orders WHERE accountId=? AND orderId = ?";
+        try (ResultSet rs = executeSQLHelper.executeQuery(query,accountId, orderId)) {
             if (rs.next())
                 return createOrder(rs);
             else
@@ -59,7 +63,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public void updateStatus(long accountId, long orderId, String status) {
         String query = "UPDATE Orders SET status=? WHERE accountId=? AND orderId=?";
-        ExecuteSQLUtils.executeUpdate(query, status, accountId, orderId);
+        executeSQLHelper.executeUpdate(query, status, accountId, orderId);
     }
 
     private Order createOrder(ResultSet resultSet) throws Exception {

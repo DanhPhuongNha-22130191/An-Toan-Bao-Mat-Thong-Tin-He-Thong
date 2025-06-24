@@ -7,6 +7,7 @@ import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -33,7 +35,7 @@ public class ProfileController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            accountService = new AccountService();
+            accountService = CDI.current().select(AccountService.class).get();
         } catch (Exception e) {
             LogUtils.debug(ProfileController.class, "Khởi tạo ProfileController thất bại: " + e.getMessage());
             throw new ServletException("Khởi tạo ProfileController thất bại", e);

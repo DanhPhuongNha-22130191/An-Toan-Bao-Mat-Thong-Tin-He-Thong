@@ -1,14 +1,19 @@
 package com.atbm.dao.account.impl;
 
 import com.atbm.dao.account.AccountDao;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
 import com.atbm.models.enums.Role;
-import com.atbm.utils.ExecuteSQLUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@ApplicationScoped
 public class AccountDaoImpl implements AccountDao {
+    private final ExecuteSQLHelper executeSQLHelper;
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
@@ -17,11 +22,16 @@ public class AccountDaoImpl implements AccountDao {
     private static final String PUBLIC_KEY_ACTIVE = "publicKeyActive";
     private static final String IS_DELETED = "isDeleted";
 
+    @Inject
+    public AccountDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
+
     @Override
     public boolean insert(Account account) {
         String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive) VALUES (?, ?, ?, ?, ?)";
         try {
-            return ExecuteSQLUtils.executeUpdate(query,
+            return executeSQLHelper.executeUpdate(query,
                     account.getUsername(),
                     account.getPassword(),
                     account.getEmail(),
@@ -36,7 +46,7 @@ public class AccountDaoImpl implements AccountDao {
     public boolean update(Account account) {
         String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ? WHERE accountId = ?";
         try {
-            return ExecuteSQLUtils.executeUpdate(query,
+            return executeSQLHelper.executeUpdate(query,
                     account.getUsername(),
                     account.getPassword(),
                     account.getEmail(),
@@ -52,7 +62,7 @@ public class AccountDaoImpl implements AccountDao {
     public boolean delete(long accountId) {
         String query = "DELETE FROM Account WHERE accountId = ?";
         try {
-            return ExecuteSQLUtils.executeUpdate(query, accountId);
+            return executeSQLHelper.executeUpdate(query, accountId);
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi xóa tài khoản: " + e.getMessage());
         }
@@ -61,7 +71,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountById(long accountId) {
         String query = "SELECT * FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -74,7 +84,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountByUsername(String username) {
         String query = "SELECT * FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, username)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -87,7 +97,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public Account getAccountByEmail(String email) {
         String query = "SELECT * FROM Account WHERE email = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, email)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, email)) {
             if (rs != null && rs.next()) {
                 return createAccount(rs);
             }
@@ -100,7 +110,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public boolean existsByUsername(String username) {
         String query = "SELECT 1 FROM Account WHERE username = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, username)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, username)) {
             return rs != null && rs.next();
         } catch (SQLException e) {
             throw new RuntimeException("Lỗi khi kiểm tra username: " + e.getMessage());
@@ -110,7 +120,7 @@ public class AccountDaoImpl implements AccountDao {
     @Override
     public String getPublicKeyActive(long accountId) {
         String query = "SELECT publicKeyActive FROM Account WHERE accountId = ?";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query, accountId)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId)) {
             if (rs != null && rs.next()) {
                 return rs.getString("publicKeyActive");
             }

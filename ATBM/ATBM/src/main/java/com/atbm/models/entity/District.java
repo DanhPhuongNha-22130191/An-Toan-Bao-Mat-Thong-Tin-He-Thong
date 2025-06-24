@@ -1,0 +1,62 @@
+package com.atbm.models.entity;
+
+public class District {
+    private long id;
+    private long provinceId;
+    private String name;
+    private int code;
+
+    public District() {
+    }
+
+    /**
+     * Tạo dữ liệu
+     */
+    public District(long provinceId, String name, int code) {
+        this.provinceId = provinceId;
+        this.name = name;
+        this.code = code;
+    }
+
+    /**
+     * Lấy dữ liệu
+     */
+    public District(long id, long provinceId, String name, int code) {
+        this.id = id;
+        this.provinceId = provinceId;
+        this.name = name;
+        this.code = code;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(long provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+}
