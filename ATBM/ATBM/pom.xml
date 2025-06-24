@@ -71,6 +71,13 @@
             <artifactId>weld-servlet-shaded</artifactId>
             <version>5.1.0.Final</version>
         </dependency>
+        <!-- Bidding object-->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+
 
     </dependencies>
 
