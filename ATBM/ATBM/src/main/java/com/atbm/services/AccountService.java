@@ -10,16 +10,22 @@ import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.utils.SignatureUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
+@ApplicationScoped
 public class AccountService {
     private final AccountDao accountDao;
 
-    public AccountService() {
-        accountDao = new AccountDaoImpl();
+    @Inject
+    public AccountService(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
+
 
     public boolean register(RegisterRequest registerRequest) throws NoSuchAlgorithmException {
         if (accountDao.existsByUsername(registerRequest.username().trim())) {

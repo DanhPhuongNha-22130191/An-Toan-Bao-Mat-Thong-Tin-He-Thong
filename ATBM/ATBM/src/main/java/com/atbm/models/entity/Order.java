@@ -35,14 +35,14 @@ public class Order {
     /**
      *  Tạo dữ liệu
      */
-    public Order(long shippingInfoId, long orderSecurityId, long accountId, double totalPrice, PaymentMethod paymentMethod, OrderStatus status, LocalDateTime orderAt) {
-        this.orderAt = orderAt;
+    public Order(long shippingInfoId, long orderSecurityId, long accountId, double totalPrice, PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
-        this.status = status;
+        this.status = OrderStatus.PROCESSING;
         this.totalPrice = totalPrice;
         this.shippingInfoId = shippingInfoId;
         this.orderSecurityId = orderSecurityId;
         this.accountId = accountId;
+        this.orderAt = LocalDateTime.now();
     }
 
     public long getOrderId() {

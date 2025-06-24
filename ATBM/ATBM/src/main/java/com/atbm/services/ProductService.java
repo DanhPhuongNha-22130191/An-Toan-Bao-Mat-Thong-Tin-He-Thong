@@ -1,30 +1,32 @@
 package com.atbm.services;
 
 import com.atbm.dao.brand.BrandDao;
-import com.atbm.dao.brand.impl.BrandDaoImpl;
 import com.atbm.dao.product.ProductDao;
-import com.atbm.dao.product.impl.ProductDaoImpl;
 import com.atbm.dao.strap.StrapDao;
-import com.atbm.dao.strap.impl.StrapDaoImpl;
 import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 import com.atbm.models.entity.Strap;
 import com.atbm.models.wrapper.request.FilterProductRequest;
 import com.atbm.models.wrapper.response.ProductResponse;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class ProductService {
     private final ProductDao productDao;
     private final BrandDao brandDao;
     private final StrapDao strapDao;
 
-    public ProductService() {
-        productDao = new ProductDaoImpl();
-        brandDao = new BrandDaoImpl();
-        strapDao = new StrapDaoImpl();
+    @Inject
+    public ProductService(ProductDao productDao, BrandDao brandDao, StrapDao strapDao) {
+        this.productDao = productDao;
+        this.brandDao = brandDao;
+        this.strapDao = strapDao;
     }
+
 
     //Lấy danh sách tất cả sản phẩm
     public List<ProductResponse> getProducts() {

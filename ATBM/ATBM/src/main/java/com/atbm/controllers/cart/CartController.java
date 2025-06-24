@@ -6,6 +6,7 @@ import com.atbm.models.wrapper.response.CartResponse;
 import com.atbm.services.CartService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,13 +22,13 @@ public class CartController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        cartService = new CartService();
+        cartService = CDI.current().select(CartService.class).get();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long accountId = (long) req.getSession().getAttribute("accountId");
-        CartResponse response = cartService.getCartByUserId(accountId);
+        CartResponse response = cartService.getCartByAccountId(accountId);
         HttpUtils.setAttribute(req, "cart", response);
 //        HttpUtils.dispatcher(req, resp, VIEW_CART);
     }

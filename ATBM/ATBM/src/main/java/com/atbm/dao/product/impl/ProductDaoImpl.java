@@ -1,16 +1,21 @@
 package com.atbm.dao.product.impl;
 
 import com.atbm.dao.product.ProductDao;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Product;
-import com.atbm.utils.ExecuteSQLUtils;
 import com.atbm.utils.LogUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class ProductDaoImpl implements ProductDao {
+    @Inject
+    private ExecuteSQLHelper executeSQLHelper;
     private final String TABLE_NAME = "Product";
     private final String PRODUCT_ID = "productId";
     private final String NAME = "name";
@@ -29,7 +34,7 @@ public class ProductDaoImpl implements ProductDao {
     public Product getProductById(long productId) {
         String query = "SELECT * FROM Product WHERE productId = ?";
         try {
-            return createProduct(ExecuteSQLUtils.executeQuery(query, productId));
+            return createProduct(executeSQLHelper.executeQuery(query, productId));
         } catch (SQLException e) {
             LogUtils.debug(ProductDaoImpl.class, e.getMessage());
             throw new RuntimeException("Lấy Product lỗi");
@@ -39,7 +44,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<Product> getProducts() {
         String query = "SELECT * FROM Product WHERE isDeleted = false ORDER BY price ";
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
             List<Product> products = new ArrayList<>();
             while (rs.next()) {
                 products.add(createProduct(rs));
@@ -54,8 +59,8 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public boolean insert(Product product) {
         List<String> fieldNames = List.of(PRODUCT_ID, NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
-        String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
-        return ExecuteSQLUtils.executeUpdate(
+        String query = executeSQLHelper.createInsertQuery(TABLE_NAME, fieldNames);
+        return executeSQLHelper.executeUpdate(
                 query,
                 product.getName(),
                 product.getPrice(),
@@ -75,8 +80,8 @@ public class ProductDaoImpl implements ProductDao {
     public boolean update(Product product) {
         List<String> updateFields = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
         List<String> conditionFields = List.of(PRODUCT_ID);
-        String query = ExecuteSQLUtils.createUpdateQuery(TABLE_NAME, updateFields, conditionFields);
-        return ExecuteSQLUtils.executeUpdate(
+        String query = executeSQLHelper.createUpdateQuery(TABLE_NAME, updateFields, conditionFields);
+        return executeSQLHelper.executeUpdate(
                 query,
                 product.getName(),
                 product.getPrice(),
@@ -96,7 +101,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public boolean delete(long productId) {
         String query = "UPDATE Product SET isDeleted=true WHERE productId=?";
-        return ExecuteSQLUtils.executeUpdate(query, productId);
+        return executeSQLHelper.executeUpdate(query, productId);
     }
 
 

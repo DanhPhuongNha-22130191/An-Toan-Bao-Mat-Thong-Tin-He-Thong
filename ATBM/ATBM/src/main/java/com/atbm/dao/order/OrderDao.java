@@ -6,8 +6,11 @@ import com.atbm.models.entity.Order;
 import java.util.List;
 
 public interface OrderDao {
-    SQLTransactionStep<Boolean> insert(Order order);
+    SQLTransactionStep<Long> insert(Order order);
+
     List<Order> getOrdersByAccountId(long accountId);
-    Order getOrderById(long orderId);
+
+    Order getOrderById(long accountId, long orderId);
+
     void updateStatus(long accountId, long orderId, String status);
 }
