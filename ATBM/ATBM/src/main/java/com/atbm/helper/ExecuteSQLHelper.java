@@ -15,8 +15,16 @@ import java.util.List;
  */
 @ApplicationScoped
 public class ExecuteSQLHelper {
+    private final DBConnection dbConnection;
+
     @Inject
-    private DBConnection dbConnection;
+    public ExecuteSQLHelper(DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
+
+    public ExecuteSQLHelper() {
+        dbConnection=null;
+    }
 
     public String createInsertQuery(String tableName, List<String> fieldNames) {
         String columns = String.join(", ", fieldNames);

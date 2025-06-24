@@ -17,12 +17,19 @@ public class LocationService {
     private final DistrictDao districtDao;
     private final WardDao wardDao;
 
+    public LocationService() {
+        this.provinceDao = null;
+        this.districtDao = null;
+        this.wardDao = null;
+    }
+
     @Inject
     public LocationService(ProvinceDao provinceDao, DistrictDao districtDao, WardDao wardDao) {
         this.provinceDao = provinceDao;
         this.districtDao = districtDao;
         this.wardDao = wardDao;
     }
+
 
     public List<Province> getProvinces() {
         return provinceDao.getProvinces();

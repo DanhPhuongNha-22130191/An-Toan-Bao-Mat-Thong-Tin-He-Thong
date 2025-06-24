@@ -1,23 +1,15 @@
 package com.atbm.services;
 
-import com.atbm.dao.account.AccountDao;
-import com.atbm.dao.account.impl.AccountDaoImpl;
 import com.atbm.dao.cart.CartDao;
-import com.atbm.dao.cart.impl.CartDaoImpl;
 import com.atbm.dao.order.OrderDao;
-import com.atbm.dao.order.impl.OrderDaoImpl;
 import com.atbm.dao.orderItem.OrderItemDao;
-import com.atbm.dao.orderItem.impl.OrderItemDaoImpl;
 import com.atbm.dao.orderSecurity.OrderSecurityDao;
-import com.atbm.dao.orderSecurity.impl.OrderSecurityDaoImpl;
 import com.atbm.dao.shippingInfo.ShippingInfoDao;
-import com.atbm.dao.shippingInfo.impl.ShippingInfoDaoImpl;
 import com.atbm.database.CachedTransactionStep;
 import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.helper.OrderBuilderHelper;
 import com.atbm.models.entity.*;
-import com.atbm.models.enums.OrderStatus;
 import com.atbm.models.wrapper.request.CheckoutOrderRequest;
 import com.atbm.models.wrapper.response.OrderResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,7 +26,6 @@ public class OrderService {
     private final OrderItemDao orderItemDao;
     private final OrderSecurityDao orderSecurityDao;
     private final CartDao cartDao;
-    private final AccountDao accountDao;
     private final OrderBuilderHelper orderBuilderHelper;
     private final ExecuteSQLHelper executeSQLHelper;
 
@@ -44,14 +35,12 @@ public class OrderService {
                         OrderItemDao orderItemDao,
                         OrderSecurityDao orderSecurityDao,
                         CartDao cartDao,
-                        AccountDao accountDao,
                         OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper) {
         this.orderDao = orderDao;
         this.shippingInfoDao = shippingInfoDao;
         this.orderItemDao = orderItemDao;
         this.orderSecurityDao = orderSecurityDao;
         this.cartDao = cartDao;
-        this.accountDao = accountDao;
         this.orderBuilderHelper = orderBuilderHelper;
         this.executeSQLHelper = executeSQLHelper;
     }

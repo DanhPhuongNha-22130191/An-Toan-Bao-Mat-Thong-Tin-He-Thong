@@ -17,6 +17,12 @@ public class OrderBuilderHelper {
     private final AccountDao accountDao;
     private final CartDao cartDao;
     private final LocationService locationService;
+    public OrderBuilderHelper(){
+        accountDao=null;
+        cartDao=null;
+        locationService=null;
+    }
+
 
     @Inject
     public OrderBuilderHelper(AccountDao accountDao, CartDao cartDao, LocationService locationService) {
@@ -24,6 +30,7 @@ public class OrderBuilderHelper {
         this.cartDao = cartDao;
         this.locationService = locationService;
     }
+
 
 
     public OrderSecurity builderOrderSecurity(long accountId, CheckoutOrderRequest checkoutOrderRequest) {
