@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 @WebServlet("/admin/users")
 public class AccountController extends HttpServlet {
@@ -30,55 +29,53 @@ public class AccountController extends HttpServlet {
         HttpUtils.dispatcher(req, resp, "/WEB-INF/views/userAdmin.jsp");
     }
 
+    // Thêm tài khoản mới
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getParameter("action");
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String email = req.getParameter("email");
+        String roleStr = req.getParameter("role");
+        Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
 
-        if ("add".equalsIgnoreCase(action)) {
-            String username = req.getParameter("username");
-            String password = req.getParameter("password");
-            String email = req.getParameter("email");
-            String roleStr = req.getParameter("role");
-            Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
+        AddAccountRequest addRequest = new AddAccountRequest(
+                username,
+                password,
+                email,
+                role,
+                false
+        );
 
-            AddAccountRequest addRequest = new AddAccountRequest(
-                    username,
-                    password,
-                    email,
-                    role,
-                    false // mặc định là chưa bị xoá
-            );
+        accountService.register(addRequest);
+        HttpUtils.sendRedirect(req, resp, "/admin/users");
+    }
 
-            try {
-                accountService.register(addRequest);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
+    // Cập nhật tài khoản (Edit)
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        long userId = Long.parseLong(req.getParameter("userId"));
+        String username = req.getParameter("username");
+        String email = req.getParameter("email");
+        String roleStr = req.getParameter("role");
+        Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
 
-            HttpUtils.sendRedirect(req, resp, "/admin/users");
+        EditAccountRequest editRequest = new EditAccountRequest(
+                userId,
+                username,
+                email,
+                role,
+                false
+        );
 
-        } else if ("edit".equalsIgnoreCase(action)) {
-            long userId = Long.parseLong(req.getParameter("userId"));
-            String username = req.getParameter("username");
-            String email = req.getParameter("email");
-            String roleStr = req.getParameter("role");
-            Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
+        accountService.update(editRequest);
+        HttpUtils.sendRedirect(req, resp, "/admin/users");
+    }
 
-            EditAccountRequest editRequest = new EditAccountRequest(
-                    userId,
-                    username,
-                    email,
-                    role,
-                    false
-            );
-
-            accountService.update(editRequest);
-            HttpUtils.sendRedirect(req, resp, "/admin/users");
-
-        } else if ("delete".equalsIgnoreCase(action)) {
-            long userId = Long.parseLong(req.getParameter("userId"));
-            accountService.delete(userId);
-            HttpUtils.sendRedirect(req, resp, "/admin/users");
-        }
+    // Xoá tài khoản (Delete - đánh dấu isDeleted = true)
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        long userId = Long.parseLong(req.getParameter("userId"));
+        accountService.delete(userId);
+        HttpUtils.sendRedirect(req, resp, "/admin/users");
     }
 }

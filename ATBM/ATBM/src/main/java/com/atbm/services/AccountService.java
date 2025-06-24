@@ -40,22 +40,26 @@ public class AccountService {
     }
 
     // Đăng ký tài khoản từ AddAccountRequest
-    public boolean register(AddAccountRequest request) throws NoSuchAlgorithmException {
+    public boolean register(AddAccountRequest request) {
         if (accountDao.existsByUsername(request.username().trim())) {
-            return false;
+            throw new RuntimeException("Username already exists");
         }
-        String hashedPassword = SignatureUtil.hash(request.password());
-        Account account = new Account();
-        account.setUsername(request.username().trim());
-        account.setPassword(hashedPassword);
-        account.setEmail(request.email() != null ? request.email().trim() : null);
-        if (request.role() != null) {
-            account.setRole(request.role());
+        try {
+            String hashedPassword = SignatureUtil.hash(request.password());
+            Account account = new Account();
+            account.setUsername(request.username().trim());
+            account.setPassword(hashedPassword);
+            account.setEmail(request.email() != null ? request.email().trim() : null);
+            if (request.role() != null) {
+                account.setRole(request.role());
+            }
+            account.setDeleted(request.isDeleted() != null ? request.isDeleted() : false);
+            return accountDao.insert(account);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
         }
-        // Mặc định tài khoản mới không bị xóa
-        account.setDeleted(request.isDeleted() != null ? request.isDeleted() : false);
-        return accountDao.insert(account);
     }
+
 
     // Đăng nhập
     public AccountResponse login(LoginRequest loginRequest) throws NoSuchAlgorithmException {
