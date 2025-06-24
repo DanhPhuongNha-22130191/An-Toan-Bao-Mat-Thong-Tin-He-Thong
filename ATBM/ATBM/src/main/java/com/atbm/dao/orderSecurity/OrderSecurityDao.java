@@ -10,5 +10,7 @@ public interface OrderSecurityDao {
 
     SQLTransactionStep<Boolean> update(OrderSecurity orderSecurity);
 
-    SQLTransactionStep<Boolean> updateSignature(long orderSecurityId, String signature);
+    void updateSignature(long orderSecurityId, String signature);
+
+    boolean isDigitallySigned(long orderSecurityId);
 }

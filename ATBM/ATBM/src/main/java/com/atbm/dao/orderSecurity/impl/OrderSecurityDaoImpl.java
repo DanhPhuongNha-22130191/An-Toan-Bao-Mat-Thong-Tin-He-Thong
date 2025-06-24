@@ -38,9 +38,20 @@ public class OrderSecurityDaoImpl implements OrderSecurityDao {
     }
 
     @Override
-    public SQLTransactionStep<Boolean> updateSignature(long orderSecurityId, String signature) {
+    public void updateSignature(long orderSecurityId, String signature) {
         String query = "UPDATE OrderSecurity SET signature=? WHERE orderSecurityId=?";
-        return executeSQLHelper.buildUpdateStep(query, signature, orderSecurityId);
+        if(executeSQLHelper.executeUpdate(query, signature, orderSecurityId))
+            throw new RuntimeException("Cập nhật thất bại");
+    }
+
+    @Override
+    public boolean isDigitallySigned(long orderSecurityId) {
+        String query = "SELECT COUNT(*) FROM OrderSecurity WHERE orderSecurityId=? and signature IS NOT NULL";
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, orderSecurityId)) {
+            return rs.next();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private OrderSecurity createOrderSecurity(ResultSet resultSet) throws SQLException {

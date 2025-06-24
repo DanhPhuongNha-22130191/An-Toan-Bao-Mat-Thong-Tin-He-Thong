@@ -10,13 +10,13 @@ public class ShippingInfo {
     private String ward;
     private String note;
     private String shippingMethod;
-    private String shippingFee;
+    private double shippingFee;
 
-    private Integer provinceId;
-    private Integer districtId;
-    private String wardId;
+    private long provinceId;
+    private long districtId;
+    private long wardId;
 
-    public ShippingInfo(long shippingInfoId, String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, String shippingFee, Integer provinceId, Integer districtId, String wardId) {
+    public ShippingInfo(long shippingInfoId, String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, double shippingFee, long provinceId, long districtId, long wardId) {
         this.shippingInfoId = shippingInfoId;
         this.recipientName = recipientName;
         this.phoneNumber = phoneNumber;
@@ -43,7 +43,7 @@ public class ShippingInfo {
     /**
      *  Tạo dữ liệu
      */
-    public ShippingInfo(String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, String shippingFee, Integer provinceId, Integer districtId, String wardId) {
+    public ShippingInfo(String recipientName, String phoneNumber, String addressLine, String district, String province, String ward, String note, String shippingMethod, double shippingFee, long provinceId, long districtId, long wardId) {
         this.recipientName = recipientName;
         this.phoneNumber = phoneNumber;
         this.addressLine = addressLine;
@@ -123,19 +123,19 @@ public class ShippingInfo {
         this.shippingMethod = shippingMethod;
     }
 
-    public String getShippingFee() {
+    public double getShippingFee() {
         return shippingFee;
     }
 
-    public void setShippingFee(String shippingFee) {
+    public void setShippingFee(double shippingFee) {
         this.shippingFee = shippingFee;
     }
 
-    public Integer getProvinceId() {
+    public long getProvinceId() {
         return provinceId;
     }
 
-    public void setProvinceId(Integer provinceId) {
+    public void setProvinceId(long provinceId) {
         this.provinceId = provinceId;
     }
 
@@ -147,19 +147,19 @@ public class ShippingInfo {
         this.province = province;
     }
 
-    public Integer getDistrictId() {
+    public long getDistrictId() {
         return districtId;
     }
 
-    public void setDistrictId(Integer districtId) {
+    public void setDistrictId(long districtId) {
         this.districtId = districtId;
     }
 
-    public String getWardId() {
+    public long getWardId() {
         return wardId;
     }
 
-    public void setWardId(String wardId) {
+    public void setWardId(long wardId) {
         this.wardId = wardId;
     }
 }

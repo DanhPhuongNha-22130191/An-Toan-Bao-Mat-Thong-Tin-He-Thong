@@ -31,7 +31,7 @@ public class CartService {
     public CartResponse getCartByAccountId(long accountId) {
         Cart cart = cartDao.getCartByAccountId(accountId);
         List<CartItem> cartItems = cartDao.getCartItemsByCartId(cart.getCartId());
-        return new CartResponse(cart.getCartId(), cart.getTotalPrice(), cartItems);
+        return new CartResponse(cart.getCartId(), cart.getTotalPrice(), cartItems,cart.getUpdateAt());
     }
 
     public void insertCart(Cart cart) {
