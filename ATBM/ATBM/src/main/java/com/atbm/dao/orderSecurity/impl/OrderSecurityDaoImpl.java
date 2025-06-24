@@ -13,12 +13,12 @@ import java.util.List;
 
 @ApplicationScoped
 public class OrderSecurityDaoImpl implements OrderSecurityDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String TABLE_NAME = "OrderSecurity";
-    private static final String ORDER_SECURITY_ID = "orderSecurityId";
-    private static final String PUBLIC_KEY = "publicKey";
-    private static final String SIGNATURE = "signature";
+    public OrderSecurityDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public OrderSecurity getOrderSecurityById(long orderSecurityId) {

@@ -6,6 +6,7 @@ import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,7 +26,7 @@ public class ProductController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
+        productService = CDI.current().select(ProductService.class).get();
     }
 
     @Override

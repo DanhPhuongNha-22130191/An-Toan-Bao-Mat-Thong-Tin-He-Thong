@@ -5,6 +5,7 @@ import com.atbm.models.wrapper.request.AddAccountRequest;
 import com.atbm.models.wrapper.request.EditAccountRequest;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,7 +20,7 @@ public class AccountController extends HttpServlet {
 
     @Override
     public void init() {
-        accountService = new AccountService();
+        accountService = CDI.current().select(AccountService.class).get();
     }
 
     @Override

@@ -14,21 +14,12 @@ import java.util.List;
 
 @ApplicationScoped
 public class ProductDaoImpl implements ProductDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private final String TABLE_NAME = "Product";
-    private final String PRODUCT_ID = "productId";
-    private final String NAME = "name";
-    private final String PRICE = "price";
-    private final String DESCRIPTION = "description";
-    private final String STOCK = "stock";
-    private final String IMAGE = "image";
-    private final String TRENDING = "isTrending";
-    private final String SIZE = "size";
-    private final String WATER_RESISTANCE = "waterResistance";
-    private final String BRAND_ID = "brandId";
-    private final String STRAP_ID = "strapId";
-    private final String DELETED = "isDeleted";
+    public ProductDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public Product getProductById(long productId) {
@@ -61,9 +52,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean insert(Product product) {
-        List<String> fieldNames = List.of( NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> fieldNames = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, fieldNames);
-        return ExecuteSQLUtils.executeUpdate(
+        return executeSQLHelper.executeUpdate(
                 query,
                 product.getName(),
                 product.getPrice(),

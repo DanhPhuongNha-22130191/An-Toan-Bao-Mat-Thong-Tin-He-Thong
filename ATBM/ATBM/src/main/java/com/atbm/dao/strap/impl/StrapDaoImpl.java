@@ -12,12 +12,13 @@ import java.sql.SQLException;
 
 @ApplicationScoped
 public class StrapDaoImpl implements StrapDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String STRAP_ID = "strapId";
-    private static final String COLOR = "color";
-    private static final String MATERIAL = "material";
-    private static final String LENGTH = "length";
+    public StrapDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
+
 
     @Override
     public Strap getStrapById(long strapId) {

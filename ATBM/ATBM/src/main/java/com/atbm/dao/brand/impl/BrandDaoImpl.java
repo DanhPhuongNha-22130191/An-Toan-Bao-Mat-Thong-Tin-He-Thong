@@ -12,10 +12,12 @@ import java.sql.SQLException;
 
 @ApplicationScoped
 public class BrandDaoImpl implements BrandDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String BRAND_ID = "brandId";
-    private static final String NAME = "name";
+    public BrandDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public Brand getBrandById(long brandId) {

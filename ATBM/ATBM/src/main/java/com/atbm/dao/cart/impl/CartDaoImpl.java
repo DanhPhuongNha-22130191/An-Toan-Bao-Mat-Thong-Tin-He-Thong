@@ -17,20 +17,12 @@ import java.util.List;
 
 @ApplicationScoped
 public class CartDaoImpl implements CartDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    public static final String CART_TABLE_NAME = "Cart";
-    public static final String CART_ID = "cartId";
-    public static final String ACCOUNT_ID = "accountId";
-    public static final String TOTAL_PRICE = "totalPrice";
-    public static final String UPDATED_AT = "updateAt";
-    public static final String CART_ITEM_TABLE_NAME = "CartItem";
-    public static final String CART_ITEM_ID = "cartItemId";
-    public static final String PRODUCT_ID = "productId";
-    public static final String QUANTITY = "quantity";
-    public static final String PRICE_SNAPSHOT = "priceSnapshot";
-    public static final String NAME_SNAPSHOT = "nameSnapshot";
-    public static final String IMAGE_SNAPSHOT = "imageSnapshot";
+    public CartDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public void insert(Cart cart) {

@@ -14,13 +14,6 @@ import java.util.List;
 @ApplicationScoped
 public class AccountDaoImpl implements AccountDao {
     private final ExecuteSQLHelper executeSQLHelper;
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-    private static final String EMAIL = "email";
-    private static final String ROLES = "roles";
-    private static final String ACCOUNT_ID = "accountId";
-    private static final String PUBLIC_KEY_ACTIVE = "publicKeyActive";
-    private static final String IS_DELETED = "isDeleted";
 
     @Inject
     public AccountDaoImpl(ExecuteSQLHelper executeSQLHelper) {

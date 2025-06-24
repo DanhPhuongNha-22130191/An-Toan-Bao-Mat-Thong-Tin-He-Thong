@@ -12,16 +12,13 @@ import java.util.List;
 
 @ApplicationScoped
 public class OrderItemDaoImpl implements OrderItemDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String TABLE_NAME = "OrderItems";
-    private static final String ORDER_ITEM_ID = "orderItemId";
-    private static final String ORDER_ID = "orderId";
-    private static final String PRODUCT_ID = "productId";
-    private static final String QUANTITY = "quantity";
-    private static final String PRICE = "priceSnapshot";
-    private static final String NAME = "nameSnapshot";
-    private static final String IMG = "imageSnapshot";
+    public OrderItemDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
+
 
     @Override
     public SQLTransactionStep<Boolean> insert(OrderItem orderItem) {

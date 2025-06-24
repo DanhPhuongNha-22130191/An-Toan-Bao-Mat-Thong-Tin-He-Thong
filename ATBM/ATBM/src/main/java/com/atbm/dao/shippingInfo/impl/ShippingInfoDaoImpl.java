@@ -13,22 +13,12 @@ import java.util.List;
 
 @ApplicationScoped
 public class ShippingInfoDaoImpl implements ShippingInfoDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String TABLE_NAME = "ShippingInfo";
-    private static final String SHIPPING_INFO_ID = "shippingInfoId";
-    private static final String RECEIVER_NAME = "receiverName";
-    private static final String PHONE_NUMBER = "phoneNumber";
-    private static final String ADDRESS_LINE = "addressLine";
-    private static final String DISTRICT = "district";
-    private static final String PROVINCE = "province";
-    private static final String WARD = "ward";
-    private static final String SHIPPING_METHOD = "shippingMethod";
-    private static final String SHIPPING_FEE = "shippingFee";
-    private static final String NOTE = "note";
-    private static final String DISTRICT_ID = "districtId";
-    private static final String PROVINCE_ID = "provinceId";
-    private static final String WARD_ID = "wardId";
+    public ShippingInfoDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public SQLTransactionStep<Long> insert(ShippingInfo shippingInfo) {

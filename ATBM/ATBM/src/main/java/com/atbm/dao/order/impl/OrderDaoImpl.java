@@ -12,19 +12,15 @@ import jakarta.inject.Inject;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
 @ApplicationScoped
 public class OrderDaoImpl implements OrderDao {
+    private final ExecuteSQLHelper executeSQLHelper;
+
     @Inject
-    private ExecuteSQLHelper executeSQLHelper;
-    private static final String TABLE_NAME = "Orders";
-    private static final String ORDER_ID = "orderId";
-    private static final String ACCOUNT_ID = "accountId";
-    private static final String STATUS = "status";
-    private static final String TOTAL_PRICE = "totalPrice";
-    private static final String ORDER_AT = "orderAt";
-    private static final String PAYMENT_METHOD = "paymentMethod";
-    private static final String SHIPPING_INFO_ID = "shippingInfoId";
-    private static final String ORDER_SECURITY_ID = "orderSecurityId";
+    public OrderDaoImpl(ExecuteSQLHelper executeSQLHelper) {
+        this.executeSQLHelper = executeSQLHelper;
+    }
 
     @Override
     public SQLTransactionStep<Long> insert(Order order) {
@@ -50,7 +46,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Order getOrderById(long accountId, long orderId) {
         String query = "SELECT * FROM Orders WHERE accountId=? AND orderId = ?";
-        try (ResultSet rs = executeSQLHelper.executeQuery(query,accountId, orderId)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId, orderId)) {
             if (rs.next())
                 return createOrder(rs);
             else
