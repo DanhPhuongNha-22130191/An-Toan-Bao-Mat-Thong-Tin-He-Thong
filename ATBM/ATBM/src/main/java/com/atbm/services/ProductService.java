@@ -29,7 +29,6 @@ public class ProductService {
         this.strapDao = strapDao;
     }
 
-
     //Lấy danh sách tất cả sản phẩm
     public List<ProductResponse> getProducts() {
         List<ProductResponse> productResponses = new ArrayList<>();
