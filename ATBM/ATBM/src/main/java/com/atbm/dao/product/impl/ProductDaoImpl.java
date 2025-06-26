@@ -1,6 +1,7 @@
 package com.atbm.dao.product.impl;
 
 import com.atbm.dao.product.ProductDao;
+import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 import com.atbm.utils.ExecuteSQLUtils;
 import com.atbm.utils.LogUtils;
@@ -20,10 +21,10 @@ public class ProductDaoImpl implements ProductDao {
     private final String IMAGE = "image";
     private final String TRENDING = "isTrending";
     private final String SIZE = "size";
-    private final String WATER_RESISTANCE = "waterResistance";
     private final String BRAND_ID = "brandId";
     private final String STRAP_ID = "strapId";
     private final String DELETED = "isDeleted";
+    private final String WATER_RESISTANCE = "waterResistance";
 
     @Override
     public Product getProductById(long productId) {
@@ -38,7 +39,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> getProducts() {
-        String query = "SELECT * FROM Product WHERE isDeleted = 0 ORDER BY price ";
+        String query = "SELECT * FROM Product WHERE isDeleted = 0";
         try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
             List<Product> products = new ArrayList<>();
             while (rs.next()) {
@@ -56,7 +57,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean insert(Product product) {
-        List<String> fieldNames = List.of( NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> fieldNames = List.of( NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, BRAND_ID, STRAP_ID, DELETED);
         String query = ExecuteSQLUtils.createInsertQuery(TABLE_NAME, fieldNames);
         return ExecuteSQLUtils.executeUpdate(
                 query,
@@ -67,7 +68,6 @@ public class ProductDaoImpl implements ProductDao {
                 product.getImage(),
                 product.isTrending(),
                 product.getSize(),
-                product.isWaterResistance(),
                 product.getBrandId(),
                 product.getStrapId(),
                 product.isDeleted()
@@ -76,7 +76,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public boolean update(Product product) {
-        List<String> updateFields = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, WATER_RESISTANCE, BRAND_ID, STRAP_ID, DELETED);
+        List<String> updateFields = List.of(NAME, PRICE, DESCRIPTION, STOCK, IMAGE, TRENDING, SIZE, BRAND_ID, STRAP_ID, DELETED);
         List<String> conditionFields = List.of(PRODUCT_ID);
         String query = ExecuteSQLUtils.createUpdateQuery(TABLE_NAME, updateFields, conditionFields);
         return ExecuteSQLUtils.executeUpdate(
@@ -88,7 +88,6 @@ public class ProductDaoImpl implements ProductDao {
                 product.getImage(),
                 product.isTrending(),
                 product.getSize(),
-                product.isWaterResistance(),
                 product.getBrandId(),
                 product.getStrapId(),
                 product.isDeleted(),
@@ -101,7 +100,6 @@ public class ProductDaoImpl implements ProductDao {
         String query = "UPDATE Product SET isDeleted=1 WHERE productId=?";
         return ExecuteSQLUtils.executeUpdate(query, productId);
     }
-
 
     private Product createProduct(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
@@ -121,9 +119,21 @@ public class ProductDaoImpl implements ProductDao {
         }
         return null;
     }
-
-    public static void main(String[] args) {
-        System.out.println(new ProductDaoImpl().delete(1));
-
+    public List<Brand> getBrands() {
+        String query = "SELECT * FROM Brand WHERE isDeleted = 0 ORDER BY name";
+        List<Brand> brands = new ArrayList<>();
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
+            while (rs.next()) {
+                Brand brand = new Brand(
+                        rs.getLong("brandId"),
+                        rs.getString("name")
+                );
+                brands.add(brand);
+            }
+            return brands;
+        } catch (SQLException e) {
+            LogUtils.debug(ProductDaoImpl.class, e.getMessage());
+            throw new RuntimeException("Lấy danh sách thương hiệu lỗi");
+        }
     }
 }
