@@ -1,5 +1,6 @@
 package com.atbm.dao.product;
 
+import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 
 import java.util.List;

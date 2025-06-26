@@ -9,6 +9,8 @@ import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class StrapDaoImpl implements StrapDao {
@@ -29,6 +31,28 @@ public class StrapDaoImpl implements StrapDao {
             LogUtils.debug(StrapDaoImpl.class, e.getMessage());
             throw new RuntimeException("Lấy Strap lỗi");
         }
+    }
+
+    @Override
+    public List<Strap> getStraps() {
+        String query = "SELECT * FROM Strap";
+        List<Strap> straps = new ArrayList<>();
+
+        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
+            while (rs.next()) {
+                Strap strap = new Strap();
+                strap.setStrapId(rs.getLong("strapId"));
+                strap.setColor(rs.getString("color"));
+                strap.setMaterial(rs.getString("material"));
+                strap.setLength(rs.getDouble("length"));
+                straps.add(strap);
+            }
+        } catch (SQLException e) {
+            LogUtils.debug(getClass(), e.getMessage());
+            throw new RuntimeException("Lỗi khi lấy danh sách dây đeo");
+        }
+
+        return straps;
     }
 
     private Strap createStrap(ResultSet resultSet) throws SQLException {

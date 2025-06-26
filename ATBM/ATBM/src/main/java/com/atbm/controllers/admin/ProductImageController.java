@@ -30,7 +30,7 @@ public class ProductImageController extends HttpServlet {
         try {
             long productId = Long.parseLong(productIdStr);
             ProductResponse product = productService.getProductById(productId);
-            byte[] imageData = product.image();
+            byte[] imageData = product.getImage();
             HttpUtils.setResponseImage(resp, imageData);
         } catch (NumberFormatException e) {
 

@@ -57,7 +57,6 @@ public class ProductService {
                 product.getImage(),
                 strap,
                 brand,
-                product.isWaterResistance(),
                 product.getSize());
     }
 
@@ -82,38 +81,46 @@ public class ProductService {
         return productDao.delete(productId);
     }
 
-    // Taọ sản phẩm mới
+    // Tạo sản phẩm mới mà KHÔNG cần trường waterResistance từ request
     public boolean addProduct(AddProductRequest addProductRequest) {
         Product product = new Product(
                 0L,
-                addProductRequest.name(),
-                addProductRequest.price(),
-                addProductRequest.description(),
-                addProductRequest.stock(),
-                addProductRequest.image(),
+                addProductRequest.getName(),
+                addProductRequest.getPrice(),
+                addProductRequest.getDescription(),
+                addProductRequest.getStock(),
+                addProductRequest.getImage(),
+                false, // isTrending
+                addProductRequest.getSize(),
                 false,
-                addProductRequest.size(),
-                addProductRequest.waterResistance(),
-                addProductRequest.brandId(),
-                addProductRequest.strapId()
+                addProductRequest.getBrandId(),
+                addProductRequest.getStrapId()
         );
         return productDao.insert(product);
     }
 
+
     // Cập nhật sản phẩm theo id
     public boolean editProduct(EditProductRequest editRequest) {
-        Product existingProduct = productDao.getProductById(editRequest.productId());
+        Product existingProduct = productDao.getProductById(editRequest.getProductId());
         if (existingProduct == null) {
             return false;
         }
-        existingProduct.setName(editRequest.name());
-        existingProduct.setPrice(editRequest.price());
-        existingProduct.setDescription(editRequest.description());
-        existingProduct.setStock(editRequest.stock());
-        existingProduct.setBrandId(editRequest.brandId());
-        if (editRequest.image() != null && editRequest.image().length > 0) {
-            existingProduct.setImage(editRequest.image());
+        existingProduct.setName(editRequest.getName());
+        existingProduct.setPrice(editRequest.getPrice());
+        existingProduct.setDescription(editRequest.getDescription());
+        existingProduct.setStock(editRequest.getStock());
+        existingProduct.setBrandId(editRequest.getBrandId());
+        if (editRequest.getImage() != null && editRequest.getImage().length > 0) {
+            existingProduct.setImage(editRequest.getImage());
         }
         return productDao.update(existingProduct);
+    }
+
+    public List<Brand> getBrands() {
+        return brandDao.getBrands();
+    }
+    public List<Strap> getStraps() {
+        return strapDao.getStraps();
     }
 }

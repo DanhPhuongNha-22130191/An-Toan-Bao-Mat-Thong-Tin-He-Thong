@@ -29,7 +29,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ProductResponse> products = productService.getProducts();
         HttpUtils.setAttribute(req, "products", products);
-//        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ProductController extends HttpServlet {
         );
         List<ProductResponse> products = productService.filterProduct(filterProductRequest);
         HttpUtils.setAttribute(req, "products", products);
-        //        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
         HttpUtils.setResponseJson(resp, products);
     }
 

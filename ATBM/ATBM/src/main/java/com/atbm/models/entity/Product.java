@@ -1,3 +1,4 @@
+
 package com.atbm.models.entity;
 
 public class Product {
