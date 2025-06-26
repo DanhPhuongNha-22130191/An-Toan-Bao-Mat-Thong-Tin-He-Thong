@@ -1,14 +1,17 @@
 package com.atbm.utils;
 
+import com.atbm.models.entity.Order;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Utility class hỗ trợ gửi HTTP GET và POST request sử dụng HttpURLConnection và Gson.
@@ -22,23 +25,21 @@ public class HttpClientUtils {
      * Gửi HTTP GET request đến một URL và parse JSON response thành đối tượng kiểu T.
      *
      * @param url   URL endpoint (dưới dạng chuỗi)
-     * @param clazz Class của kiểu dữ liệu muốn nhận về
+     * @param typeOfT Class của kiểu dữ liệu muốn nhận về
      * @param <T>   Kiểu dữ liệu trả về (class đơn giản, không phải List<T>)
      * @return Đối tượng kiểu T được parse từ JSON response
      * @throws IOException Nếu có lỗi trong kết nối hoặc đọc dữ liệu
      */
-    public static <T> T sendGet(String url, Class<T> clazz) throws IOException {
-        //Tạo url để gửi
+    public static <T> T sendGet(String url, Type typeOfT) throws IOException {
         URL urlRequest = URI.create(url).toURL();
-        //Tạo http connection tới endpoint
         HttpURLConnection connection = (HttpURLConnection) urlRequest.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", JSON);
-        if (connection.getResponseCode() == 200) {
+        if (connection.getResponseCode() >= 400) {
             throw new IOException(connection.getResponseMessage());
         }
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            return gson.fromJson(br, clazz);
+            return gson.fromJson(br, typeOfT);
         }
     }
 

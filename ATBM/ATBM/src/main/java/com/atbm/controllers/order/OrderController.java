@@ -37,7 +37,7 @@ public class OrderController extends HttpServlet {
         long id = Long.parseLong(req.getParameter("accountId"));
         CartResponse cart = getCartInSession(req.getSession());
         CheckoutOrderRequest checkoutOrderRequest = FormMapper.bind(req.getParameterMap(), CheckoutOrderRequest.class);
-        orderService.checkout(id, checkoutOrderRequest, cart.updateAt());
+        orderService.checkout(id, checkoutOrderRequest, cart.getUpdateAt());
     }
 
     private CartResponse getCartInSession(HttpSession session) {

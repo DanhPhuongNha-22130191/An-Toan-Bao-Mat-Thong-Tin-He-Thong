@@ -1,10 +1,13 @@
 package com.atbm.models.entity;
 
+import java.util.List;
+
 public class District {
     private long id;
     private long provinceId;
     private String name;
     private int code;
+    private List<Ward> wards;
 
     public District() {
     }
@@ -58,5 +61,13 @@ public class District {
 
     public void setCode(int code) {
         this.code = code;
+    }
+
+    public List<Ward> getWards() {
+        return wards;
+    }
+
+    public void setWards(List<Ward> wards) {
+        this.wards = wards;
     }
 }

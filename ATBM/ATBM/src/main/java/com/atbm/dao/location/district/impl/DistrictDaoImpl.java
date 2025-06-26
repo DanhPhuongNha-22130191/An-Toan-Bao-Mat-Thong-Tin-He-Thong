@@ -1,6 +1,7 @@
 package com.atbm.dao.location.district.impl;
 
 import com.atbm.dao.location.district.DistrictDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.District;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,9 +21,9 @@ public class DistrictDaoImpl implements DistrictDao {
 
 
     @Override
-    public void insert(District district) {
+    public SQLTransactionStep<Long> insert(District district) {
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(DISTRICT_NAME, DISTRICT_CODE, PROVINCE_ID));
-        executeSQLHelper.executeUpdate(query, district.getName(), district.getCode(), district.getProvinceId());
+        return executeSQLHelper.buildInsertStepReturningId(query, district.getName(), district.getCode(), district.getProvinceId());
     }
 
     @Override
