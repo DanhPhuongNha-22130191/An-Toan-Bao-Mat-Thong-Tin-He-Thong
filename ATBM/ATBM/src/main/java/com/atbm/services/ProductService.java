@@ -18,15 +18,18 @@ import java.util.List;
 
 @ApplicationScoped
 public class ProductService {
-    private final ProductDao productDao;
-    private final BrandDao brandDao;
-    private final StrapDao strapDao;
+    private  ProductDao productDao;
+    private  BrandDao brandDao;
+    private  StrapDao strapDao;
 
     @Inject
     public ProductService(ProductDao productDao, BrandDao brandDao, StrapDao strapDao) {
         this.productDao = productDao;
         this.brandDao = brandDao;
         this.strapDao = strapDao;
+    }
+
+    public ProductService() {
     }
 
     //Lấy danh sách tất cả sản phẩm

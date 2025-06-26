@@ -5,12 +5,15 @@ import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.utils.LogUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class ProductDaoImpl implements ProductDao {
     private final String TABLE_NAME = "Product";
     private final String PRODUCT_ID = "productId";
@@ -28,6 +31,10 @@ public class ProductDaoImpl implements ProductDao {
 
     private final ExecuteSQLHelper sqlHelper;
 
+<<<<<<< nha-refactor
+    @Inject
+=======
+>>>>>>> refactor
     public ProductDaoImpl(ExecuteSQLHelper sqlHelper) {
         this.sqlHelper = sqlHelper;
     }
