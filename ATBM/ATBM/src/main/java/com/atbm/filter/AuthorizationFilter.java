@@ -3,6 +3,7 @@ package com.atbm.filter;
 import com.atbm.models.enums.Role;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class AuthorizationFilter implements Filter {
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -20,7 +22,8 @@ public class AuthorizationFilter implements Filter {
         HttpSession session = request.getSession(false);
 
         long accountId = Long.parseLong(session.getAttribute("accountId").toString());
-        AccountService accountService = new AccountService();
+        //Lấy service trong bean của CDI
+        AccountService accountService = CDI.current().select(AccountService.class).get();
         AccountResponse accountResponse = accountService.getAccountById(accountId);
 
         if (accountResponse == null) {

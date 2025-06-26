@@ -1,13 +1,21 @@
 package com.atbm.dao.orderSecurity;
 
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.models.entity.OrderSecurity;
 
 public interface OrderSecurityDao {
+    String TABLE_NAME = "OrderSecurity";
+    String ORDER_SECURITY_ID = "orderSecurityId";
+    String PUBLIC_KEY = "publicKey";
+    String SIGNATURE = "signature";
+
     OrderSecurity getOrderSecurityById(long orderSecurityId);
 
-    boolean insert(OrderSecurity orderSecurity);
+    SQLTransactionStep<Long> insert(OrderSecurity orderSecurity);
 
-    boolean update(OrderSecurity orderSecurity);
+    SQLTransactionStep<Boolean> update(OrderSecurity orderSecurity);
 
-    boolean updateSignature(long orderSecurityId, String signature);
+    void updateSignature(long orderSecurityId, String signature);
+
+    boolean isDigitallySigned(long orderSecurityId);
 }

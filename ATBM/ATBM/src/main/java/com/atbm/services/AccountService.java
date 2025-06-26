@@ -12,17 +12,22 @@ import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.utils.SignatureUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@ApplicationScoped
 public class AccountService {
     private final AccountDao accountDao;
 
-    public AccountService() {
-        accountDao = new AccountDaoImpl();
+    @Inject
+    public AccountService(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 
     // Đăng ký tài khoản từ RegisterRequest

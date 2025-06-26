@@ -8,6 +8,19 @@ import com.atbm.models.entity.Product;
 import java.util.List;
 
 public interface CartDao {
+    String CART_TABLE_NAME = "Cart";
+    String CART_ID = "cartId";
+    String ACCOUNT_ID = "accountId";
+    String TOTAL_PRICE = "totalPrice";
+    String UPDATED_AT = "updateAt";
+    String CART_ITEM_TABLE_NAME = "CartItem";
+    String CART_ITEM_ID = "cartItemId";
+    String PRODUCT_ID = "productId";
+    String QUANTITY = "quantity";
+    String PRICE_SNAPSHOT = "priceSnapshot";
+    String NAME_SNAPSHOT = "nameSnapshot";
+    String IMAGE_SNAPSHOT = "imageSnapshot";
+
     void insert(Cart cart);
 
     long getCartIdByAccountId(long accountId);

@@ -6,6 +6,7 @@ import com.atbm.utils.EmailUtil;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.utils.RecaptchaUtil;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -27,7 +28,7 @@ public class ForgotPasswordController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            accountService = new AccountService();
+            accountService = CDI.current().select(AccountService.class).get();
             emailUtil = new EmailUtil();
         } catch (Exception e) {
             LogUtils.debug(ForgotPasswordController.class, "Khởi tạo ForgotPasswordController thất bại: " + e.getMessage());

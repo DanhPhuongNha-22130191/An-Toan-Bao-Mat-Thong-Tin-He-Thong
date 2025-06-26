@@ -5,6 +5,7 @@ import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.utils.RecaptchaUtil;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,7 +26,7 @@ public class RegisterController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            accountService = new AccountService();
+            accountService = CDI.current().select(AccountService.class).get();
         } catch (Exception e) {
             LogUtils.debug(RegisterController.class, "Khởi tạo RegisterController thất bại: " + e.getMessage());
             throw new ServletException("Khởi tạo RegisterController thất bại", e);
