@@ -1,6 +1,7 @@
 package com.atbm.dao.location.ward.impl;
 
 import com.atbm.dao.location.ward.WardDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Ward;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,9 +20,9 @@ public class WardDaoImpl implements WardDao {
     }
 
     @Override
-    public void insert(Ward ward) {
+    public SQLTransactionStep<Long> insert(Ward ward) {
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(WARD_NAME, WARD_DISTRICT_ID, WARD_CODE));
-        executeSQLHelper.executeUpdate(query, ward.getName(), ward.getDistrictId(), ward.getCode());
+        return executeSQLHelper.buildInsertStepReturningId(query, ward.getName(), ward.getDistrictId(), ward.getCode());
     }
 
     @Override

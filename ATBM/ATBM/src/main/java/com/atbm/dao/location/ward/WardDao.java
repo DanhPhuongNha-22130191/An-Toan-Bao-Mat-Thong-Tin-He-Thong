@@ -1,5 +1,6 @@
 package com.atbm.dao.location.ward;
 
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.models.entity.Ward;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface WardDao {
     String WARD_CODE = "code";
     String WARD_DISTRICT_ID = "districtId";
 
-    void insert(Ward ward);
+    SQLTransactionStep<Long> insert(Ward ward);
 
     Ward getWardById(long wardId);
 
