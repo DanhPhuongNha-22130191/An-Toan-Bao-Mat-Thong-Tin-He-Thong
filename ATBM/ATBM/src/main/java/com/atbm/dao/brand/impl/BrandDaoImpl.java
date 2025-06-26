@@ -36,7 +36,7 @@ public class BrandDaoImpl implements BrandDao {
     public List<Brand> getBrands() {
         String query = "SELECT * FROM Brand ";
         List<Brand> brands = new ArrayList<>();
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
             while (rs.next()) {
                 Brand brand = new Brand(
                         rs.getLong(BRAND_ID),

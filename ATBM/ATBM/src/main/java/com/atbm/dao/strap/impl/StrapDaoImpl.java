@@ -38,7 +38,7 @@ public class StrapDaoImpl implements StrapDao {
         String query = "SELECT * FROM Strap";
         List<Strap> straps = new ArrayList<>();
 
-        try (ResultSet rs = ExecuteSQLUtils.executeQuery(query)) {
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
             while (rs.next()) {
                 Strap strap = new Strap();
                 strap.setStrapId(rs.getLong("strapId"));

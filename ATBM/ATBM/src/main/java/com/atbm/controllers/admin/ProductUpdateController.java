@@ -3,6 +3,7 @@ package com.atbm.controllers.admin;
 import com.atbm.models.wrapper.request.EditProductRequest;
 import com.atbm.services.ProductService;
 import com.atbm.utils.HttpUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +22,8 @@ public class ProductUpdateController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
+        productService = productService = CDI.current().select(ProductService.class).get();
+
     }
 
     @Override
