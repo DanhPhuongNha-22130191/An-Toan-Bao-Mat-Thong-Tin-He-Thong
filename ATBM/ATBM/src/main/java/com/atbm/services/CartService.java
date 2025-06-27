@@ -20,6 +20,12 @@ public class CartService {
     private final ProductDao productDao;
     private final ExecuteSQLHelper executeSQLHelper;
 
+    public CartService() {
+        cartDao = null;
+        productDao = null;
+        executeSQLHelper = null;
+    }
+
     @Inject
     public CartService(CartDao cartDao, ProductDao productDao, ExecuteSQLHelper executeSQLHelper) {
         this.cartDao = cartDao;
@@ -30,8 +36,11 @@ public class CartService {
 
     public CartResponse getCartByAccountId(long accountId) {
         Cart cart = cartDao.getCartByAccountId(accountId);
-        List<CartItem> cartItems = cartDao.getCartItemsByCartId(cart.getCartId());
-        return new CartResponse(cart.getCartId(), cart.getTotalPrice(), cartItems,cart.getUpdateAt());
+        if (cart != null) {
+            List<CartItem> cartItems = cartDao.getCartItemsByCartId(cart.getCartId());
+            return new CartResponse(cart.getCartId(), cart.getTotalPrice(), cartItems, cart.getUpdateAt());
+        } else throw new RuntimeException("Không lấy được giỏ hàng");
+
     }
 
     public void insertCart(Cart cart) {
@@ -40,12 +49,12 @@ public class CartService {
 
     public void updateQuantity(long accountId, UpdateCartRequest updateCartRequest) {
         Cart cart = cartDao.getCartByAccountId(accountId);
-        CartItem cartItem = cartDao.getCartItemById(updateCartRequest.cartItemId());
+        CartItem cartItem = cartDao.getCartItemById(updateCartRequest.getCartItemId());
 
-        double newTotalPrice = calculateNewTotalPrice(cart.getTotalPrice(), cartItem.getQuantity(), updateCartRequest.quantity(), cartItem.getPriceSnapshot());
+        double newTotalPrice = calculateNewTotalPrice(cart.getTotalPrice(), cartItem.getQuantity(), updateCartRequest.getQuantity(), cartItem.getPriceSnapshot());
 
         if (!executeSQLHelper.executeStepsInTransaction(List.of(
-                cartDao.updateQuantity(cart.getCartId(), updateCartRequest.cartItemId(), updateCartRequest.quantity()),
+                cartDao.updateQuantity(cart.getCartId(), updateCartRequest.getCartItemId(), updateCartRequest.getQuantity()),
                 cartDao.updateTotalPrice(accountId, newTotalPrice))))
             throw new RuntimeException("Thay đổi số lượng hàng thất bại");
     }
@@ -53,25 +62,25 @@ public class CartService {
 
     public void removeProductFromCart(long accountId, UpdateCartRequest updateCartRequest) {
         Cart cart = cartDao.getCartByAccountId(accountId);
-        CartItem cartItem = cartDao.getCartItemById(updateCartRequest.cartItemId());
+        CartItem cartItem = cartDao.getCartItemById(updateCartRequest.getCartItemId());
 
         double productAmount = cartItem.getPriceSnapshot() * cartItem.getQuantity();
         double newTotalPrice = cart.getTotalPrice() - productAmount;
 
         if (!executeSQLHelper.executeStepsInTransaction(List.of(
-                cartDao.removeProductFromCart(cart.getCartId(), updateCartRequest.cartItemId()),
+                cartDao.removeProductFromCart(cart.getCartId(), updateCartRequest.getCartItemId()),
                 cartDao.updateTotalPrice(accountId, newTotalPrice))))
             throw new RuntimeException("Xóa hàng khỏi giỏ hàng thất bại");
     }
 
     public void addProductToCart(long accountId, AddCartRequest addCartRequest) {
         Cart cart = cartDao.getCartByAccountId(accountId);
-        Product product = productDao.getProductById(addCartRequest.productId());
+        Product product = productDao.getProductById(addCartRequest.getProductId());
 
-        double priceToAdd = product.getPrice() * addCartRequest.quantity();
+        double priceToAdd = product.getPrice() * addCartRequest.getQuantity();
         double newTotalPrice = cart.getTotalPrice() + priceToAdd;
         if (!executeSQLHelper.executeStepsInTransaction(List.of(
-                cartDao.addProductToCart(cart.getCartId(), product, addCartRequest.quantity()),
+                cartDao.addProductToCart(cart.getCartId(), product, addCartRequest.getQuantity()),
                 cartDao.updateTotalPrice(accountId, newTotalPrice))))
             throw new RuntimeException("Thêm vào giỏ hàng thất bại");
     }

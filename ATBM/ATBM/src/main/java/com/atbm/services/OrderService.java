@@ -44,6 +44,15 @@ public class OrderService {
         this.orderBuilderHelper = orderBuilderHelper;
         this.executeSQLHelper = executeSQLHelper;
     }
+    public OrderService(){
+        orderDao=null;
+        shippingInfoDao=null;
+        orderItemDao=null;
+        orderSecurityDao=null;
+        cartDao=null;
+        orderBuilderHelper=null;
+        executeSQLHelper=null;
+    }
 
     public void checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
         Cart cart = cartDao.getCartByAccountId(accountId);

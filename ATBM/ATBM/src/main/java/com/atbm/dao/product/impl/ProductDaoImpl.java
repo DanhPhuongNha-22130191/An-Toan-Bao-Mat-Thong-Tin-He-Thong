@@ -31,10 +31,7 @@ public class ProductDaoImpl implements ProductDao {
 
     private final ExecuteSQLHelper sqlHelper;
 
-<<<<<<< nha-refactor
     @Inject
-=======
->>>>>>> refactor
     public ProductDaoImpl(ExecuteSQLHelper sqlHelper) {
         this.sqlHelper = sqlHelper;
     }

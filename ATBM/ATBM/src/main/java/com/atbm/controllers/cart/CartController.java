@@ -1,5 +1,7 @@
 package com.atbm.controllers.cart;
 
+import com.atbm.config.BaseController;
+import com.atbm.mapper.FormMapper;
 import com.atbm.models.wrapper.request.AddCartRequest;
 import com.atbm.models.wrapper.request.UpdateCartRequest;
 import com.atbm.models.wrapper.response.CartResponse;
@@ -9,15 +11,14 @@ import com.atbm.utils.LogUtils;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
 @WebServlet("/user/cart")
-public class CartController extends HttpServlet {
-    private final static String VIEW_CART = "/WEB-INF/views/cart.jsp";
+public class CartController extends BaseController {
+    private final static String VIEW_CART = "/views/cart.jsp";
     private CartService cartService;
 
     @Override
@@ -27,21 +28,18 @@ public class CartController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long accountId = (long) req.getSession().getAttribute("accountId");
+        long accountId = getAccountId(req);
         CartResponse response = cartService.getCartByAccountId(accountId);
         HttpUtils.setAttribute(req, "cart", response);
-//        HttpUtils.dispatcher(req, resp, VIEW_CART);
+        HttpUtils.dispatcher(req, resp, VIEW_CART);
     }
 
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long accountId = (long) req.getSession().getAttribute("accountId");
-        String cartItemIdStr = req.getParameter("cartItemId");
-        String quantityStr = req.getParameter("quantity");
+        long accountId = getAccountId(req);
         try {
-            long cartItemId = Long.parseLong(cartItemIdStr);
-            int quantity = Integer.parseInt(quantityStr);
-            cartService.updateQuantity(accountId, new UpdateCartRequest(cartItemId, quantity));
+            UpdateCartRequest updateCartRequest = FormMapper.bind(req.getParameterMap(), UpdateCartRequest.class);
+            cartService.updateQuantity(accountId, updateCartRequest);
             doGet(req, resp);
         } catch (NumberFormatException e) {
             LogUtils.debug(CartController.class, e.getMessage());
@@ -51,13 +49,10 @@ public class CartController extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long accountId = (long) req.getSession().getAttribute("accountId");
-        String cartItemIdStr = req.getParameter("cartItemId");
-        String quantityStr = req.getParameter("quantity");
+        long accountId = getAccountId(req);
         try {
-            long cartItemId = Long.parseLong(cartItemIdStr);
-            int quantity = Integer.parseInt(quantityStr);
-            cartService.removeProductFromCart(accountId, new UpdateCartRequest(cartItemId, quantity));
+            UpdateCartRequest updateCartRequest = FormMapper.bind(req.getParameterMap(), UpdateCartRequest.class);
+            cartService.removeProductFromCart(accountId, updateCartRequest);
             doGet(req, resp);
         } catch (NumberFormatException e) {
             LogUtils.debug(CartController.class, e.getMessage());
@@ -67,13 +62,10 @@ public class CartController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long accountId = (long) req.getSession().getAttribute("accountId");
-        String productIdStr = req.getParameter("productId");
-        String quantityStr = req.getParameter("quantity");
+        long accountId = getAccountId(req);
         try {
-            long productId = Long.parseLong(productIdStr);
-            int quantity = Integer.parseInt(quantityStr);
-            cartService.addProductToCart(accountId, new AddCartRequest(productId, quantity));
+            AddCartRequest addCartRequest = FormMapper.bind(req.getParameterMap(), AddCartRequest.class);
+            cartService.addProductToCart(accountId, addCartRequest);
             doGet(req, resp);
         } catch (NumberFormatException e) {
             LogUtils.debug(CartController.class, e.getMessage());

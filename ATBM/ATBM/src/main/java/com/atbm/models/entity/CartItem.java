@@ -92,4 +92,17 @@ public class CartItem {
     public void setImageSnapshot(byte[] imageSnapshot) {
         this.imageSnapshot = imageSnapshot;
     }
+
+    public double getTotalPrice() {
+        return priceSnapshot * quantity;
+    }
+    public String getTotalPriceString() {
+        return String.format("%.2f", getTotalPrice());
+    }
+    public String getTotalPriceStringWithCurrency() {
+        return String.format("%.2f VND", getTotalPrice());
+    }
+    public String getPriceWithCurrency(){
+        return String.format("%.2f VND", getPriceSnapshot());
+    }
 }

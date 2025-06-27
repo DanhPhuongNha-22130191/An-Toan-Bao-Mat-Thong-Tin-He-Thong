@@ -52,4 +52,7 @@ public class CartResponse {
     public void setUpdateAt(LocalDate updateAt) {
         this.updateAt = updateAt;
     }
+    public String getTotalPriceStringWithCurrency() {
+        return String.format("%.2f VND", getTotalPrice());
+    }
 }
