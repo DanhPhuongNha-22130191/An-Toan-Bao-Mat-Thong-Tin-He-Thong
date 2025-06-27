@@ -3,7 +3,6 @@ package com.atbm.controllers.user.info;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
-import com.atbm.utils.LogUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,10 +15,10 @@ import java.io.IOException;
 public class PersonalInfoController extends HttpServlet {
     private AccountService accountService;
 
-    @Override
-    public void init() throws ServletException {
-        accountService = new AccountService();
-    }
+//    @Override
+//    public void init() throws ServletException {
+//        accountService = new AccountService();
+//    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

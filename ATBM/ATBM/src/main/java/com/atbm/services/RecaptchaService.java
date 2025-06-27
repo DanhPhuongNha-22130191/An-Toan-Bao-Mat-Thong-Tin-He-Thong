@@ -6,7 +6,7 @@ import com.atbm.utils.LogUtils;
 import java.io.*;
 import java.net.*;
 
-public class Recaptcha {
+public class RecaptchaService {
     private static final String RECAPTCHA_SECRET_KEY = ConfigUtils.get("recaptcha.secret");
 
     public static boolean verify(String recaptchaResponse) {
@@ -30,7 +30,7 @@ public class Recaptcha {
                 return response.toString().contains("\"success\": true");
             }
         } catch (Exception e) {
-            LogUtils.debug(Recaptcha.class, "Lỗi khi xác minh reCAPTCHA: " + e.getMessage());
+            LogUtils.debug(RecaptchaService.class, "Lỗi khi xác minh reCAPTCHA: " + e.getMessage());
             return false;
         }
     }

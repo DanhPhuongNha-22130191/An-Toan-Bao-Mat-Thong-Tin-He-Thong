@@ -53,4 +53,6 @@ public class OrderResponse{
     public void setDigitallySigned(boolean digitallySigned) {
         isDigitallySigned = digitallySigned;
     }
+
+
 }

@@ -24,10 +24,10 @@ import java.security.NoSuchAlgorithmException;
 public class UserController extends HttpServlet {
     private AccountService accountService;
 
-    @Override
-    public void init() throws ServletException {
-        accountService = new AccountService();
-    }
+//    @Override
+//    public void init() throws ServletException {
+//        accountService = new AccountService();
+//    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

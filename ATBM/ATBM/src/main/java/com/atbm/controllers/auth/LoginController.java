@@ -5,7 +5,7 @@ import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
-import com.atbm.utils.RecaptchaUtil;
+import com.atbm.services.RecaptchaService;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,7 +50,7 @@ public class LoginController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Lấy mã phản hồi reCAPTCHA từ client và xác minh
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
-        boolean isRecaptchaValid = RecaptchaUtil.verify(recaptchaResponse);
+        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse);
 
         if (!isRecaptchaValid) {
             HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");

@@ -14,7 +14,6 @@ import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.utils.EmailUtils;
 import com.atbm.utils.SignatureUtils;
-import com.atbm.utils.SignatureUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.inject.Inject;
@@ -38,7 +37,7 @@ public class AccountService {
         if (accountDao.existsByUsername(registerRequest.username().trim())) {
             return false;
         }
-        String hashedPassword = SignatureUtil.hash(registerRequest.password());
+        String hashedPassword = SignatureUtils.hash(registerRequest.password());
         Account account = new Account(
                 registerRequest.username().trim(),
                 hashedPassword,
@@ -53,7 +52,7 @@ public class AccountService {
             throw new RuntimeException("Username already exists");
         }
         try {
-            String hashedPassword = SignatureUtil.hash(request.password());
+            String hashedPassword = SignatureUtils.hash(request.password());
             Account account = new Account();
             account.setUsername(request.username().trim());
             account.setPassword(hashedPassword);
@@ -72,7 +71,7 @@ public class AccountService {
     // Đăng nhập
     public AccountResponse login(LoginRequest loginRequest) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountByUsername(loginRequest.username().trim());
-        if (account != null && SignatureUtil.hash(loginRequest.password()).equals(account.getPassword())) {
+        if (account != null && SignatureUtils.hash(loginRequest.password()).equals(account.getPassword())) {
             return new AccountResponse(
                     account.getAccountId(),
                     account.getUsername(),
@@ -113,8 +112,8 @@ public class AccountService {
     // Đổi mật khẩu có kiểm tra mật khẩu cũ
     public boolean changePassword(long accountId, ChangePasswordRequest changePasswordRequest) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
-        if (account != null && SignatureUtil.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
-            account.setPassword(SignatureUtil.hash(changePasswordRequest.newPassword()));
+        if (account != null && SignatureUtils.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
+            account.setPassword(SignatureUtils.hash(changePasswordRequest.newPassword()));
             return accountDao.update(account);
         }
         return false;
@@ -124,7 +123,7 @@ public class AccountService {
     public boolean updatePassword(long accountId, String newPassword) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
         if (account != null) {
-            account.setPassword(SignatureUtil.hash(newPassword));
+            account.setPassword(SignatureUtils.hash(newPassword));
             return accountDao.update(account);
         }
         return false;
@@ -216,4 +215,9 @@ public class AccountService {
         }
         return false;
     }
+    public AccountResponse getUserInfo(long accountId) {
+        return getAccountById(accountId);
+    }
+
+
 }

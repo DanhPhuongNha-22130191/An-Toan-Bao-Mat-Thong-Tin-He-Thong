@@ -2,10 +2,10 @@ package com.atbm.controllers.auth;
 
 import com.atbm.models.entity.Account;
 import com.atbm.services.AccountService;
-import com.atbm.utils.EmailUtil;
+import com.atbm.utils.EmailUtils;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
-import com.atbm.utils.RecaptchaUtil;
+import com.atbm.services.RecaptchaService;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @WebServlet("/forgot-password")
 public class ForgotPasswordController extends HttpServlet {
     private AccountService accountService;
-    private EmailUtil emailUtil;
+    private EmailUtils emailUtil;
 
     /**
      * Phương thức khởi tạo các service khi servlet được tạo.
@@ -29,7 +29,7 @@ public class ForgotPasswordController extends HttpServlet {
     public void init() throws ServletException {
         try {
             accountService = CDI.current().select(AccountService.class).get();
-            emailUtil = new EmailUtil();
+            emailUtil = new EmailUtils();
         } catch (Exception e) {
             LogUtils.debug(ForgotPasswordController.class, "Khởi tạo ForgotPasswordController thất bại: " + e.getMessage());
             throw new ServletException("Khởi tạo ForgotPasswordController thất bại", e);
@@ -52,7 +52,7 @@ public class ForgotPasswordController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Lấy thông tin reCAPTCHA từ form và xác minh
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
-        boolean isRecaptchaValid = RecaptchaUtil.verify(recaptchaResponse);
+        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse);
         if (!isRecaptchaValid) {
             HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
             HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
