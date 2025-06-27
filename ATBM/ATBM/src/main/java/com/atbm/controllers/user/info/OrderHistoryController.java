@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/user/orders")
+@WebServlet("/user/history-orders")
 @RequestScoped
 public class OrderHistoryController extends HttpServlet {
     private final OrderService orderService;
