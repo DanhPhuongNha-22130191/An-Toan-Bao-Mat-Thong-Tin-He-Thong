@@ -64,19 +64,27 @@ public class ProductService {
 
     public List<ProductResponse> filterProduct(FilterProductRequest filterProductRequest) {
         List<Product> products = productDao.getProducts();
-        List<Product> productFiltered = products.stream().filter(product ->
-                filterProductRequest.brandsId().contains(product.getBrandId())
-                        && filterProductRequest.strapsId().contains(product.getStrapId())
-                        && product.getPrice() >= filterProductRequest.minPrice()
-                        && product.getPrice() <= filterProductRequest.maxPrice()
 
-        ).toList();
+        List<Product> productFiltered = products.stream().filter(product -> {
+            boolean matchBrand = filterProductRequest.brandsId().isEmpty()
+                    || filterProductRequest.brandsId().contains(product.getBrandId());
+
+            boolean matchStrap = filterProductRequest.strapsId().isEmpty()
+                    || filterProductRequest.strapsId().contains(product.getStrapId());
+
+            boolean matchPrice = product.getPrice() >= filterProductRequest.minPrice()
+                    && product.getPrice() <= filterProductRequest.maxPrice();
+
+            return matchBrand && matchStrap && matchPrice;
+        }).toList();
+
         List<ProductResponse> productResponses = new ArrayList<>();
         for (Product product : productFiltered) {
             productResponses.add(createProductResponse(product));
         }
         return productResponses;
     }
+
 
     // Xóa sản phầm theo id
     public boolean deleteProductById(long productId) {
@@ -124,5 +132,12 @@ public class ProductService {
     }
     public List<Strap> getStraps() {
         return strapDao.getStraps();
+    }
+
+    public double getMinPrice() {
+        return productDao.getMinPrice();
+    }
+    public double getMaxPrice() {
+        return productDao.getMaxPrice();
     }
 }

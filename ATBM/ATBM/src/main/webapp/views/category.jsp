@@ -34,7 +34,7 @@
 
             <!-- THANH BÊN LỌC SẢN PHẨM -->
             <div class="col-xl-3 col-lg-4 col-md-5">
-                <form id="filterForm" action="category" method="get">
+                <form id="filterForm" method="post">
 
                     <!-- BỘ LỌC THƯƠNG HIỆU -->
                     <div class="sidebar-categories">
@@ -48,7 +48,7 @@
                                             <!-- CHECKBOX THƯƠNG HIỆU -->
                                             <input class="pixel-checkbox" type="checkbox" name="brandId[]"
                                                    id="brand${brand.brandId}" value="${brand.brandId}"
-                                                   <c:if test="${fn:contains(paramValues['brandId'], brand.brandId)}">checked</c:if> >
+                                                   <c:if test="${fn:contains(paramValues['brandId[]'], brand.brandId)}">checked</c:if> >
                                             <label for="brand${brand.brandId}">${brand.name}</label>
                                         </li>
                                     </c:forEach>
@@ -69,7 +69,7 @@
                                         <!-- CHECKBOX CHẤT LIỆU DÂY -->
                                         <input class="pixel-checkbox" type="checkbox" name="strapId[]"
                                                id="strap${strap.strapId}" value="${strap.strapId}"
-                                               <c:if test="${fn:contains(paramValues['strapId'], strap.strapId)}">checked</c:if> >
+                                               <c:if test="${fn:contains(paramValues['strapId[]'], strap.strapId)}">checked</c:if> >
                                         <label for="strap${strap.strapId}">${strap.material}</label>
                                     </li>
                                 </c:forEach>
@@ -83,17 +83,19 @@
                                 <div id="price-range"></div>
                                 <div class="value-wrapper d-flex">
                                     <div class="price">Giá:</div>
-                                    <div id="lower-value">0</div>
-                                    <span>&nbsp;₫</span>
+                                    <div id="lower-value">${param.minPrice != null ? param.minPrice : minPrice}</div>
+                                    <span> ₫</span>
                                     <div class="to">đến</div>
-                                    <div id="upper-value">1000</div>
-                                    <span>&nbsp;₫</span>
+                                    <div id="upper-value">${param.maxPrice != null ? param.maxPrice : maxPrice}</div>
+                                    <span> ₫</span>
                                 </div>
                                 <!-- INPUT ẨN GIÁ TỐI THIỂU / TỐI ĐA -->
                                 <input type="hidden" id="minPriceInput" name="minPrice"
-                                       value="${param.minPrice != null ? param.minPrice : minPrice}">
+                                       value="${param.minPrice != null ? param.minPrice : minPrice}"
+                                       min="${minPrice}" max="${maxPrice}">
                                 <input type="hidden" id="maxPriceInput" name="maxPrice"
-                                       value="${param.maxPrice != null ? param.maxPrice : maxPrice}">
+                                       value="${param.maxPrice != null ? param.maxPrice : maxPrice}"
+                                       min="${minPrice}" max="${maxPrice}">
                             </div>
                         </div>
                     </div>
@@ -120,7 +122,7 @@
                                     <div class="card-product__img">
                                         <div class="product-image-wrapper">
                                             <!-- HÌNH ẢNH SẢN PHẨM -->
-                                            <img src="${pageContext.request.contextPath}/admin/productImage?productId=${product.productId}"
+                                            <img src="${pageContext.request.contextPath}/product-image/${product.productId}"
                                                  alt="${product.name}"
                                                  class="product-image"
                                                  onerror="this.style.display='none'; this.parentElement.querySelector('.product-placeholder').style.display='flex';">
@@ -172,7 +174,7 @@
 <!-- HÀM THÊM SẢN PHẨM VÀO GIỎ HÀNG BẰNG FETCH -->
 <script>
     function addToCart(productId) {
-        fetch('/ATBM/user/cart/add', {
+        fetch(`${window.contextPath}/user/cart/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -189,6 +191,11 @@
                     window.location.href = response.url;
                 } else {
                     return response.text();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    alert('Sản phẩm đã được thêm vào giỏ hàng!');
                 }
             })
             .catch(error => {

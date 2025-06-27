@@ -1,5 +1,7 @@
 package com.atbm.controllers.shop;
 
+import com.atbm.models.entity.Brand;
+import com.atbm.models.entity.Strap;
 import com.atbm.models.wrapper.request.FilterProductRequest;
 import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;
@@ -28,8 +30,18 @@ public class ProductController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ProductResponse> products = productService.getProducts();
+        List<Brand> brands = productService.getBrands();
+        List<Strap> straps = productService.getStraps();
+        double minPrice = productService.getMinPrice();
+        double maxPrice = productService.getMaxPrice();
+
+        HttpUtils.setAttribute(req, "brands", brands);
+        HttpUtils.setAttribute(req, "straps", straps);
+        HttpUtils.setAttribute(req, "minPrice", minPrice);
+        HttpUtils.setAttribute(req, "maxPrice", maxPrice);
         HttpUtils.setAttribute(req, "products", products);
-        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+
+        HttpUtils.dispatcher(req, resp, "/views/category.jsp");
     }
 
     @Override
@@ -41,8 +53,6 @@ public class ProductController extends HttpServlet {
                 parseDouble(req.getParameter("maxPrice"))
         );
         List<ProductResponse> products = productService.filterProduct(filterProductRequest);
-        HttpUtils.setAttribute(req, "products", products);
-        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
         HttpUtils.setResponseJson(resp, products);
     }
 

@@ -35,7 +35,16 @@ public class StrapDaoImpl implements StrapDao {
 
     @Override
     public List<Strap> getStraps() {
-        String query = "SELECT * FROM Strap";
+        String query = """
+        SELECT strapId, color, material, length
+        FROM (
+            SELECT *,
+                   ROW_NUMBER() OVER (PARTITION BY material ORDER BY strapId) AS rn
+            FROM Strap
+        ) AS temp
+        WHERE rn = 1
+        """;
+
         List<Strap> straps = new ArrayList<>();
 
         try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
@@ -49,11 +58,12 @@ public class StrapDaoImpl implements StrapDao {
             }
         } catch (SQLException e) {
             LogUtils.debug(getClass(), e.getMessage());
-            throw new RuntimeException("Lỗi khi lấy danh sách dây đeo");
+            throw new RuntimeException("Lỗi khi lấy danh sách dây đeo không trùng material");
         }
 
         return straps;
     }
+
 
     private Strap createStrap(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
