@@ -3,6 +3,7 @@ package com.atbm.controllers.admin;
 import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;
 import com.atbm.utils.HttpUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +18,7 @@ public class ProductImageController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
+        productService = CDI.current().select(ProductService.class).get();
     }
 
     @Override
@@ -29,7 +30,7 @@ public class ProductImageController extends HttpServlet {
         try {
             long productId = Long.parseLong(productIdStr);
             ProductResponse product = productService.getProductById(productId);
-            byte[] imageData = product.image();
+            byte[] imageData = product.getImage();
             HttpUtils.setResponseImage(resp, imageData);
         } catch (NumberFormatException e) {
 

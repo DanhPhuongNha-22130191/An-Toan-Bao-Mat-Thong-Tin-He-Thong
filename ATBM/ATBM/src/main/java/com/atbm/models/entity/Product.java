@@ -1,3 +1,4 @@
+
 package com.atbm.models.entity;
 
 public class Product {
@@ -14,7 +15,7 @@ public class Product {
     private long strapId;
     private boolean isDeleted;
 
-    public Product() {
+    public Product(String name, String description, String status, double price, int stock, long brandId, long strapId, double size, boolean haveTrending, boolean waterResistance, byte[] imageBytes) {
     }
 
     /**

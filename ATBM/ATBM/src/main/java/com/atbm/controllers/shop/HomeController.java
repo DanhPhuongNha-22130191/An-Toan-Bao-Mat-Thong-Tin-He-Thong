@@ -3,8 +3,10 @@ package com.atbm.controllers.shop;
 import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;
 import com.atbm.utils.HttpUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,13 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebFilter("/home")
+@WebServlet("/home")
 public class HomeController extends HttpServlet {
     private ProductService productService;
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
+        productService = CDI.current().select(ProductService.class).get();
     }
 
     @Override

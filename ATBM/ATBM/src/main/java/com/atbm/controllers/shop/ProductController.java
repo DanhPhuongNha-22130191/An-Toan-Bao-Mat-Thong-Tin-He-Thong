@@ -4,6 +4,7 @@ import com.atbm.models.wrapper.request.FilterProductRequest;
 import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;
 import com.atbm.utils.HttpUtils;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,14 +22,14 @@ public class ProductController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
+        productService = CDI.current().select(ProductService.class).get();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ProductResponse> products = productService.getProducts();
         HttpUtils.setAttribute(req, "products", products);
-//        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ProductController extends HttpServlet {
         );
         List<ProductResponse> products = productService.filterProduct(filterProductRequest);
         HttpUtils.setAttribute(req, "products", products);
-        //        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
         HttpUtils.setResponseJson(resp, products);
     }
 

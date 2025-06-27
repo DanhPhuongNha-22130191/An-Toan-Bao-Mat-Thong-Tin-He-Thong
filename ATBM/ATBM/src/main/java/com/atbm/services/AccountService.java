@@ -3,243 +3,164 @@ package com.atbm.services;
 import com.atbm.dao.account.AccountDao;
 import com.atbm.dao.account.impl.AccountDaoImpl;
 import com.atbm.models.entity.Account;
+import com.atbm.models.wrapper.request.AddAccountRequest;
+import com.atbm.models.wrapper.request.EditAccountRequest;
 import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.RegisterRequest;
 import com.atbm.models.wrapper.request.LoginRequest;
 import com.atbm.models.wrapper.request.UpdateProfileRequest;
+import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.utils.EmailUtils;
 import com.atbm.utils.SignatureUtils;
+import com.atbm.utils.SignatureUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+@ApplicationScoped
 public class AccountService {
     private final AccountDao accountDao;
 
-    public AccountService() {
-        accountDao = new AccountDaoImpl();
+    @Inject
+    public AccountService(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 
-    public AccountResponse getUserInfo(long accountId) {
-        Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+    // Đăng ký tài khoản từ RegisterRequest
+    public boolean register(RegisterRequest registerRequest) throws NoSuchAlgorithmException {
+        if (accountDao.existsByUsername(registerRequest.username().trim())) {
+            return false;
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        return new AccountResponse(
-                account.getAccountId(),
-                account.getUsername(),
-                account.getEmail(),
-                account.getPublicKeyActive(),
-                account.getRole()
+        String hashedPassword = SignatureUtil.hash(registerRequest.password());
+        Account account = new Account(
+                registerRequest.username().trim(),
+                hashedPassword,
+                registerRequest.email().trim()
         );
+        return accountDao.insert(account);
     }
 
-    public void register(RegisterRequest registerRequest) throws NoSuchAlgorithmException {
-        String username = registerRequest.username().trim();
-        String email = registerRequest.email().trim();
-        String password = registerRequest.password().trim();
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            throw new RuntimeException("Vui lòng nhập đầy đủ thông tin đăng ký.");
+    // Đăng ký tài khoản từ AddAccountRequest
+    public boolean register(AddAccountRequest request) {
+        if (accountDao.existsByUsername(request.username().trim())) {
+            throw new RuntimeException("Username already exists");
         }
-        if (accountDao.existsByUsername(username)) {
-            throw new RuntimeException("Tên người dùng đã tồn tại.");
-        }
-        if (accountDao.getAccountByEmail(email) != null) {
-            throw new RuntimeException("Email đã được sử dụng.");
-        }
-        String hashedPassword = SignatureUtils.hash(password);
-        Account account = new Account(username, hashedPassword, email);
         try {
-            accountDao.insert(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Đăng ký thất bại: " + e.getMessage());
+            String hashedPassword = SignatureUtil.hash(request.password());
+            Account account = new Account();
+            account.setUsername(request.username().trim());
+            account.setPassword(hashedPassword);
+            account.setEmail(request.email() != null ? request.email().trim() : null);
+            if (request.role() != null) {
+                account.setRole(request.role());
+            }
+            account.setDeleted(request.isDeleted() != null ? request.isDeleted() : false);
+            return accountDao.insert(account);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
         }
     }
 
+
+    // Đăng nhập
     public AccountResponse login(LoginRequest loginRequest) throws NoSuchAlgorithmException {
-        String username = loginRequest.username().trim();
-        String password = loginRequest.password().trim();
-        if (username.isEmpty() || password.isEmpty()) {
-            throw new RuntimeException("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+        Account account = accountDao.getAccountByUsername(loginRequest.username().trim());
+        if (account != null && SignatureUtil.hash(loginRequest.password()).equals(account.getPassword())) {
+            return new AccountResponse(
+                    account.getAccountId(),
+                    account.getUsername(),
+                    account.getEmail(),
+                    account.getPublicKeyActive(),
+                    account.getRole()
+            );
         }
-        Account account = accountDao.getAccountByUsername(username);
-        if (account == null) {
-            throw new RuntimeException("Sai tài khoản hoặc mật khẩu.");
-        }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        if (!SignatureUtils.hash(password).equals(account.getPassword())) {
-            throw new RuntimeException("Sai tài khoản hoặc mật khẩu.");
-        }
-        return new AccountResponse(
-                account.getAccountId(),
-                account.getUsername(),
-                account.getEmail(),
-                account.getPublicKeyActive(),
-                account.getRole()
-        );
+        return null;
     }
 
-    public void updateProfile(long accountId, UpdateProfileRequest updateProfileRequest) {
+    // Lấy thông tin tài khoản theo ID
+    public AccountResponse getAccountById(long accountId) {
         Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+        if (account != null) {
+            return new AccountResponse(
+                    account.getAccountId(),
+                    account.getUsername(),
+                    account.getEmail(),
+                    account.getPublicKeyActive(),
+                    account.getRole()
+            );
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        String newUsername = updateProfileRequest.username().trim();
-        String newEmail = updateProfileRequest.email().trim();
-        if (newUsername.isEmpty() || newEmail.isEmpty()) {
-            throw new RuntimeException("Vui lòng nhập đầy đủ thông tin.");
-        }
-        if (accountDao.existsByUsername(newUsername) && !newUsername.equals(account.getUsername())) {
-            throw new RuntimeException("Tên người dùng đã tồn tại.");
-        }
-        if (accountDao.getAccountByEmail(newEmail) != null && !newEmail.equals(account.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng.");
-        }
-        // Kiểm tra nếu không có thay đổi
-        if (newUsername.equals(account.getUsername()) && newEmail.equals(account.getEmail())) {
-            throw new RuntimeException("Không có thay đổi nào để cập nhật.");
-        }
-        account.setUsername(newUsername);
-        account.setEmail(newEmail);
-        try {
-            accountDao.update(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Cập nhật hồ sơ thất bại: " + e.getMessage());
-        }
+        return null;
     }
 
-    public void changePassword(long accountId, ChangePasswordRequest request) throws NoSuchAlgorithmException {
+    // Cập nhật thông tin profile
+    public boolean updateProfile(long accountId, UpdateProfileRequest updateProfileRequest) {
         Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+        if (account != null) {
+            account.setUsername(updateProfileRequest.username().trim());
+            account.setEmail(updateProfileRequest.email().trim());
+            return accountDao.update(account);
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        String oldPassword = request.oldPassword().trim();
-        String newPassword = request.newPassword().trim();
-        if (oldPassword.isEmpty() || newPassword.isEmpty()) {
-            throw new RuntimeException("Vui lòng nhập đầy đủ mật khẩu.");
-        }
-        if (oldPassword.equals(newPassword)) {
-            throw new RuntimeException("Mật khẩu mới không được giống mật khẩu cũ.");
-        }
-        if (!SignatureUtils.hash(oldPassword).equals(account.getPassword())) {
-            throw new RuntimeException("Mật khẩu cũ không đúng.");
-        }
-        account.setPassword(SignatureUtils.hash(newPassword));
-        try {
-            accountDao.update(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Thay đổi mật khẩu thất bại: " + e.getMessage());
-        }
+        return false;
     }
 
-    public void updatePassword(long accountId, String newPassword) throws NoSuchAlgorithmException {
+    // Đổi mật khẩu có kiểm tra mật khẩu cũ
+    public boolean changePassword(long accountId, ChangePasswordRequest changePasswordRequest) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+        if (account != null && SignatureUtil.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
+            account.setPassword(SignatureUtil.hash(changePasswordRequest.newPassword()));
+            return accountDao.update(account);
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        if (newPassword.trim().isEmpty()) {
-            throw new RuntimeException("Mật khẩu mới không được để trống.");
-        }
-        account.setPassword(SignatureUtils.hash(newPassword));
-        try {
-            accountDao.update(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Cập nhật mật khẩu thất bại: " + e.getMessage());
-        }
+        return false;
     }
 
+    // Cập nhật mật khẩu trực tiếp
+    public boolean updatePassword(long accountId, String newPassword) throws NoSuchAlgorithmException {
+        Account account = accountDao.getAccountById(accountId);
+        if (account != null) {
+            account.setPassword(SignatureUtil.hash(newPassword));
+            return accountDao.update(account);
+        }
+        return false;
+    }
+
+    // Lấy tài khoản theo email
     public Account getAccountByEmail(String email) {
-        try {
-            Account account = accountDao.getAccountByEmail(email.trim());
-            if (account == null) {
-                throw new RuntimeException("Email không tồn tại trong hệ thống.");
-            }
-            if (account.isDelete()) {
-                throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-            }
-            return account;
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi khi lấy tài khoản theo email: " + e.getMessage());
-        }
+        return accountDao.getAccountByEmail(email.trim());
     }
 
-    public void resetPassword(String email) throws NoSuchAlgorithmException {
-        Account account = getAccountByEmail(email);
-        String newPassword = generateRandomPassword();
-        updatePassword(account.getAccountId(), newPassword);
-        String emailContent = "Chào bạn,\n\n" +
-                "Mật khẩu mới của bạn là: " + newPassword + "\n" +
-                "Vui lòng sử dụng mật khẩu này để đăng nhập và đổi mật khẩu sớm nhất có thể.\n\n" +
-                "Trân trọng,\nWatchShop";
-        if (!EmailUtils.sendEmail(email, "Khôi phục mật khẩu", emailContent)) {
-            throw new RuntimeException("Gửi email thất bại. Vui lòng thử lại sau.");
-        }
-    }
-
-    public void updatePublicKey(long accountId, UpdatePublicKeyRequest updatePublicKeyRequest) {
+    // Cập nhật khóa công khai
+    public boolean updatePublicKey(long accountId, UpdatePublicKeyRequest updatePublicKeyRequest) {
         Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+        if (account != null) {
+            account.setPublicKeyActive(updatePublicKeyRequest.publicKey().trim());
+            return accountDao.update(account);
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        String publicKey = updatePublicKeyRequest.publicKey().trim();
-        if (publicKey.isEmpty()) {
-            throw new RuntimeException("Vui lòng nhập hoặc tải lên khóa công khai.");
-        }
-        account.setPublicKeyActive(publicKey);
-        try {
-            accountDao.update(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Cập nhật khóa công khai thất bại: " + e.getMessage());
-        }
+        return false;
     }
 
-    public void revokePublicKey(long accountId) {
+    // Thu hồi khóa công khai
+    public boolean revokePublicKey(long accountId) {
         Account account = accountDao.getAccountById(accountId);
-        if (account == null) {
-            throw new RuntimeException("Tài khoản không tồn tại.");
+        if (account != null) {
+            account.setPublicKeyActive(null);
+            return accountDao.update(account);
         }
-        if (account.isDelete()) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa.");
-        }
-        account.setPublicKeyActive(null);
-        try {
-            accountDao.update(account);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Hủy khóa công khai thất bại: " + e.getMessage());
-        }
+        return false;
     }
 
+    // Lấy khóa công khai đang hoạt động
     public String getPublicKeyActive(long accountId) {
-        try {
-            String publicKey = accountDao.getPublicKeyActive(accountId);
-            if (publicKey == null) {
-                throw new RuntimeException("Không tìm thấy khóa công khai.");
-            }
-            return publicKey;
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Lỗi khi lấy khóa công khai: " + e.getMessage());
-        }
+        return accountDao.getPublicKeyActive(accountId);
     }
 
+    // Tạo mật khẩu ngẫu nhiên
     public String generateRandomPassword() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder password = new StringBuilder();
@@ -248,5 +169,51 @@ public class AccountService {
             password.append(characters.charAt(random.nextInt(characters.length())));
         }
         return password.toString();
+    }
+
+    // Lấy danh sách tài khoản (bao gồm cả tài khoản bị xóa)
+    public List<AccountResponse> getAccounts() {
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        List<Account> accounts = accountDao.getAccounts();
+        for (Account account : accounts) {
+            accountResponses.add(new AccountResponse(
+                    account.getAccountId(),
+                    account.getUsername(),
+                    account.getEmail(),
+                    account.getPublicKeyActive(),
+                    account.getRole()
+            ));
+        }
+        return accountResponses;
+    }
+
+    // Cập nhật tài khoản từ EditAccountRequest
+    public boolean update(EditAccountRequest request) {
+        Account account = accountDao.getAccountById(request.accountId());
+        if (account == null) return false;
+
+        if (request.username() != null && !request.username().isBlank()) {
+            account.setUsername(request.username().trim());
+        }
+        if (request.email() != null) {
+            account.setEmail(request.email().trim());
+        }
+        if (request.role() != null) {
+            account.setRole(request.role());
+        }
+        if (request.isDeleted() != null) {
+            account.setDeleted(request.isDeleted());
+        }
+        return accountDao.update(account);
+    }
+
+    // Xóa tài khoản (đánh dấu isDeleted = true)
+    public boolean delete(long accountId) {
+        Account account = accountDao.getAccountById(accountId);
+        if (account != null && !account.isDeleted()) {
+            account.setDeleted(true);
+            return accountDao.update(account);
+        }
+        return false;
     }
 }
