@@ -2,7 +2,6 @@ package com.atbm.filter;
 
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,7 +22,7 @@ public class AuthenticationFilter implements Filter {
             response.sendRedirect(request.getContextPath() + "/login");
         } else {
             try {
-                Long.parseLong(request.getParameter("accountId"));
+                Long.parseLong(session.getAttribute("accountId").toString());
             } catch (NumberFormatException e) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
