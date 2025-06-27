@@ -96,7 +96,7 @@
 				<c:forEach var="product" items="${trendingProducts}">
 					<div class="card text-center card-product">
 						<div class="card-product__img">
-							<img src="${pageContext.request.contextPath}/admin/productImage?productId=${product.productId}" alt="${product.name}">
+							<img src="${pageContext.request.contextPath}/product-image/${product.productId}" alt="${product.name}">
 							<ul class="card-product__imgOverlay">
 								<li>
 									<button onclick="addToCart(${product.productId})"><i
@@ -131,7 +131,7 @@
 					<div class="col-md-6 col-lg-4 col-xl-3">
 						<div class="card text-center card-product">
 							<div class="card-product__img">
-								<img src="${pageContext.request.contextPath}/admin/productImage?productId=${newProduct.productId}" alt="${newProduct.name}">
+								<img src="${pageContext.request.contextPath}/product-image/${newProduct.productId}" alt="${newProduct.name}">
 								<ul class="card-product__imgOverlay">
 									<li>
 										<button onclick="addToCart(${product.productId})"><i

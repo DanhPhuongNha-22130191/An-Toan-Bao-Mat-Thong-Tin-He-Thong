@@ -28,6 +28,6 @@ public class HomeController extends HttpServlet {
         List<ProductResponse> products = productService.getProducts();
         HttpUtils.setAttribute(req, "newProducts", products);
         HttpUtils.setAttribute(req, "trendingProducts", products.subList(0, 5));
-//        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/home.jsp");
+        HttpUtils.dispatcher(req, resp, "/views/index.jsp");
     }
 }
