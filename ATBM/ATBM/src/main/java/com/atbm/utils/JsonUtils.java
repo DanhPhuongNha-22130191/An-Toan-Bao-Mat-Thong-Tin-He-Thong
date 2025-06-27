@@ -1,5 +1,6 @@
 package com.atbm.utils;
 
+import com.atbm.models.entity.Order;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;

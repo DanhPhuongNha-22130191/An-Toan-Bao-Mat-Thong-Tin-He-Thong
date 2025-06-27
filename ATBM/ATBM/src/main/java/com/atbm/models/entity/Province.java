@@ -1,9 +1,12 @@
 package com.atbm.models.entity;
 
+import java.util.List;
+
 public class Province {
     private long id;
     private int code;
     private String name;
+    private List<District> districts;
 
     public Province() {
     }
@@ -41,5 +44,23 @@ public class Province {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<District> getDistricts() {
+        return districts;
+    }
+
+    public void setDistricts(List<District> districts) {
+        this.districts = districts;
+    }
+
+    @Override
+    public String toString() {
+        return "Province{" +
+                "id=" + id +
+                ", code=" + code +
+                ", name='" + name + '\'' +
+                ", districts=" + districts +
+                '}';
     }
 }

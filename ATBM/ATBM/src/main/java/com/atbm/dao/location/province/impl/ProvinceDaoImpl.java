@@ -1,6 +1,7 @@
 package com.atbm.dao.location.province.impl;
 
 import com.atbm.dao.location.province.ProvinceDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Province;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,9 +20,9 @@ public class ProvinceDaoImpl implements ProvinceDao {
     }
 
     @Override
-    public void insert(String provinceName, String provinceCode) {
+    public SQLTransactionStep<Long> insert(Province province) {
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(PROVINCE_NAME, PROVINCE_CODE));
-        executeSQLHelper.executeUpdate(query, provinceName, provinceCode);
+      return  executeSQLHelper.buildInsertStepReturningId(query, province.getName(), province.getCode());
     }
 
     @Override
