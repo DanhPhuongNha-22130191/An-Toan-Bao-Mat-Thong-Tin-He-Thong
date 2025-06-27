@@ -154,4 +154,27 @@ public class ProductDaoImpl implements ProductDao {
             throw new RuntimeException("Lỗi lấy danh sách thương hiệu", e);
         }
     }
+    public double getMinPrice() {
+        String query = "SELECT MIN(price) AS minPrice FROM Product WHERE isDeleted = 0";
+        try (ResultSet rs = sqlHelper.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble("minPrice");
+            }
+            return 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi lấy giá thấp nhất", e);
+        }
+    }
+    public double getMaxPrice() {
+        String query = "SELECT MAX(price) AS maxPrice FROM Product WHERE isDeleted = 0";
+        try (ResultSet rs = sqlHelper.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble("maxPrice");
+            }
+            return 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi lấy giá cao nhất", e);
+        }
+    }
+
 }
