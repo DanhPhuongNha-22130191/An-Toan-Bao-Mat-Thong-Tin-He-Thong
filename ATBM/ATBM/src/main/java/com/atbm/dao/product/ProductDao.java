@@ -30,4 +30,7 @@ public interface ProductDao {
 
     List<Product> getProducts();
 
+    double getMinPrice();
+
+    double getMaxPrice();
 }

@@ -27,6 +27,10 @@ import java.util.Random;
 public class AccountService {
     private final AccountDao accountDao;
 
+    public AccountService() {
+        accountDao = null;
+    }
+
     @Inject
     public AccountService(AccountDao accountDao) {
         this.accountDao = accountDao;

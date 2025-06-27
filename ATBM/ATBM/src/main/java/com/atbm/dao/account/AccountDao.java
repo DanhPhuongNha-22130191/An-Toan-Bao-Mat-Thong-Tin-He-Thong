@@ -8,7 +8,7 @@ public interface AccountDao {
     String USERNAME = "username";
     String PASSWORD = "password";
     String EMAIL = "email";
-    String ROLES = "roles";
+    String ROLES = "role";
     String ACCOUNT_ID = "accountId";
     String PUBLIC_KEY_ACTIVE = "publicKeyActive";
     String IS_DELETED = "isDeleted";
