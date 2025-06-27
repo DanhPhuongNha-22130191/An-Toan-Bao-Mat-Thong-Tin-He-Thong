@@ -1,9 +1,6 @@
 package com.atbm.config;
 
-import com.atbm.filter.AuthenticationFilter;
-import com.atbm.filter.AuthorizationFilter;
-import com.atbm.filter.EncodingFilter;
-import com.atbm.filter.ExceptionHandlerFilter;
+import com.atbm.filter.*;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebListener;
 
@@ -14,6 +11,8 @@ public class WebInitializer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
+        FilterRegistration.Dynamic corsBlockFilter = context.addFilter("CorsBlockFilter", CorsBlockFilter.class);
+        corsBlockFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 
         FilterRegistration.Dynamic authenticationFilter = context.addFilter(
                 "AuthenticationFilter", AuthenticationFilter.class
