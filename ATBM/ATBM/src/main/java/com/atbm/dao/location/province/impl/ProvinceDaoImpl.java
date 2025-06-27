@@ -7,7 +7,9 @@ import com.atbm.models.entity.Province;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @ApplicationScoped
@@ -21,8 +23,11 @@ public class ProvinceDaoImpl implements ProvinceDao {
 
     @Override
     public SQLTransactionStep<Long> insert(Province province) {
+        if (existsProvince(province.getCode())) {
+            return connection -> null;
+        }
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(PROVINCE_NAME, PROVINCE_CODE));
-      return  executeSQLHelper.buildInsertStepReturningId(query, province.getName(), province.getCode());
+        return executeSQLHelper.buildInsertStepReturningId(query, province.getName(), province.getCode());
     }
 
     @Override
@@ -57,6 +62,16 @@ public class ProvinceDaoImpl implements ProvinceDao {
             if (rs.next())
                 return rs.getString(PROVINCE_NAME);
             return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean existsProvince(int provinceCode) {
+        String query = "SELECT * FROM Province WHERE code = ?";
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, provinceCode)) {
+            return rs.next();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

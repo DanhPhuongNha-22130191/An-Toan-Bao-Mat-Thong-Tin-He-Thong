@@ -10,8 +10,14 @@ public interface ProvinceDao {
     String PROVINCE_ID = "id";
     String PROVINCE_NAME = "name";
     String PROVINCE_CODE = "code";
+
     SQLTransactionStep<Long> insert(Province province);
+
     Province getProvinceById(String provinceId);
+
     List<Province> getProvinces();
+
     String getProvinceNameById(long provinceId);
+
+    boolean existsProvince(int provinceCode);
 }
