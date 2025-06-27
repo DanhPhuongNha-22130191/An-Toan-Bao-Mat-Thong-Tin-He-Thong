@@ -3,6 +3,7 @@ package com.atbm.filter;
 import com.atbm.models.enums.Role;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
+import com.atbm.utils.LogUtils;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public class AuthorizationFilter implements Filter {
             response.sendRedirect(request.getContextPath() + "/access-denied");
             return;
         }
-        if (path.startsWith(request.getContextPath() + "/user") && Role.ADMIN != role) {
+        if (path.startsWith(request.getContextPath() + "/user") && Role.USER != role) {
             response.sendRedirect(request.getContextPath() + "/access-denied");
             return;
         }

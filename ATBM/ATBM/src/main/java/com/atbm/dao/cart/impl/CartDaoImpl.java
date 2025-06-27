@@ -35,6 +35,7 @@ public class CartDaoImpl implements CartDao {
     public long getCartIdByAccountId(long accountId) {
         String query = "SELECT cartId FROM Cart WHERE accountId = ?";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId)) {
+            if (!rs.next()) throw new RuntimeException("Không tìm thấy mã giỏ hàng");
             return rs.getLong(CART_ID);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -45,9 +46,11 @@ public class CartDaoImpl implements CartDao {
     public Cart getCartByAccountId(long accountId) {
         String query = "SELECT * FROM Cart WHERE accountId = ?";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, accountId)) {
+            if (!rs.next()) throw new RuntimeException("Không tìm thấy giỏ hàng");
             return createCart(rs);
         } catch (Exception e) {
-            throw new RuntimeException("Có lỗi xảy ra không lấy giỏ hàng thành công");
+            LogUtils.debug(CartDaoImpl.class, e.getMessage());
+            throw new RuntimeException("Có lỗi xảy ra, lấy giỏ hàng không thành công");
         }
     }
 
@@ -61,7 +64,7 @@ public class CartDaoImpl implements CartDao {
             }
         } catch (Exception e) {
             LogUtils.debug(CartDaoImpl.class, e.getMessage());
-            throw new RuntimeException("Có lỗi xảy ra không lấy giỏ hàng thành công");
+            throw new RuntimeException("Có lỗi xảy ra lấy giỏ hàng không thành công");
         }
         return result;
     }
@@ -99,12 +102,14 @@ public class CartDaoImpl implements CartDao {
 
     @Override
     public CartItem getCartItemById(long cartItemId) {
-        String query = "SELECT * FROM cartItem WHERE cartItemId = ?";
+        System.out.println(cartItemId);
+        String query = "SELECT * FROM CartItem WHERE cartItemId = ?";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, cartItemId)) {
+            if (!rs.next()) throw new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng");
             return createCartItem(rs);
         } catch (Exception e) {
             LogUtils.debug(CartDaoImpl.class, e.getMessage());
-            throw new RuntimeException("Không tìm thấy sản phẩm trong giỏ hàng");
+            throw new RuntimeException(e);
         }
     }
 
@@ -113,7 +118,7 @@ public class CartDaoImpl implements CartDao {
     }
 
     private CartItem createCartItem(ResultSet rs) throws Exception {
-        return new CartItem(rs.getLong(CART_ITEM_ID), rs.getLong(CART_ID), rs.getLong(PRODUCT_ID), rs.getInt(QUANTITY), rs.getDouble(PRICE_SNAPSHOT), rs.getNString(NAME_SNAPSHOT), rs.getBytes(IMAGE_SNAPSHOT));
+        return new CartItem(rs.getLong(CART_ITEM_ID), rs.getLong(CART_ID), rs.getLong(PRODUCT_ID), rs.getInt(QUANTITY), rs.getDouble(PRICE_SNAPSHOT), rs.getString(NAME_SNAPSHOT), rs.getBytes(IMAGE_SNAPSHOT));
     }
 
 
