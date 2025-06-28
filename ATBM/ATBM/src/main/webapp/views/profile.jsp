@@ -98,7 +98,7 @@
                         <c:forEach var="order" items="${orders}" varStatus="status">
                             <div class="order-item mb-3 p-3 border rounded">
                                 <h5>
-                                    <a href="${pageContext.request.contextPath}/user/order/confirmation?orderId=${order.orderId}">
+                                    <a href="${pageContext.request.contextPath}/user/order/${order.orderId}">
                                         Đơn hàng #${order.orderId}
                                     </a>
                                     <c:if test="${tamperStatuses[status.index]}">
@@ -182,7 +182,7 @@
                         <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3" placeholder="Nhập public key của bạn vào đây..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
-                     k                </form>
+                </form>
             </div>
         </div>
     </div>
