@@ -23,7 +23,6 @@ public class Account {
         this.password = password;
         this.email = email;
         this.role = Role.USER;
-        this.isDeleted = false;
     }
 
     /**

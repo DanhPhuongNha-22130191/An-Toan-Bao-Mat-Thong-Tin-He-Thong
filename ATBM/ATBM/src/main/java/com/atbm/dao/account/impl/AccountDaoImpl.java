@@ -22,22 +22,7 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean insert(Account account) {
-        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive) VALUES (?, ?, ?, ?, ?)";
-        try {
-            return executeSQLHelper.executeUpdate(query,
-                    account.getUsername(),
-                    account.getPassword(),
-                    account.getEmail(),
-                    account.getRole().toString(),
-                    account.getPublicKeyActive());
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thêm tài khoản: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public boolean update(Account account) {
-        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ? WHERE accountId = ?";
+        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive, isDeleted) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             return executeSQLHelper.executeUpdate(query,
                     account.getUsername(),
@@ -45,6 +30,23 @@ public class AccountDaoImpl implements AccountDao {
                     account.getEmail(),
                     account.getRole().toString(),
                     account.getPublicKeyActive(),
+                    account.isDeleted());
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi thêm tài khoản: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean update(Account account) {
+        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ?, isDeleted = ? WHERE accountId = ?";
+        try {
+            return executeSQLHelper.executeUpdate(query,
+                    account.getUsername(),
+                    account.getPassword(),
+                    account.getEmail(),
+                    account.getRole().toString(),
+                    account.getPublicKeyActive(),
+                    account.isDeleted(),
                     account.getAccountId());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi cập nhật tài khoản: " + e.getMessage());

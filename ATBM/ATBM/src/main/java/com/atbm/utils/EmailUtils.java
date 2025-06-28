@@ -3,13 +3,14 @@ package com.atbm.utils;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class EmailUtil {
-	private static final Logger LOGGER = Logger.getLogger(EmailUtil.class.getName());
-	private static final String USERNAME = "lydung853@gmail.com";
-	private static final String PASSWORD = "powj nhms wkyz tyky";
+public class EmailUtils {
+	private static final Logger LOGGER = Logger.getLogger(EmailUtils.class.getName());
+	private static final String USERNAME = ConfigUtils.get("email.username");
+	private static final String PASSWORD = ConfigUtils.get("email.password");
 
 	public static boolean sendEmail(String to, String subject, String content) {
 		LOGGER.info("Chuẩn bị gửi email đến: " + to + ", Chủ đề: " + subject);
@@ -35,7 +36,7 @@ public class EmailUtil {
 			Transport.send(message);
 			return true;
 		} catch (MessagingException e) {
-			LogUtils.debug(EmailUtil.class, "Lỗi khi gửi email: " + e.getMessage());
+			LogUtils.debug(EmailUtils.class, "Lỗi khi gửi email: " + e.getMessage());
 			return false;
 		}
 	}
