@@ -10,6 +10,7 @@ import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.helper.OrderBuilderHelper;
 import com.atbm.models.entity.*;
+import com.atbm.models.enums.OrderStatus;
 import com.atbm.models.wrapper.request.CheckoutOrderRequest;
 import com.atbm.models.wrapper.response.OrderResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -65,20 +66,18 @@ public class OrderService {
         long[] id = new long[3];
         String paymentMethod = checkoutOrderRequest.getPaymentMethod();
         boolean success = executeSQLHelper.executeStepsInTransaction(List.of(connection -> {
-                    // Gọi step.apply(connection) để lấy ID và cache lại trong step
-                    id[0] = securityStep.apply(connection);
-                    return id[0];
-                }, connection -> {
-                    // Gọi step.apply(connection) để lấy ID và cache lại trong step
-                    id[1] = shippingStep.apply(connection);
-                    return id[1];
-                }, connection -> {
-                    SQLTransactionStep<Long> orderStep = buildInsertOrderStep(accountId, id[0], id[1], cart.getTotalPrice(), paymentMethod);
-                    id[2] = orderStep.apply(connection);
-                    return id[2];
-                }, connection -> buildInsertOrderItemsStep(cart.getCartId(), id[2]).apply(connection),
-                cartDao.clearCart(cart.getCartId()),
-                cartDao.updateTotalPrice(accountId, 0.0)));
+            // Gọi step.apply(connection) để lấy ID và cache lại trong step
+            id[0] = securityStep.apply(connection);
+            return id[0];
+        }, connection -> {
+            // Gọi step.apply(connection) để lấy ID và cache lại trong step
+            id[1] = shippingStep.apply(connection);
+            return id[1];
+        }, connection -> {
+            SQLTransactionStep<Long> orderStep = buildInsertOrderStep(accountId, id[0], id[1], cart.getTotalPrice(), paymentMethod);
+            id[2] = orderStep.apply(connection);
+            return id[2];
+        }, connection -> buildInsertOrderItemsStep(cart.getCartId(), id[2]).apply(connection), cartDao.clearCart(cart.getCartId()), cartDao.updateTotalPrice(accountId, 0.0)));
 
         if (!success) {
             throw new RuntimeException("Thanh toán thất bại");
@@ -106,6 +105,14 @@ public class OrderService {
             orderResponses.add(createOrderResponse(order));
         }
         return orderResponses;
+    }
+
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return orderDao.getOrdersByStatus(status.name());
+    }
+
+    public void updateStatus(long orderId, OrderStatus status) {
+        orderDao.updateStatus(orderId, status.name());
     }
 
     private OrderResponse createOrderResponse(Order order) {

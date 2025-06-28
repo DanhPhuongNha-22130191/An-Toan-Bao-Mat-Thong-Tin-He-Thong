@@ -14,16 +14,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/vendors/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/order-security.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <style>
-        .order-item {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .order-item:hover {
-            background-color: #f8f9fa;
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -92,30 +84,101 @@
 
             <!-- Lịch sử mua hàng -->
             <div id="order-history" class="tab-content card shadow-sm p-4 ${activeTab == 'order-history' ? '' : 'd-none'}">
-                <h4 class="text-primary mb-4">Lịch sử mua hàng</h4>
+                <h4 class="text-primary mb-4">
+                    <i class="fas fa-history"></i> Lịch sử mua hàng
+                </h4>
+                
+                <!-- Thống kê đơn hàng bị thay đổi -->
+                <c:if test="${orders != null && not empty orders}">
+                    <c:set var="tamperedCount" value="0" />
+                    <c:forEach var="tamperStatus" items="${tamperStatuses}">
+                        <c:if test="${tamperStatus}">
+                            <c:set var="tamperedCount" value="${tamperedCount + 1}" />
+                        </c:if>
+                    </c:forEach>
+                    
+                    <c:if test="${tamperedCount > 0}">
+                        <div class="tamper-count">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Cảnh báo: ${tamperedCount} đơn hàng đã bị phát hiện thay đổi!</span>
+                            <button onclick="showTamperInfo()" class="btn btn-sm btn-outline-light ms-auto">
+                                <i class="fas fa-info-circle"></i> Tìm hiểu thêm
+                            </button>
+                        </div>
+                        
+                        <div class="tamper-warning">
+                            <h6><i class="fas fa-shield-alt"></i> Thông tin bảo mật</h6>
+                            <p class="mb-0">
+                                Hệ thống đã phát hiện ${tamperedCount} đơn hàng có dấu hiệu bị thay đổi sau khi ký số. 
+                                Điều này có thể do lỗi hệ thống hoặc có sự can thiệp không mong muốn. 
+                                Vui lòng kiểm tra chi tiết và liên hệ hỗ trợ nếu cần thiết.
+                            </p>
+                        </div>
+                    </c:if>
+                </c:if>
+                
                 <c:choose>
                     <c:when test="${orders != null && not empty orders}">
                         <c:forEach var="order" items="${orders}" varStatus="status">
-                            <div class="order-item mb-3 p-3 border rounded">
-                                <h5>
-                                    <a href="${pageContext.request.contextPath}/user/order/${order.orderId}">
-                                        Đơn hàng #${order.orderId}
-                                    </a>
-                                    <c:if test="${tamperStatuses[status.index]}">
-                            <span class="badge bg-danger ms-2">
-                                <i class="fas fa-exclamation-triangle"></i> Đã bị thay đổi
-                            </span>
-                                    </c:if>
-                                </h5>
-                                <p><strong>Ngày đặt:</strong> ${order.orderDate}</p>
-                                <p><strong>Tổng tiền:</strong> ${order.totalAmount}đ</p>
-                                <p><strong>Trạng thái:</strong> ${order.status}</p>
+                            <div class="order-item mb-3 p-3 rounded ${tamperStatuses[status.index] ? 'tampered' : ''}">
+                                <div class="order-summary">
+                                    <div class="order-info">
+                                        <h5 class="mb-2">
+                                            <a href="${pageContext.request.contextPath}/user/order/detail/${order.order.orderId}" 
+                                               class="text-decoration-none text-dark">
+                                                <i class="fas fa-shopping-bag"></i> Đơn hàng #${order.order.orderId}
+                                            </a>
+                                            <c:if test="${tamperStatuses[status.index]}">
+                                                <span class="tamper-badge ms-2">
+                                                    <i class="fas fa-exclamation-triangle tamper-icon"></i>
+                                                    Đã bị thay đổi
+                                                </span>
+                                            </c:if>
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p class="mb-1"><strong><i class="fas fa-calendar"></i> Ngày đặt:</strong> 
+                                                    ${order.order.orderAt != null ? order.order.orderAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : 'N/A'}
+                                                </p>
+                                                <p class="mb-1"><strong><i class="fas fa-money-bill-wave"></i> Tổng tiền:</strong> 
+                                                    ${order.order.totalPrice != null ? order.order.totalPrice : 0} VNĐ
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-1"><strong><i class="fas fa-credit-card"></i> Thanh toán:</strong> 
+                                                    ${order.order.paymentMethod != null ? order.order.paymentMethod : 'N/A'}
+                                                </p>
+                                                <p class="mb-1"><strong><i class="fas fa-info-circle"></i> Trạng thái:</strong> 
+                                                    <span class="order-status status-${order.order.status != null ? order.order.status.toString().toLowerCase() : 'pending'}">
+                                                        ${order.order.status != null ? order.order.status : 'Chờ xử lý'}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <c:if test="${order.shippingInfo != null}">
+                                            <p class="mb-1"><strong><i class="fas fa-user"></i> Người nhận:</strong> 
+                                                ${order.shippingInfo.recipientName}
+                                            </p>
+                                        </c:if>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="${pageContext.request.contextPath}/user/order/${order.order.orderId}"
+                                           class="btn-view-details">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </a>
+                                        <c:if test="${tamperStatuses[status.index]}">
+                                            <button onclick="reportOrder(${order.order.orderId})" class="btn-report">
+                                                <i class="fas fa-flag"></i> Báo cáo
+                                            </button>
+                                        </c:if>
+                                    </div>
+                                </div>
                             </div>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
                         <div class="alert alert-info">
-                            Bạn chưa có đơn hàng nào.
+                            <i class="fas fa-info-circle"></i> Bạn chưa có đơn hàng nào.
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -245,11 +308,137 @@
     }
 
     function reportOrder(orderId) {
-        if (confirm("Bạn muốn báo cáo đơn hàng " + orderId + " bị thay đổi?")) {
-            alert("Đã gửi báo cáo cho quản trị viên về đơn hàng " + orderId);
+        // Hiển thị modal báo cáo
+        document.getElementById("reportOrderId").value = orderId;
+        const reportModal = new bootstrap.Modal(document.getElementById("reportModal"));
+        reportModal.show();
+    }
+
+    function submitReport() {
+        const orderId = document.getElementById("reportOrderId").value;
+        const reason = document.getElementById("reportReason").value;
+        
+        if (!orderId) {
+            alert("Lỗi: Không tìm thấy mã đơn hàng");
+            return;
         }
+        
+        // Tạo form data
+        const formData = new FormData();
+        formData.append("orderId", orderId);
+        formData.append("reason", reason || "Không có lý do");
+        
+        // Gửi báo cáo
+        fetch("${pageContext.request.contextPath}/user/report-order", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Đã gửi báo cáo thành công!");
+                // Đóng modal
+                const reportModal = bootstrap.Modal.getInstance(document.getElementById("reportModal"));
+                reportModal.hide();
+                // Reset form
+                document.getElementById("reportReason").value = "";
+            } else {
+                alert("Lỗi: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi khi gửi báo cáo:", error);
+            alert("Lỗi khi gửi báo cáo. Vui lòng thử lại sau.");
+        });
+    }
+
+    function showTamperInfo() {
+        const infoModal = new bootstrap.Modal(document.getElementById("tamperInfoModal"));
+        infoModal.show();
     }
 </script>
+
+<!-- Modal Báo cáo đơn hàng -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="reportModalLabel">
+                    <i class="fas fa-flag"></i> Báo cáo đơn hàng bị thay đổi
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Hệ thống đã phát hiện đơn hàng này có dấu hiệu bị thay đổi sau khi ký số. 
+                    Vui lòng mô tả chi tiết nếu bạn nhận thấy sự khác biệt.
+                </p>
+                <input type="hidden" id="reportOrderId">
+                <div class="mb-3">
+                    <label for="reportReason" class="form-label">Lý do báo cáo (tùy chọn):</label>
+                    <textarea class="form-control" id="reportReason" rows="3" 
+                              placeholder="Mô tả chi tiết về những thay đổi bạn nhận thấy..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-warning" onclick="submitReport()">
+                    <i class="fas fa-paper-plane"></i> Gửi báo cáo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thông tin về chữ ký số -->
+<div class="modal fade" id="tamperInfoModal" tabindex="-1" aria-labelledby="tamperInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="tamperInfoModalLabel">
+                    <i class="fas fa-shield-alt"></i> Thông tin về chữ ký số và bảo mật đơn hàng
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success"></i> Đơn hàng an toàn</h6>
+                        <p class="text-muted small">
+                            Đơn hàng có chữ ký số hợp lệ, đảm bảo tính toàn vẹn dữ liệu và không bị thay đổi sau khi ký.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-exclamation-triangle text-danger"></i> Đơn hàng bị thay đổi</h6>
+                        <p class="text-muted small">
+                            Đơn hàng có dấu hiệu bị thay đổi sau khi ký số. Có thể do lỗi hệ thống hoặc can thiệp không mong muốn.
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <h6><i class="fas fa-cogs"></i> Cách thức hoạt động</h6>
+                <ul class="text-muted small">
+                    <li>Khi đặt hàng, hệ thống tạo chữ ký số cho toàn bộ thông tin đơn hàng</li>
+                    <li>Chữ ký số được tạo bằng private key của hệ thống</li>
+                    <li>Khi xem đơn hàng, hệ thống xác minh chữ ký bằng public key</li>
+                    <li>Nếu chữ ký không hợp lệ, đơn hàng được đánh dấu là "bị thay đổi"</li>
+                </ul>
+                <hr>
+                <h6><i class="fas fa-question-circle"></i> Cần làm gì khi đơn hàng bị thay đổi?</h6>
+                <ul class="text-muted small">
+                    <li>Kiểm tra lại thông tin đơn hàng có chính xác không</li>
+                    <li>Liên hệ hỗ trợ khách hàng nếu có nghi ngờ</li>
+                    <li>Sử dụng nút "Báo cáo" để thông báo cho quản trị viên</li>
+                    <li>Lưu ý: Đơn hàng vẫn có thể được xử lý bình thường</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
