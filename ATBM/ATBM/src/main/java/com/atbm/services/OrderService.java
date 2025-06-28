@@ -1,5 +1,6 @@
 package com.atbm.services;
 
+import com.atbm.dao.account.AccountDao;
 import com.atbm.dao.cart.CartDao;
 import com.atbm.dao.order.OrderDao;
 import com.atbm.dao.orderItem.OrderItemDao;
@@ -22,16 +23,18 @@ import java.util.List;
 
 @ApplicationScoped
 public class OrderService {
-    private  OrderDao orderDao;
-    private  ShippingInfoDao shippingInfoDao;
-    private  OrderItemDao orderItemDao;
-    private  OrderSecurityDao orderSecurityDao;
-    private  CartDao cartDao;
-    private  OrderBuilderHelper orderBuilderHelper;
-    private  ExecuteSQLHelper executeSQLHelper;
+    private final OrderDao orderDao;
+    private final ShippingInfoDao shippingInfoDao;
+    private final OrderItemDao orderItemDao;
+    private final OrderSecurityDao orderSecurityDao;
+    private final CartDao cartDao;
+    private final OrderBuilderHelper orderBuilderHelper;
+    private final ExecuteSQLHelper executeSQLHelper;
+    private final OrderSecurityService orderSecurityService;
+    private final AccountDao accountDao;
 
     @Inject
-    public OrderService(OrderDao orderDao, ShippingInfoDao shippingInfoDao, OrderItemDao orderItemDao, OrderSecurityDao orderSecurityDao, CartDao cartDao, OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper) {
+    public OrderService(OrderDao orderDao, ShippingInfoDao shippingInfoDao, OrderItemDao orderItemDao, OrderSecurityDao orderSecurityDao, CartDao cartDao, OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper, OrderSecurityService orderSecurityService, AccountDao accountDao) {
         this.orderDao = orderDao;
         this.shippingInfoDao = shippingInfoDao;
         this.orderItemDao = orderItemDao;
@@ -39,9 +42,23 @@ public class OrderService {
         this.cartDao = cartDao;
         this.orderBuilderHelper = orderBuilderHelper;
         this.executeSQLHelper = executeSQLHelper;
+        this.orderSecurityService = orderSecurityService;
+        this.accountDao = accountDao;
     }
 
-    public OrderService(){}
+
+    public OrderService() {
+        orderDao = null;
+        shippingInfoDao = null;
+        orderItemDao = null;
+        orderSecurityDao = null;
+        cartDao = null;
+        orderBuilderHelper = null;
+        orderSecurityService = null;
+        executeSQLHelper = null;
+        accountDao = null;
+    }
+
 
     public long checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
         Cart cart = cartDao.getCartByAccountId(accountId);
@@ -94,7 +111,9 @@ public class OrderService {
         List<Order> orders = orderDao.getOrdersByAccountId(accountId);
         List<OrderResponse> orderResponses = new ArrayList<>();
         for (Order order : orders) {
-            orderResponses.add(createOrderResponse(order));
+            OrderResponse orderResponse = createOrderResponse(order);
+            orderResponse.setChanged(orderSecurityService.isOrderTampered(order));
+            orderResponses.add(orderResponse);
         }
         return orderResponses;
     }
@@ -139,12 +158,21 @@ public class OrderService {
         };
     }
 
-    public void updateSignature(long id, long orderId, String signature) {
-        if (signature == null) {
+    public void updateSignature(long accountId, long orderId, String signature) {
+        if (signature == null || signature.trim().isEmpty()) {
             throw new RuntimeException("Chữ ký không được bỏ trống");
         }
-        Order order = orderDao.getOrderById(orderId, id);
-        orderSecurityDao.updateSignature(order.getOrderSecurityId(), signature);
+
+        if (signature.trim().length() < 10) {
+            throw new RuntimeException("Chữ ký phải có ít nhất 10 ký tự");
+        }
+
+        Order order = orderDao.getOrderById(accountId, orderId);
+        if (order == null) {
+            throw new RuntimeException("Không tìm thấy đơn hàng hoặc bạn không có quyền truy cập");
+        }
+
+        orderSecurityDao.updateSignature(order.getOrderSecurityId(), accountDao.getPublicKeyActive(accountId), signature.trim());
     }
 
     public List<Order> getOrders(){

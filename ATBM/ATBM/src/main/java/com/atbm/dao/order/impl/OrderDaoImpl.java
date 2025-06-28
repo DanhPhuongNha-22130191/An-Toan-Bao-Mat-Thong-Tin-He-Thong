@@ -82,6 +82,21 @@ public class OrderDaoImpl implements OrderDao {
             throw new RuntimeException(e);
         }
         return result;
+
+    }
+
+    @Override
+    public List<Order> getOrdersByStatus(String status) {
+        String query = "SELECT * FROM Orders WHERE  status = ?";
+        List<Order> result = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, status)) {
+            while (rs.next()) {
+                result.add(createOrder(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     @Override

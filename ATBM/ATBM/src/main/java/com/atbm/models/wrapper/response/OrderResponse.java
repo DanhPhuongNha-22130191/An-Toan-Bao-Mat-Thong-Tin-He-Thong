@@ -5,12 +5,14 @@ import com.atbm.models.entity.OrderItem;
 import com.atbm.models.entity.ShippingInfo;
 
 import java.util.List;
+import java.util.Map;
 
 public class OrderResponse{
     private Order order;
     private ShippingInfo shippingInfo;
     private List<OrderItem> orderItems;
     private boolean isDigitallySigned;
+    private  boolean isChanged;
 
     public OrderResponse() {
     }
@@ -54,5 +56,11 @@ public class OrderResponse{
         isDigitallySigned = digitallySigned;
     }
 
+    public boolean isChanged() {
+        return isChanged;
+    }
 
+    public void setChanged(boolean isChanged) {
+        this.isChanged = isChanged;
+    }
 }

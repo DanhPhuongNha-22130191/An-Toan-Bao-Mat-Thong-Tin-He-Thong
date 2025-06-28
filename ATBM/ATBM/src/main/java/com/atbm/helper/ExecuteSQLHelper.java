@@ -24,7 +24,7 @@ public class ExecuteSQLHelper {
     }
 
     public ExecuteSQLHelper() {
-        dbConnection=null;
+        dbConnection = null;
     }
 
     public String createInsertQuery(String tableName, List<String> fieldNames) {
@@ -51,7 +51,9 @@ public class ExecuteSQLHelper {
         try {
             PreparedStatement preStatement = connect.prepareStatement(query);
             for (int i = 0; i < data.length; i++)
-                preStatement.setObject(i + 1, data[i]);
+                if (data[i] != null)
+                    preStatement.setObject(i + 1, data[i]);
+                else preStatement.setNull(i + 1,Types.VARCHAR);
             return preStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LogUtils.debug(ExecuteSQLHelper.class, e.getMessage());

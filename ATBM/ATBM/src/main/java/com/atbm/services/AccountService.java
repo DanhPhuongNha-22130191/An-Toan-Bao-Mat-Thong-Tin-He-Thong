@@ -29,18 +29,22 @@ import java.util.Random;
 
 @ApplicationScoped
 public class AccountService {
-    private AccountDao accountDao;
-    private CartDao cartDao;
-    private ExecuteSQLHelper executeSQLHelper;
+    private final AccountDao accountDao;
+    private final CartDao cartDao;
+    private final ExecuteSQLHelper executeSQLHelper;
+
+    public AccountService() {
+        accountDao = null;
+        cartDao = null;
+        executeSQLHelper = null;
+    }
+
 
     @Inject
     public AccountService(AccountDao accountDao, CartDao cartDao, ExecuteSQLHelper executeSQLHelper) {
         this.accountDao = accountDao;
         this.cartDao = cartDao;
         this.executeSQLHelper = executeSQLHelper;
-    }
-
-    public AccountService() {
     }
 
     // Đăng ký tài khoản từ RegisterRequest
@@ -127,8 +131,8 @@ public class AccountService {
     public boolean updateProfile(long accountId, UpdateProfileRequest updateProfileRequest) {
         Account account = accountDao.getAccountById(accountId);
         if (account != null) {
-            account.setUsername(updateProfileRequest.username().trim());
-            account.setEmail(updateProfileRequest.email().trim());
+            account.setUsername(updateProfileRequest.getUsername().trim());
+            account.setEmail(updateProfileRequest.getEmail().trim());
             return accountDao.update(account);
         }
         return false;
@@ -230,7 +234,6 @@ public class AccountService {
         account.setDeleted(true); // Đánh dấu isDeleted = true
         return accountDao.update(account); // Cập nhật trạng thái
     }
-
 
     public AccountResponse getUserInfo(long accountId) {
         return getAccountById(accountId);

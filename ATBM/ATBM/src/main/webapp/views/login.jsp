@@ -18,6 +18,7 @@
 			left: 50%;
 			transform: translate(-50%, -50%);
 			width: 350px;
+			max-height: max-content;
 			background: white;
 			padding: 25px;
 			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
