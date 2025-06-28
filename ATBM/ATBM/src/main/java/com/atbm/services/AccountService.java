@@ -2,16 +2,22 @@ package com.atbm.services;
 
 import com.atbm.dao.account.AccountDao;
 import com.atbm.dao.account.impl.AccountDaoImpl;
+import com.atbm.dao.cart.CartDao;
+import com.atbm.database.SQLTransactionStep;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
+import com.atbm.models.entity.Cart;
 import com.atbm.models.wrapper.request.AddAccountRequest;
 import com.atbm.models.wrapper.request.EditAccountRequest;
+import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.RegisterRequest;
 import com.atbm.models.wrapper.request.LoginRequest;
 import com.atbm.models.wrapper.request.UpdateProfileRequest;
 import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
-import com.atbm.utils.SignatureUtil;
+import com.atbm.utils.EmailUtils;
+import com.atbm.utils.SignatureUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.inject.Inject;
@@ -24,28 +30,41 @@ import java.util.Random;
 @ApplicationScoped
 public class AccountService {
     private final AccountDao accountDao;
+    private final CartDao cartDao;
+    private final ExecuteSQLHelper executeSQLHelper;
 
     public AccountService() {
         accountDao = null;
+        cartDao = null;
+        executeSQLHelper = null;
     }
 
     @Inject
-    public AccountService(AccountDao accountDao) {
+    public AccountService(AccountDao accountDao, CartDao cartDao, ExecuteSQLHelper executeSQLHelper) {
         this.accountDao = accountDao;
+        this.cartDao = cartDao;
+        this.executeSQLHelper = executeSQLHelper;
     }
 
     // Đăng ký tài khoản từ RegisterRequest
     public boolean register(RegisterRequest registerRequest) throws NoSuchAlgorithmException {
-        if (accountDao.existsByUsername(registerRequest.username().trim())) {
+        if (accountDao.existsByUsername(registerRequest.getUsername().trim())) {
             return false;
         }
-        String hashedPassword = SignatureUtil.hash(registerRequest.password());
+        String hashedPassword = SignatureUtils.hash(registerRequest.getPassword());
         Account account = new Account(
-                registerRequest.username().trim(),
+                registerRequest.getUsername().trim(),
                 hashedPassword,
-                registerRequest.email().trim()
+                registerRequest.getPassword().trim()
         );
-        return accountDao.insert(account);
+        SQLTransactionStep<Long> insertAccountStep = accountDao.insert(account);
+        return executeSQLHelper.executeStepsInTransaction(List.of(
+                connection -> {
+                    long id = insertAccountStep.apply(connection);
+                    cartDao.insert(new Cart(id));
+                    return id;
+                }
+        ));
     }
 
     // Đăng ký tài khoản từ AddAccountRequest
@@ -54,7 +73,7 @@ public class AccountService {
             throw new RuntimeException("Username already exists");
         }
         try {
-            String hashedPassword = SignatureUtil.hash(request.password());
+            String hashedPassword = SignatureUtils.hash(request.password());
             Account account = new Account();
             account.setUsername(request.username().trim());
             account.setPassword(hashedPassword);
@@ -63,7 +82,14 @@ public class AccountService {
                 account.setRole(request.role());
             }
             account.setDeleted(request.isDeleted() != null ? request.isDeleted() : false);
-            return accountDao.insert(account);
+            SQLTransactionStep<Long> insertAccountStep = accountDao.insert(account);
+            return executeSQLHelper.executeStepsInTransaction(List.of(
+                    connection -> {
+                        long id = insertAccountStep.apply(connection);
+                        cartDao.insert(new Cart(id));
+                        return id;
+                    }
+            ));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing password", e);
         }
@@ -72,8 +98,8 @@ public class AccountService {
 
     // Đăng nhập
     public AccountResponse login(LoginRequest loginRequest) throws NoSuchAlgorithmException {
-        Account account = accountDao.getAccountByUsername(loginRequest.username().trim());
-        if (account != null && SignatureUtil.hash(loginRequest.password()).equals(account.getPassword())) {
+        Account account = accountDao.getAccountByUsername(loginRequest.getUsername().trim());
+        if (account != null && SignatureUtils.hash(loginRequest.getPassword()).equals(account.getPassword())) {
             return new AccountResponse(
                     account.getAccountId(),
                     account.getUsername(),
@@ -114,8 +140,8 @@ public class AccountService {
     // Đổi mật khẩu có kiểm tra mật khẩu cũ
     public boolean changePassword(long accountId, ChangePasswordRequest changePasswordRequest) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
-        if (account != null && SignatureUtil.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
-            account.setPassword(SignatureUtil.hash(changePasswordRequest.newPassword()));
+        if (account != null && SignatureUtils.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
+            account.setPassword(SignatureUtils.hash(changePasswordRequest.newPassword()));
             return accountDao.update(account);
         }
         return false;
@@ -125,7 +151,7 @@ public class AccountService {
     public boolean updatePassword(long accountId, String newPassword) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
         if (account != null) {
-            account.setPassword(SignatureUtil.hash(newPassword));
+            account.setPassword(SignatureUtils.hash(newPassword));
             return accountDao.update(account);
         }
         return false;
@@ -217,4 +243,10 @@ public class AccountService {
         }
         return false;
     }
+
+    public AccountResponse getUserInfo(long accountId) {
+        return getAccountById(accountId);
+    }
+
+
 }

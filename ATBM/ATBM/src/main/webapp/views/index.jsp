@@ -106,7 +106,7 @@
 						<div class="card-body">
 							<p>${product.description}</p>
 							<h4 class="card-product__title">
-								<a href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">${product.name}</a>
+								<a href="${pageContext.servletContext.contextPath}/shop/product/${product.productId}">${product.name}</a>
 							</h4>
 							<p class="card-product__price">${product.price} ₫</p>
 						</div>
@@ -134,7 +134,7 @@
 								<img src="${pageContext.request.contextPath}/product-image/${newProduct.productId}" alt="${newProduct.name}">
 								<ul class="card-product__imgOverlay">
 									<li>
-										<button onclick="addToCart(${product.productId})"><i
+										<button onclick="addToCart(${newProduct.productId})"><i
 												class="ti-shopping-cart"></i></button>
 									</li>
 								</ul>
@@ -262,7 +262,7 @@
 <script src="${pageContext.request.contextPath}/assests/js/main.js"></script>
 <script>
 	function addToCart(productId) {
-		fetch('/ATBM/user/cart/add', {
+		fetch('/ATBM/user/cart', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'

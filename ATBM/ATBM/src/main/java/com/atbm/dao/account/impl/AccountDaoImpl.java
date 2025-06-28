@@ -1,6 +1,7 @@
 package com.atbm.dao.account.impl;
 
 import com.atbm.dao.account.AccountDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
 import com.atbm.models.enums.Role;
@@ -21,15 +22,16 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public boolean insert(Account account) {
-        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive) VALUES (?, ?, ?, ?, ?)";
+    public SQLTransactionStep<Long> insert(Account account) {
+        String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(USERNAME, PASSWORD, EMAIL, ROLES, PUBLIC_KEY_ACTIVE, IS_DELETED));
         try {
-            return executeSQLHelper.executeUpdate(query,
+            return executeSQLHelper.buildInsertStepReturningId(query,
                     account.getUsername(),
                     account.getPassword(),
                     account.getEmail(),
                     account.getRole().toString(),
-                    account.getPublicKeyActive());
+                    account.getPublicKeyActive(),
+                    account.isDeleted());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thêm tài khoản: " + e.getMessage());
         }
@@ -37,7 +39,7 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean update(Account account) {
-        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ? WHERE accountId = ?";
+        String query= executeSQLHelper.createUpdateQuery(TABLE_NAME, List.of(USERNAME, PASSWORD, EMAIL, ROLES, PUBLIC_KEY_ACTIVE, IS_DELETED), List.of(ACCOUNT_ID));
         try {
             return executeSQLHelper.executeUpdate(query,
                     account.getUsername(),
@@ -45,6 +47,7 @@ public class AccountDaoImpl implements AccountDao {
                     account.getEmail(),
                     account.getRole().toString(),
                     account.getPublicKeyActive(),
+                    account.isDeleted(),
                     account.getAccountId());
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi cập nhật tài khoản: " + e.getMessage());

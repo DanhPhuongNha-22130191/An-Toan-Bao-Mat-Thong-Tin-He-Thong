@@ -5,7 +5,7 @@ import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class SignatureUtil {
+public class SignatureUtils {
     /**
      * Tạo mã băm SHA-256 từ chuỗi đầu vào
      */

@@ -163,7 +163,7 @@
 					<p>${product.description}</p>
 					<div class="product_count">
 						<!-- Sửa lại form action để giống như shop.jsp -->
-						<form action="${pageContext.request.contextPath}/user/cart/add" method="post">
+						<form action="${pageContext.request.contextPath}/user/cart" method="post">
 							<input type="hidden" name="productId" value="${product.productId}">
 							<div class="mb-3">
 								<label for="qty">Quantity:</label>

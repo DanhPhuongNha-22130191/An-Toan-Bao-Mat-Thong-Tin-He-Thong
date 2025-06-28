@@ -134,7 +134,7 @@
 										<ul class="card-product__imgOverlay">
 											<li><button><i class="ti-search"></i></button></li>
 											<li>
-												<form action="${pageContext.request.contextPath}/user/cart/add" method="post">
+												<form action="${pageContext.request.contextPath}/user/cart" method="POST">
 													<input type="hidden" name="productId" value="${product.productId}" />
 													<input type="hidden" name="quantity" value="1" />
 													<button type="submit">
@@ -147,7 +147,7 @@
 									</div>
 									<div class="card-body">
 										<h4 class="card-product__title">
-											<a href="${pageContext.request.contextPath}/product?action=details&id=${product.productId}">${product.name}</a>
+											<a href="${pageContext.request.contextPath}/shop/product/${product.productId}">${product.name}</a>
 										</h4>
 										<p class="card-product__price">$${product.price}</p>
 									</div>

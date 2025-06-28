@@ -50,19 +50,19 @@
                 <div class="card-body">
                     <h5 class="card-title text-primary text-center">Menu</h5>
                     <div class="list-group">
-                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=profile"
+                        <a href="${pageContext.request.contextPath}/user/info"
                            class="list-group-item list-group-item-action ${activeTab == 'profile' ? 'active' : ''}">
                             <i class="bi bi-person-circle"></i> Thông tin cá nhân
                         </a>
-                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=order-history"
+                        <a href="${pageContext.request.contextPath}/user/history-orders"
                            class="list-group-item list-group-item-action ${activeTab == 'order-history' ? 'active' : ''}">
                             <i class="bi bi-receipt"></i> Lịch sử mua hàng
                         </a>
-                        <a href="${pageContext.request.contextPath}/user/account?action=profile&tab=account-settings"
+                        <a href="${pageContext.request.contextPath}/user/update"
                            class="list-group-item list-group-item-action ${activeTab == 'account-settings' ? 'active' : ''}">
                             <i class="bi bi-gear"></i> Cài đặt tài khoản
                         </a>
-                        <a href="${pageContext.request.contextPath}/user/account?action=logout"
+                        <a href="${pageContext.request.contextPath}/user/logout"
                            class="list-group-item list-group-item-action">
                             <i class="bi bi-box-arrow-right"></i> Đăng xuất
                         </a>
@@ -76,7 +76,7 @@
             <!-- Thông tin cá nhân -->
             <div id="profile" class="tab-content card shadow-sm p-4 ${activeTab == 'profile' ? '' : 'd-none'}">
                 <h4 class="text-primary mb-4">Thông tin cá nhân</h4>
-                <form action="${pageContext.request.contextPath}/user/account" method="post">
+                <form action="${pageContext.request.contextPath}/user/update" method="post">
                     <input type="hidden" name="action" value="updateProfile">
                     <div class="mb-3">
                         <label class="form-label">Họ và tên:</label>
@@ -126,7 +126,7 @@
                 <h4 class="text-primary mb-4">Cài đặt tài khoản</h4>
 
                 <!-- Form đổi mật khẩu -->
-                <form action="${pageContext.request.contextPath}/user/account" method="post" class="mb-4">
+                <form action="${pageContext.request.contextPath}/user/update" method="post" class="mb-4">
                     <input type="hidden" name="action" value="changePassword">
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu cũ:</label>
@@ -155,7 +155,7 @@
                             </button>
                         </div>
                         <div class="mt-2">
-                            <form action="${pageContext.request.contextPath}/user/account" method="post" style="display: inline;">
+                            <form action="${pageContext.request.contextPath}/user/update" method="post" style="display: inline;">
                                 <input type="hidden" name="action" value="revokePublicKey">
                                 <button type="submit" class="btn btn-danger btn-sm">Thu hồi Public Key</button>
                             </form>
@@ -171,7 +171,7 @@
 
                 <!-- Form upload/nhập Public Key mới -->
                 <h6 class="text-primary">Tải lên hoặc nhập Public Key mới</h6>
-                <form action="${pageContext.request.contextPath}/user/account" method="post" enctype="multipart/form-data">
+                <form action="${pageContext.request.contextPath}/user/update" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="uploadPublicKey">
                     <div class="mb-3">
                         <label class="form-label" for="publicKeyFile">Tải lên file Public Key:</label>
@@ -182,12 +182,11 @@
                         <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3" placeholder="Nhập public key của bạn vào đây..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </form>
+                     k                </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <script src="${pageContext.request.contextPath}/assets/vendors/jquery/jquery-3.2.1.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/vendors/bootstrap/bootstrap.bundle.min.js"></script>
