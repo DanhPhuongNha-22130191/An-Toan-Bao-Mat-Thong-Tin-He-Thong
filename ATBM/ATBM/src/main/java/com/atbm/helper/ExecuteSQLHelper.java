@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,11 +89,27 @@ public class ExecuteSQLHelper {
         return connection -> {
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 for (int i = 0; i < params.length; i++) {
-                    stmt.setObject(i + 1, params[i]);
+                    Object param = params[i];
+                    if (param == null) {
+                        stmt.setNull(i + 1, Types.VARBINARY);
+                    } else if (param instanceof byte[]) {
+                        stmt.setBytes(i + 1, (byte[]) param);
+                    } else if (param instanceof String) {
+                        stmt.setString(i + 1, (String) param);
+                    } else if (param instanceof Long) {
+                        stmt.setLong(i + 1, (Long) param);
+                    } else if (param instanceof Integer) {
+                        stmt.setInt(i + 1, (Integer) param);
+                    } else if (param instanceof Double) {
+                        stmt.setDouble(i + 1, (Double) param);
+                    } else {
+                        stmt.setObject(i + 1, param);
+                    }
                 }
                 return stmt.executeUpdate() > 0 ? Boolean.TRUE : null;
             } catch (SQLException e) {
-                throw new RuntimeException("Lỗi khi thực hiện thay đổi");
+                e.printStackTrace();
+                throw new RuntimeException("Lỗi khi thực hiện thay đổi: " + e.getMessage());
             }
         };
     }
@@ -113,6 +130,7 @@ public class ExecuteSQLHelper {
                         (stmt.getGeneratedKeys().next() ? stmt.getGeneratedKeys().getLong(1) : null)
                         : null;
             } catch (SQLException e) {
+                e.printStackTrace();
                 throw new RuntimeException("Lỗi khi thực hiện thay đổi");
             }
         };
@@ -140,6 +158,7 @@ public class ExecuteSQLHelper {
             conn.commit();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             LogUtils.debug(ExecuteSQLHelper.class, e.getMessage());
             try {
                 conn.rollback();

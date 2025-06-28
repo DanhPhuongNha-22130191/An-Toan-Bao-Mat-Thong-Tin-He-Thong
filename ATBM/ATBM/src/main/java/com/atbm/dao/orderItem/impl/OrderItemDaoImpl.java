@@ -4,6 +4,7 @@ import com.atbm.dao.orderItem.OrderItemDao;
 import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.OrderItem;
+import com.atbm.utils.LogUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -28,13 +29,15 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
     @Override
     public List<OrderItem> getOrderItemsByOrderId(long orderId) {
-        String query = "SELECT * FROM OrderItems WHERE orderId = ?";
+        String query = "SELECT * FROM OrderItem WHERE orderId = ?";
         List<OrderItem> result = new java.util.ArrayList<>();
         try (ResultSet rs = executeSQLHelper.executeQuery(query, orderId)) {
             while (rs.next()) {
                 result.add(createOrderItem(rs));
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.debug(OrderItemDaoImpl.class, e.getMessage());
             throw new RuntimeException(e);
         }
         return result;

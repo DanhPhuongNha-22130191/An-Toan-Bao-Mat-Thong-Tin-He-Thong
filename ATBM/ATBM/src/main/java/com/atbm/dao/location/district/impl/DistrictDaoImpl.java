@@ -28,7 +28,7 @@ public class DistrictDaoImpl implements DistrictDao {
 
     @Override
     public List<District> getDistrictsByProvinceId(long provinceId) {
-        String query = "SELECT * FROM district WHERE id = ?";
+        String query = "SELECT * FROM district WHERE provinceId = ?";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, provinceId)) {
             List<District> result = new java.util.ArrayList<>();
             while (rs.next()) {

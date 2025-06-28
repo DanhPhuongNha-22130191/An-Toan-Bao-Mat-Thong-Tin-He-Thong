@@ -30,12 +30,7 @@ public class OrderService {
     private final ExecuteSQLHelper executeSQLHelper;
 
     @Inject
-    public OrderService(OrderDao orderDao,
-                        ShippingInfoDao shippingInfoDao,
-                        OrderItemDao orderItemDao,
-                        OrderSecurityDao orderSecurityDao,
-                        CartDao cartDao,
-                        OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper) {
+    public OrderService(OrderDao orderDao, ShippingInfoDao shippingInfoDao, OrderItemDao orderItemDao, OrderSecurityDao orderSecurityDao, CartDao cartDao, OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper) {
         this.orderDao = orderDao;
         this.shippingInfoDao = shippingInfoDao;
         this.orderItemDao = orderItemDao;
@@ -44,17 +39,18 @@ public class OrderService {
         this.orderBuilderHelper = orderBuilderHelper;
         this.executeSQLHelper = executeSQLHelper;
     }
-    public OrderService(){
-        orderDao=null;
-        shippingInfoDao=null;
-        orderItemDao=null;
-        orderSecurityDao=null;
-        cartDao=null;
-        orderBuilderHelper=null;
-        executeSQLHelper=null;
+
+    public OrderService() {
+        orderDao = null;
+        shippingInfoDao = null;
+        orderItemDao = null;
+        orderSecurityDao = null;
+        cartDao = null;
+        orderBuilderHelper = null;
+        executeSQLHelper = null;
     }
 
-    public void checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
+    public long checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
         Cart cart = cartDao.getCartByAccountId(accountId);
         if (!updateAt.isEqual(cart.getUpdateAt()))
             throw new RuntimeException("Giỏ hàng đã thay đổi, vui lòng tải lại trang");
@@ -66,29 +62,27 @@ public class OrderService {
         // Bước chuẩn bị các bước transaction
         SQLTransactionStep<Long> securityStep = buildInsertOrderSecurityStep(orderSecurity);
         SQLTransactionStep<Long> shippingStep = buildInsertShippingInfoStep(shippingInfo);
-        SQLTransactionStep<Long> orderStep = buildInsertOrderStep(accountId, orderSecurity, shippingInfo, cart.getTotalPrice(), checkoutOrderRequest.paymentMethod());
-
-        boolean success = executeSQLHelper.executeStepsInTransaction(List.of(
-                connection -> {
+        long[] id = new long[3];
+        String paymentMethod = checkoutOrderRequest.getPaymentMethod();
+        boolean success = executeSQLHelper.executeStepsInTransaction(List.of(connection -> {
                     // Gọi step.apply(connection) để lấy ID và cache lại trong step
-                    orderSecurity.setOrderSecurityId(securityStep.apply(connection));
-                    return securityStep;
-                },
-                connection -> {
+                    id[0] = securityStep.apply(connection);
+                    return id[0];
+                }, connection -> {
                     // Gọi step.apply(connection) để lấy ID và cache lại trong step
-                    shippingInfo.setShippingInfoId(shippingStep.apply(connection));
-                    return shippingStep;
-                },
-                connection -> orderStep
-                ,
-                buildInsertOrderItemsStep(cart.getCartId(), orderStep),
+                    id[1] = shippingStep.apply(connection);
+                    return id[1];
+                }, connection -> {
+                    SQLTransactionStep<Long> orderStep = buildInsertOrderStep(accountId, id[0], id[1], cart.getTotalPrice(), paymentMethod);
+                    id[2] = orderStep.apply(connection);
+                    return id[2];
+                }, connection -> buildInsertOrderItemsStep(cart.getCartId(), id[2]).apply(connection),
                 cartDao.clearCart(cart.getCartId()),
-                cartDao.updateTotalPrice(accountId, 0.0)
-        ));
+                cartDao.updateTotalPrice(accountId, 0.0)));
 
         if (!success) {
             throw new RuntimeException("Thanh toán thất bại");
-        }
+        } else return id[2];
     }
 
 
@@ -129,18 +123,17 @@ public class OrderService {
         return new CachedTransactionStep<>(shippingInfoDao.insert(shippingInfo));
     }
 
-    private SQLTransactionStep<Long> buildInsertOrderStep(long accountId, OrderSecurity orderSecurity, ShippingInfo shippingInfo, double totalPrice, String paymentMethod) {
-        Order order = orderBuilderHelper.builderOrder(accountId, orderSecurity.getOrderSecurityId(), shippingInfo.getShippingInfoId(), totalPrice, paymentMethod);
+    private SQLTransactionStep<Long> buildInsertOrderStep(long accountId, long orderSecurityId, long shippingInfoId, double totalPrice, String paymentMethod) {
+        Order order = orderBuilderHelper.builderOrder(accountId, orderSecurityId, shippingInfoId, totalPrice, paymentMethod);
         return new CachedTransactionStep<>(orderDao.insert(order));
     }
 
-    private SQLTransactionStep<Boolean> buildInsertOrderItemsStep(long cartId, SQLTransactionStep<Long> orderStep) {
+    private SQLTransactionStep<Boolean> buildInsertOrderItemsStep(long cartId, long orderId) {
         return connection -> {
-            long orderId = orderStep.apply(connection); // Lấy lại ID
             List<OrderItem> items = orderBuilderHelper.builderOrderItems(cartId, orderId);
             for (OrderItem item : items) {
                 if (!orderItemDao.insert(item).apply(connection)) {
-                    return null;
+                    return false;
                 }
             }
             return true;

@@ -13,11 +13,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
 @WebServlet("/user/cart")
 public class CartController extends BaseController {
+    public final static String CART_URL="/user/cart";
     private final static String VIEW_CART = "/views/cart.jsp";
     private CartService cartService;
 
@@ -30,7 +32,8 @@ public class CartController extends BaseController {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long accountId = getAccountId(req);
         CartResponse response = cartService.getCartByAccountId(accountId);
-        HttpUtils.setAttribute(req, "cart", response);
+        HttpSession session = req.getSession();
+        session.setAttribute("cart", response);
         HttpUtils.dispatcher(req, resp, VIEW_CART);
     }
 

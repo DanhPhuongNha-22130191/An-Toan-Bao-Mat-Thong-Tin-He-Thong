@@ -9,7 +9,9 @@ import com.atbm.models.enums.PaymentMethod;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,12 @@ public class OrderDaoImpl implements OrderDao {
     public SQLTransactionStep<Long> insert(Order order) {
         List<String> fieldNames = List.of(ACCOUNT_ID, ORDER_SECURITY_ID, SHIPPING_INFO_ID, STATUS, TOTAL_PRICE, ORDER_AT, PAYMENT_METHOD);
         String query = executeSQLHelper.createInsertQuery(TABLE_NAME, fieldNames);
-        return executeSQLHelper.buildInsertStepReturningId(query, order.getAccountId(), order.getOrderSecurityId(), order.getShippingInfoId(), order.getStatus(), order.getTotalPrice(), order.getOrderAt(), order.getPaymentMethod());
+        try {
+            return executeSQLHelper.buildInsertStepReturningId(query, order.getAccountId(), order.getOrderSecurityId(), order.getShippingInfoId(), OrderStatus.PROCESSING.name(), order.getTotalPrice(), Date.valueOf(LocalDate.now()), order.getPaymentMethod().name());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
