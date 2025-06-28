@@ -195,7 +195,7 @@ public class AccountService {
         return password.toString();
     }
 
-    // Lấy danh sách tài khoản (bao gồm cả tài khoản bị xóa)
+    // Lấy danh sách tài khoản
     public List<Account> getAccounts() {
         return accountDao.getAccounts();
     }
@@ -224,12 +224,13 @@ public class AccountService {
     // Xóa tài khoản (đánh dấu isDeleted = true)
     public boolean delete(long accountId) {
         Account account = accountDao.getAccountById(accountId);
-        if (account != null && !account.isDeleted()) {
-            account.setDeleted(true);
-            return accountDao.update(account);
+        if (account.isDeleted()) {
+            return false;
         }
-        return false;
+        account.setDeleted(true); // Đánh dấu isDeleted = true
+        return accountDao.update(account); // Cập nhật trạng thái
     }
+
 
     public AccountResponse getUserInfo(long accountId) {
         return getAccountById(accountId);

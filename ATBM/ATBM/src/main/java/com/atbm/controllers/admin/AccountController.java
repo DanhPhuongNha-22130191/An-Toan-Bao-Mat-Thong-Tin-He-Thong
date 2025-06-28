@@ -4,8 +4,6 @@ import com.atbm.config.BaseController;
 import com.atbm.models.entity.Account;
 import com.atbm.models.enums.Role;
 import com.atbm.models.wrapper.request.AddAccountRequest;
-import com.atbm.models.wrapper.request.EditAccountRequest;
-import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import jakarta.enterprise.inject.spi.CDI;
@@ -26,6 +24,7 @@ public class AccountController extends BaseController {
         accountService = CDI.current().select(AccountService.class).get();
     }
 
+    // Hiển thị danh sách user
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Account> accounts = accountService.getAccounts();
@@ -33,7 +32,7 @@ public class AccountController extends BaseController {
         HttpUtils.dispatcher(req, resp, "/views/userAdmin.jsp");
     }
 
-    // Thêm tài khoản mới
+    // Thêm user mới (POST)
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = req.getParameter("username");
@@ -42,40 +41,13 @@ public class AccountController extends BaseController {
         String roleStr = req.getParameter("role");
         Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
 
-        AddAccountRequest addRequest = new AddAccountRequest(
-                username,
-                password,
-                email,
-                role,
-                false
-        );
-
+        AddAccountRequest addRequest = new AddAccountRequest(username, password, email, role, false);
         accountService.register(addRequest);
+
         HttpUtils.sendRedirect(req, resp, "/admin/users");
     }
 
-    // Cập nhật tài khoản (Edit)
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long userId = Long.parseLong(req.getParameter("userId"));
-        String username = req.getParameter("username");
-        String email = req.getParameter("email");
-        String roleStr = req.getParameter("role");
-        Role role = (roleStr != null && !roleStr.isBlank()) ? Role.valueOf(roleStr) : null;
-
-        EditAccountRequest editRequest = new EditAccountRequest(
-                userId,
-                username,
-                email,
-                role,
-                false
-        );
-
-        accountService.update(editRequest);
-        HttpUtils.sendRedirect(req, resp, "/admin/users");
-    }
-
-    // Xoá tài khoản (Delete - đánh dấu isDeleted = true)
+    // Xóa user (DELETE)
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long userId = Long.parseLong(req.getParameter("userId"));

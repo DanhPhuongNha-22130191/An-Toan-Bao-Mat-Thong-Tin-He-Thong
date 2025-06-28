@@ -10,10 +10,14 @@ public class SignatureUtils {
      * Tạo mã băm SHA-256 từ chuỗi đầu vào
      */
     public static String hash(String data) throws NoSuchAlgorithmException {
+        if (data == null) {
+            throw new IllegalArgumentException("Input to hash() cannot be null");
+        }
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashBytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(hashBytes);
     }
+
 
     /**
      * Xác minh chữ ký số bằng public key
