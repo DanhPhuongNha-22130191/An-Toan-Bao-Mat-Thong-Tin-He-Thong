@@ -6,7 +6,7 @@ import com.atbm.models.entity.OrderItem;
 import java.util.List;
 
 public interface OrderItemDao {
-    String TABLE_NAME = "OrderItems";
+    String TABLE_NAME = "OrderItem";
     String ORDER_ITEM_ID = "orderItemId";
     String ORDER_ID = "orderId";
     String PRODUCT_ID = "productId";
