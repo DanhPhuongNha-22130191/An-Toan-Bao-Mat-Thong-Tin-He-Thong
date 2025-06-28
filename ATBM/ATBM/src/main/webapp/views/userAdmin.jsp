@@ -101,7 +101,7 @@
                     </tr>
                     </thead>
                     <tbody id="userTableBody">
-                    <c:forEach var="user" items="${users}">
+                    <c:forEach var="user" items="${accounts}">
                         <tr>
                             <td>${user.accountId}</td>
                             <td><c:out value="${user.username}"/></td>
@@ -246,22 +246,20 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initializePagination();
+        document.getElementById("searchInput").addEventListener("input", searchUsers);
     });
 
     let currentPage = 1;
     const itemsPerPage = 5;
-    let totalItems = 0;
     let allRows = [];
     let filteredRows = [];
 
     function initializePagination() {
         allRows = Array.from(document.querySelectorAll("#userTableBody tr"));
         filteredRows = [...allRows];
-        totalItems = filteredRows.length;
         currentPage = 1;
         updatePagination();
         showPage(currentPage);
-        console.log("Total users:", totalItems);
     }
 
     function showPage(page) {
@@ -269,9 +267,9 @@
         const endIndex = startIndex + itemsPerPage;
 
         allRows.forEach(row => row.style.display = 'none');
-        for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
-            filteredRows[i].style.display = '';
-        }
+        filteredRows.forEach((row, index) => {
+            row.style.display = (index >= startIndex && index < endIndex) ? '' : 'none';
+        });
 
         updatePaginationInfo(page);
     }
@@ -285,11 +283,11 @@
         document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
 
         for (let i = 1; i <= totalPages; i++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.className = 'btn btn-outline-secondary btn-sm' + (i === currentPage ? ' active' : '');
-            pageBtn.textContent = i;
-            pageBtn.onclick = () => goToPage(i);
-            pageNumbers.appendChild(pageBtn);
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-secondary btn-sm' + (i === currentPage ? ' active' : '');
+            btn.textContent = i;
+            btn.addEventListener('click', () => goToPage(i));
+            pageNumbers.appendChild(btn);
         }
     }
 
@@ -321,21 +319,19 @@
         }
     }
 
-    function openEditUserModal(userId, username, email) {
-        console.log("Opening Edit User Modal with:", userId, username, email);
+    function openEditUserModal(userId, username, email, role) {
         document.getElementById("editUserId").value = userId;
         document.getElementById("editUsername").value = username;
         document.getElementById("editEmail").value = email || '';
+        document.getElementById("editRole").value = role || 'USER';
     }
 
     function showPublicKey(key) {
-        console.log("Showing Public Key:", key);
         const keyText = key && key !== 'null' ? key : 'Chưa có khóa công khai';
         document.getElementById("publicKeyText").value = keyText;
     }
 
     function copyPublicKey() {
-        console.log("Copying Public Key");
         const textarea = document.getElementById("publicKeyText");
         textarea.select();
         try {
@@ -348,20 +344,20 @@
     }
 
     function confirmDelete(userId) {
-        console.log("Confirming Delete for userId:", userId);
         if (confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-            window.location.href = "${pageContext.request.contextPath}/admin/users?action=delete&userId=" + userId;
+            window.location.href = `/admin/users?action=delete&userId=${userId}`;
         }
     }
 
     function searchUsers() {
         const input = document.getElementById("searchInput").value.toLowerCase();
-        console.log("Searching users with:", input);
+
         filteredRows = allRows.filter(row => {
-            const cells = row.querySelectorAll("td");
-            return Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(input));
+            return Array.from(row.querySelectorAll("td")).some(cell =>
+                cell.textContent.toLowerCase().includes(input)
+            );
         });
-        totalItems = filteredRows.length;
+
         currentPage = 1;
         updatePagination();
         showPage(currentPage);

@@ -1,21 +1,24 @@
 package com.atbm.controllers.admin;
 
+import com.atbm.config.BaseController;
+import com.atbm.models.entity.Account;
 import com.atbm.models.enums.Role;
 import com.atbm.models.wrapper.request.AddAccountRequest;
 import com.atbm.models.wrapper.request.EditAccountRequest;
+import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/admin/users")
-public class AccountController extends HttpServlet {
+public class AccountController extends BaseController {
     private AccountService accountService;
 
     @Override
@@ -25,9 +28,9 @@ public class AccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        var accounts = accountService.getAccounts();
+        List<Account> accounts = accountService.getAccounts();
         HttpUtils.setAttribute(req, "accounts", accounts);
-        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/userAdmin.jsp");
+        HttpUtils.dispatcher(req, resp, "/views/userAdmin.jsp");
     }
 
     // Thêm tài khoản mới

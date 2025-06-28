@@ -4,12 +4,14 @@ import com.atbm.dao.account.AccountDao;
 import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
+import com.atbm.models.entity.Product;
 import com.atbm.models.enums.Role;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -128,7 +130,19 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public List<Account> getAccounts() {
-        return List.of();
+        String query = "SELECT * FROM Account WHERE isDeleted = 0";
+        List<Account> accounts = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
+            while (rs.next()) {
+                Account account = createAccount(rs);
+                if (account != null) {
+                    accounts.add(account);
+                }
+            }
+            return accounts;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lấy Account lỗi", e);
+        }
     }
 
     private Account createAccount(ResultSet rs) throws SQLException {
