@@ -11,8 +11,8 @@ public class WebInitializer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        FilterRegistration.Dynamic corsBlockFilter = context.addFilter("CorsBlockFilter", CorsBlockFilter.class);
-        corsBlockFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+//        FilterRegistration.Dynamic corsBlockFilter = context.addFilter("CorsBlockFilter", CorsBlockFilter.class);
+//        corsBlockFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 
         FilterRegistration.Dynamic authenticationFilter = context.addFilter(
                 "AuthenticationFilter", AuthenticationFilter.class

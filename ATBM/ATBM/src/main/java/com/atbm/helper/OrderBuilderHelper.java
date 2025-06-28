@@ -37,29 +37,29 @@ public class OrderBuilderHelper {
         OrderSecurity orderSecurity = new OrderSecurity();
         String publicKey = accountDao.getPublicKeyActive(accountId);
         orderSecurity.setPublicKey(publicKey);
-        orderSecurity.setSignature(checkoutOrderRequest.signature());
+        orderSecurity.setSignature(checkoutOrderRequest.getSignature());
         return orderSecurity;
     }
 
     public ShippingInfo builderShippingInfo(CheckoutOrderRequest checkoutOrderRequest) {
         ShippingInfo shippingInfo = new ShippingInfo();
-        shippingInfo.setNote(checkoutOrderRequest.note());
-        shippingInfo.setPhoneNumber(checkoutOrderRequest.phoneNumber());
-        shippingInfo.setShippingMethod(checkoutOrderRequest.shippingMethod());
-        shippingInfo.setRecipientName(checkoutOrderRequest.recipientName());
+        shippingInfo.setNote(checkoutOrderRequest.getNote());
+        shippingInfo.setPhoneNumber(checkoutOrderRequest.getPhoneNumber());
+        shippingInfo.setShippingMethod(checkoutOrderRequest.getShippingMethod());
+        shippingInfo.setRecipientName(checkoutOrderRequest.getRecipientName());
         builderLocation(shippingInfo, checkoutOrderRequest);
         return shippingInfo;
     }
 
     //Tạo thông tin địa chỉ
     private void builderLocation(ShippingInfo shippingInfo, CheckoutOrderRequest checkoutOrderRequest) {
-        shippingInfo.setAddressLine(checkoutOrderRequest.addressLine());
-        shippingInfo.setDistrict(locationService.getDistrictName(checkoutOrderRequest.districtId()));
-        shippingInfo.setDistrictId(checkoutOrderRequest.districtId());
-        shippingInfo.setWardId(checkoutOrderRequest.wardId());
-        shippingInfo.setWard(locationService.getWardName(checkoutOrderRequest.wardId()));
-        shippingInfo.setProvince(locationService.getProvinceName(checkoutOrderRequest.provinceId()));
-        shippingInfo.setProvinceId(checkoutOrderRequest.provinceId());
+        shippingInfo.setAddressLine(checkoutOrderRequest.getAddressLine());
+        shippingInfo.setDistrict(locationService.getDistrictName(checkoutOrderRequest.getDistrictId()));
+        shippingInfo.setDistrictId(checkoutOrderRequest.getDistrictId());
+        shippingInfo.setWardId(checkoutOrderRequest.getWardId());
+        shippingInfo.setWard(locationService.getWardName(checkoutOrderRequest.getWardId()));
+        shippingInfo.setProvince(locationService.getProvinceName(checkoutOrderRequest.getProvinceId()));
+        shippingInfo.setProvinceId(checkoutOrderRequest.getProvinceId());
     }
 
     public Order builderOrder(long accountId, long orderSecurityId, long shippingInfoId, double totalPrice, String paymentMethod) {

@@ -22,8 +22,14 @@ public abstract class BaseController extends HttpServlet {
             case "PUT":
                 doPut(requestWrapper, resp);
                 break;
+            case "POST":
+                doPost(requestWrapper, resp);
+                break;
+            case "GET":
+                doGet(requestWrapper, resp);
+                break;
             default:
-                super.service(req, resp);
+                super.service(requestWrapper, resp);
         }
     }
 
@@ -41,5 +47,13 @@ public abstract class BaseController extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     }
 }

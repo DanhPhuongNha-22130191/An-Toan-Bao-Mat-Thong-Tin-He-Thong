@@ -157,7 +157,7 @@
 <c:set var="contextPath" value="${pageContext.servletContext.contextPath}"/>
 <c:set var="shopUrl" value="${contextPath}/shop/product"/>
 <c:set var="updateCartUrl" value="${contextPath}/user/cart"/>
-<c:set var="checkoutUrl" value="${contextPath}/user/order"/>
+<c:set var="checkoutUrl" value="${contextPath}/user/checkout"/>
 
 <!--================Cart Area =================-->
 <section class="cart_area">
