@@ -6,7 +6,7 @@ import com.atbm.utils.EmailUtils;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import com.atbm.services.RecaptchaService;
-import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,43 +14,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Controller xử lý chức năng quên mật khẩu.
- */
 @WebServlet("/forgot-password")
 public class ForgotPasswordController extends HttpServlet {
+    @Inject
     private AccountService accountService;
+    @Inject
     private EmailUtils emailUtil;
 
-    /**
-     * Phương thức khởi tạo các service khi servlet được tạo.
-     */
-    @Override
-    public void init() throws ServletException {
-        try {
-            accountService = CDI.current().select(AccountService.class).get();
-            emailUtil = new EmailUtils();
-        } catch (Exception e) {
-            LogUtils.debug(ForgotPasswordController.class, "Khởi tạo ForgotPasswordController thất bại: " + e.getMessage());
-            throw new ServletException("Khởi tạo ForgotPasswordController thất bại", e);
-        }
-    }
-
-    /**
-     * Xử lý hiển thị modal quên mật khẩu khi người dùng gửi yêu cầu GET.
-     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
         HttpUtils.dispatcher(req, resp, "/views/login.jsp");
     }
 
-    /**
-     * Xử lý yêu cầu quên mật khẩu khi người dùng gửi form POST.
-     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Lấy thông tin reCAPTCHA từ form và xác minh
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
         boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse);
         if (!isRecaptchaValid) {
@@ -60,24 +38,20 @@ public class ForgotPasswordController extends HttpServlet {
             return;
         }
 
-        // Lấy email người dùng nhập
         String email = req.getParameter("email");
-        if (email == null || email.trim().isEmpty()) {
-            HttpUtils.setAttribute(req, "error", "Vui lòng nhập email.");
+        if (email == null || email.trim().isEmpty() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            HttpUtils.setAttribute(req, "error", "Vui lòng nhập email hợp lệ.");
             HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
             HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
         }
 
         try {
-            // Tìm tài khoản theo email
             Account account = accountService.getAccountByEmail(email.trim());
             if (account != null) {
-                // Tạo mật khẩu mới ngẫu nhiên và cập nhật
                 String newPassword = accountService.generateRandomPassword();
                 boolean updated = accountService.updatePassword(account.getAccountId(), newPassword);
                 if (updated) {
-                    // Gửi email chứa mật khẩu mới
                     String emailContent = "Chào bạn,\n\n" +
                             "Mật khẩu mới của bạn là: " + newPassword + "\n" +
                             "Vui lòng sử dụng mật khẩu này để đăng nhập và đổi mật khẩu sớm nhất có thể.\n\n" +

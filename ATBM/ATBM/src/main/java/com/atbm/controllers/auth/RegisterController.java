@@ -13,16 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Controller xử lý chức năng đăng ký tài khoản người dùng.
- */
 @WebServlet("/register")
 public class RegisterController extends HttpServlet {
     private AccountService accountService;
 
-    /**
-     * Phương thức khởi tạo servlet. Được gọi khi servlet được khởi chạy lần đầu.
-     */
     @Override
     public void init() throws ServletException {
         try {
@@ -33,23 +27,14 @@ public class RegisterController extends HttpServlet {
         }
     }
 
-    /**
-     * Hiển thị trang đăng ký khi người dùng truy cập đường dẫn /register (GET).
-     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpUtils.dispatcher(req, resp, "/views/register.jsp");
     }
 
-    /**
-     * Xử lý dữ liệu khi người dùng gửi form đăng ký (POST).
-     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Lấy mã phản hồi từ Google reCAPTCHA
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
-
-        // Kiểm tra người dùng có vượt qua reCAPTCHA hay không
         boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse);
         if (!isRecaptchaValid) {
             HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
@@ -57,31 +42,37 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Lấy thông tin người dùng từ form
         String username = req.getParameter("username");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        String confirmPassword = req.getParameter("confirmPassword");
 
-        // Kiểm tra đầu vào hợp lệ
-        if (username == null || email == null || password == null ||
-                username.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
+        if (username == null || email == null || password == null || confirmPassword == null ||
+                username.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty() || confirmPassword.trim().isEmpty()) {
             HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ thông tin đăng ký.");
             HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;
         }
 
-        try {
-            // Tạo đối tượng request cho việc đăng ký
-            RegisterRequest registerRequest = new RegisterRequest(username.trim(), password.trim(), email.trim());
+        if (!password.equals(confirmPassword)) {
+            HttpUtils.setAttribute(req, "error", "Mật khẩu xác nhận không khớp.");
+            HttpUtils.dispatcher(req, resp, "/views/register.jsp");
+            return;
+        }
 
-            // Thực hiện đăng ký tài khoản
+        if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            HttpUtils.setAttribute(req, "error", "Vui lòng nhập email hợp lệ.");
+            HttpUtils.dispatcher(req, resp, "/views/register.jsp");
+            return;
+        }
+
+        try {
+            RegisterRequest registerRequest = new RegisterRequest(username.trim(), password.trim(), email.trim());
             boolean registered = accountService.register(registerRequest);
 
             if (registered) {
-                // Nếu thành công, chuyển hướng người dùng về trang đăng nhập
-                resp.sendRedirect(req.getContextPath() + "/login");
+                resp.sendRedirect(req.getContextPath() + "/login?success=registered");
             } else {
-                // Nếu thất bại (ví dụ tài khoản hoặc email đã tồn tại), hiển thị thông báo lỗi
                 HttpUtils.setAttribute(req, "error", "Đăng ký thất bại. Tên người dùng hoặc email đã tồn tại.");
                 HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             }
