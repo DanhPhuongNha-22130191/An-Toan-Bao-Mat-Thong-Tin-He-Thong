@@ -542,7 +542,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Ngày đặt
         const now = new Date();
-        const dateStr = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN');
+        const dateStr = now.toLocaleDateString('vi-VN');
         document.getElementById('order-date').textContent = dateStr;
         // Cập nhật thông tin người dùng khi nhập
         const nameInput = document.getElementById('full-name');
@@ -576,32 +576,42 @@
     // Hàm tạo thông tin đơn hàng để ký số
     function getOrderInfoString() {
         var now = new Date();
-        var dateStr = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN');
+        var dateStr = now.toLocaleDateString('vi-VN');
         var name = document.getElementById('full-name').value.trim();
-        var email = document.getElementById('email').value.trim();
         var phone = document.getElementById('phone-number').value.trim();
         var address = document.getElementById('addressLine').value.trim();
-        var province = document.getElementById('province').value;
-        var district = document.getElementById('district').value;
-        var ward = document.getElementById('ward').value;
+        var province = document.getElementById('province');
+        var district = document.getElementById('district');
+        var ward = document.getElementById('ward');
+        
+        // Lấy tên địa chỉ từ select options
+        var provinceName = province.options[province.selectedIndex] ? province.options[province.selectedIndex].text : '';
+        var districtName = district.options[district.selectedIndex] ? district.options[district.selectedIndex].text : '';
+        var wardName = ward.options[ward.selectedIndex] ? ward.options[ward.selectedIndex].text : '';
+        
         var items = '';
         for (var i = 0; i < orderItems.length; i++) {
-            items += '- ' + orderItems[i].name + ' x' + orderItems[i].quantity + ': ' + orderItems[i].totalPrice + '\n';
+            items += '• ' + orderItems[i].name + ' x' + orderItems[i].quantity + ': ' + orderItems[i].totalPrice + ' VNĐ\n';
         }
         var total = orderTotal;
-        return 'Ngày đặt: ' + dateStr + '\nHọ tên: ' + name + '\nEmail: ' + email + '\nSĐT: ' + phone + '\nSản phẩm:\n' + items + 'Tổng tiền: ' + total;
+        
+        return 'Ngày đặt: ' + dateStr + '\n' +
+               'Họ tên: ' + name + '\n' +
+               'SĐT: ' + phone + '\n' +
+               'Địa chỉ: ' + address + ', ' + wardName + ', ' + districtName + ', ' + provinceName + '\n' +
+               'Sản phẩm:\n' + items +
+               'Tổng tiền: ' + total;
     }
     // Nút tạo thông tin đơn hàng
     document.getElementById('generateHashBtn').addEventListener('click', function() {
         var name = document.getElementById('full-name').value.trim();
-        var email = document.getElementById('email').value.trim();
         var phone = document.getElementById('phone-number').value.trim();
         var address = document.getElementById('addressLine').value.trim();
         var province = document.getElementById('province').value;
         var district = document.getElementById('district').value;
         var ward = document.getElementById('ward').value;
 
-        if (!name || !email || !phone || !address || !province || !district || !ward) {
+        if (!name || !phone || !address || !province || !district || !ward) {
             document.getElementById('hash-warning').style.display = 'block';
             document.getElementById('hash-warning').textContent = 'Vui lòng nhập đầy đủ thông tin để tạo thông tin đơn hàng!';
             return;
@@ -646,7 +656,7 @@
         document.getElementById('hash-warning').style.display = 'none';
     }
     // Gắn sự kiện reset cho các trường thông tin
-    ['full-name', 'email', 'phone-number', 'addressLine', 'province', 'district', 'ward'].forEach(function(id) {
+    ['full-name', 'phone-number', 'addressLine', 'province', 'district', 'ward'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) {
             el.addEventListener('input', resetOrderInfoState);

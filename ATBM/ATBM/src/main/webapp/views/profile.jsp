@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt"%>
 
 <c:if test="${empty sessionScope.user}">
     <c:redirect url="/views/login.jsp" />
@@ -20,7 +21,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/product/category">Trang Chủ</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/shop/product">Trang Chủ</a>
         <button class="btn btn-light" onclick="goBack()">
             <i class="bi bi-arrow-left"></i> Quay lại
         </button>
@@ -138,7 +139,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <p class="mb-1"><strong><i class="fas fa-calendar"></i> Ngày đặt:</strong> 
-                                                    ${order.order.orderAt != null ? order.order.orderAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : 'N/A'}
+                                                    ${formattedDates[status.index]}
                                                 </p>
                                                 <p class="mb-1"><strong><i class="fas fa-money-bill-wave"></i> Tổng tiền:</strong> 
                                                     ${order.order.totalPrice != null ? order.order.totalPrice : 0} VNĐ
@@ -162,14 +163,15 @@
                                         </c:if>
                                     </div>
                                     <div class="order-actions">
-                                        <a href="${pageContext.request.contextPath}/user/order/${order.order.orderId}"
+                                        <a href="${pageContext.request.contextPath}/user/order/detail/${order.order.orderId}"
                                            class="btn-view-details">
                                             <i class="fas fa-eye"></i> Xem chi tiết
                                         </a>
                                         <c:if test="${tamperStatuses[status.index]}">
-                                            <button onclick="reportOrder(${order.order.orderId})" class="btn-report">
-                                                <i class="fas fa-flag"></i> Báo cáo
-                                            </button>
+                                            <a href="${pageContext.request.contextPath}/user/order/detail/${order.order.orderId}"
+                                               class="btn-resign">
+                                                <i class="fas fa-edit"></i> Cập nhật chữ ký
+                                            </a>
                                         </c:if>
                                     </div>
                                 </div>
@@ -305,51 +307,6 @@
             const backdrop = document.querySelector(".modal-backdrop");
             if (backdrop) backdrop.remove();
         }
-    }
-
-    function reportOrder(orderId) {
-        // Hiển thị modal báo cáo
-        document.getElementById("reportOrderId").value = orderId;
-        const reportModal = new bootstrap.Modal(document.getElementById("reportModal"));
-        reportModal.show();
-    }
-
-    function submitReport() {
-        const orderId = document.getElementById("reportOrderId").value;
-        const reason = document.getElementById("reportReason").value;
-        
-        if (!orderId) {
-            alert("Lỗi: Không tìm thấy mã đơn hàng");
-            return;
-        }
-        
-        // Tạo form data
-        const formData = new FormData();
-        formData.append("orderId", orderId);
-        formData.append("reason", reason || "Không có lý do");
-        
-        // Gửi báo cáo
-        fetch("${pageContext.request.contextPath}/user/report-order", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("Đã gửi báo cáo thành công!");
-                // Đóng modal
-                const reportModal = bootstrap.Modal.getInstance(document.getElementById("reportModal"));
-                reportModal.hide();
-                // Reset form
-                document.getElementById("reportReason").value = "";
-            } else {
-                alert("Lỗi: " + data.message);
-            }
-        })
-        .catch(error => {
-            console.error("Lỗi khi gửi báo cáo:", error);
-            alert("Lỗi khi gửi báo cáo. Vui lòng thử lại sau.");
-        });
     }
 
     function showTamperInfo() {

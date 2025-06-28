@@ -142,7 +142,7 @@
 							<div class="card-body">
 								<p>${newProduct.description}</p>
 								<h4 class="card-product__title">
-									<a href="single-product.html">${newProduct.name}</a>
+									<a href="${pageContext.request.contextPath}/shop/product/${newProduct.productId}">${newProduct.name}</a>
 								</h4>
 								<p class="card-product__price">${newProduct.price} ₫</p>
 							</div>

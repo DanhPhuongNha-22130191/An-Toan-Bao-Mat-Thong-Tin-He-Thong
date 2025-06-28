@@ -22,7 +22,15 @@ public class OrderSecurityDaoImpl implements OrderSecurityDao {
 
     @Override
     public OrderSecurity getOrderSecurityById(long orderSecurityId) {
-        return null;
+        String query = "SELECT * FROM OrderSecurity WHERE orderSecurityId=?";
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, orderSecurityId)) {
+            if (rs.next()) {
+                return createOrderSecurity(rs);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy OrderSecurity: " + e.getMessage());
+        }
     }
 
     @Override
@@ -38,20 +46,31 @@ public class OrderSecurityDaoImpl implements OrderSecurityDao {
     }
 
     @Override
-    public void updateSignature(long orderSecurityId, String signature) {
-        String query = "UPDATE OrderSecurity SET signature=? WHERE orderSecurityId=?";
-        if(executeSQLHelper.executeUpdate(query, signature, orderSecurityId))
-            throw new RuntimeException("Cập nhật thất bại");
+    public void updateSignature(long orderSecurityId, String publicKey, String signature) {
+        String query = executeSQLHelper.createUpdateQuery(TABLE_NAME, List.of(PUBLIC_KEY, SIGNATURE), List.of(ORDER_SECURITY_ID));
+        if (!executeSQLHelper.executeUpdate(query, publicKey, signature, orderSecurityId)) {
+            throw new RuntimeException("Cập nhật chữ ký thất bại");
+        }
     }
 
     @Override
     public boolean isDigitallySigned(long orderSecurityId) {
-        String query = "SELECT COUNT(*) FROM OrderSecurity WHERE orderSecurityId=? and signature IS NOT NULL";
+        String query = "SELECT COUNT(*) as count FROM OrderSecurity WHERE orderSecurityId=? AND signature IS NOT NULL";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, orderSecurityId)) {
-            return rs.next();
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+            return false;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi kiểm tra chữ ký số: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void clearInformation(long orderSecurityId) {
+        String query = executeSQLHelper.createUpdateQuery(TABLE_NAME, List.of(PUBLIC_KEY, SIGNATURE), List.of(ORDER_SECURITY_ID));
+        executeSQLHelper.executeUpdate(query, null, null, orderSecurityId);
     }
 
     private OrderSecurity createOrderSecurity(ResultSet resultSet) throws SQLException {

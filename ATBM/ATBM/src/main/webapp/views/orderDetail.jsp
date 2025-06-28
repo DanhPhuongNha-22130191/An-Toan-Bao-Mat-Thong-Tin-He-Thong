@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="jakarta.tags.core" prefix="c" %>
+<%@taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
@@ -416,6 +416,8 @@
             font-size: 0.9em;
             line-height: 1.5;
             color: #495057;
+            white-space: pre-line;
+            word-break: break-word;
         }
 
         #hash-value.copied {
@@ -484,6 +486,38 @@
         .continue-btn:hover {
             background: linear-gradient(135deg, #e9ecef, #dee2e6);
             transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .form-text {
+            font-size: 0.875em;
+            color: #6c757d;
+            margin-top: 5px;
         }
 
         form.signature-form {
@@ -607,8 +641,7 @@
 <c:set var="isDigitallySigned" value="${requestScope.order.isDigitallySigned()}"/>
 <c:set var="order" value="${requestScope.order.order}"/>
 
-<%@ page import="java.time.format.DateTimeFormatter" %>
-<c:set var="dateFormatter" value="<%= DateTimeFormatter.ofPattern(\"dd/MM/yyyy HH:mm\") %>"/>
+<c:set var="dateFormatter" value="<%= DateTimeFormatter.ofPattern(\"dd/MM/yyyy\") %>"/>
 
 <section class="confirmation_area">
     <div class="container">
@@ -699,58 +732,66 @@
 
                     <div class="digital-signature-section">
                         <h4>Chữ ký điện tử</h4>
-                        
+
                         <!-- Hiển thị trạng thái ký -->
                         <div class="signature-status ${isDigitallySigned ? 'signed' : 'unsigned'}">
                             <i class="fas fa-${isDigitallySigned ? 'check' : 'exclamation'}-circle"></i>
                             ${isDigitallySigned ? 'Đã ký' : 'Chưa ký'}
                         </div>
 
+                        <!-- Cảnh báo nếu đơn hàng chưa ký -->
+                        <c:if test="${!isDigitallySigned}">
+                            <div class="alert alert-warning" style="margin-top: 15px;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Cảnh báo:</strong> Đơn hàng này chưa được ký điện tử. 
+                                Vui lòng ký để đảm bảo tính toàn vẹn và xác thực của đơn hàng.
+                            </div>
+                        </c:if>
+
+                        <!-- Hiển thị thông tin đơn hàng để ký -->
+                        <div class="hash-display" style="margin-bottom: 8px;">
+                            <div>Thông tin đơn hàng:</div>
+                            <div id="hash-value" style="font-size:0.97em; white-space: pre-line;"><c:out value="Ngày đặt: ${order.orderAt.format(dateFormatter)}
+Họ tên: ${shippingInfo.recipientName}
+SĐT: ${shippingInfo.phoneNumber}
+Địa chỉ: ${shippingInfo.addressLine}, ${shippingInfo.ward}, ${shippingInfo.district}, ${shippingInfo.province}
+Sản phẩm:"/><c:forEach var="item" items="${orderItems}"><c:out value="
+  • ${item.nameSnapshot} x${item.quantity}: ${item.priceSnapshot * item.quantity} VNĐ"/></c:forEach><c:out value="
+Tổng tiền: ${order.totalPrice} VNĐ"/></div>
+                            <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="copy-btn" id="exportHashBtn" type="button" style="top:65px;" title="Xuất file">
+                                <i class="fas fa-file-export"></i>
+                            </button>
+                        </div>
+
                         <c:choose>
                             <c:when test="${isDigitallySigned}">
-                                <!-- Đã ký - hiển thị thông tin đơn hàng và chữ ký -->
-                                <div class="hash-display" style="margin-bottom: 8px;">
-                                    <div>Thông tin đơn hàng:</div>
-                                    <div id="hash-value" style="font-size:0.97em;">
-                                        <strong>Ngày đặt:</strong> ${order.orderAt.format(dateFormatter)}<br>
-                                        <strong>Họ tên:</strong> ${shippingInfo.recipientName}<br>
-                                        <strong>SĐT:</strong> ${shippingInfo.phoneNumber}<br>
-                                        <strong>Địa chỉ:</strong> ${shippingInfo.addressLine}, ${shippingInfo.ward}, ${shippingInfo.district}, ${shippingInfo.province}<br>
-                                        <strong>Sản phẩm:</strong><br>
-                                        <c:forEach var="item" items="${orderItems}">
-                                        &nbsp;&nbsp;• ${item.nameSnapshot} x${item.quantity}: ${item.priceSnapshot * item.quantity} VNĐ<br>
-                                        </c:forEach>
-                                        <strong>Tổng tiền:</strong> ${order.totalPrice} VNĐ
-                                    </div>
-                                    <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;" title="Copy"><i class="fas fa-copy"></i></button>
-                                    <button class="copy-btn" id="exportHashBtn" type="button" style="top:65px;" title="Xuất file"><i class="fas fa-file-export"></i></button>
+                                <!-- Đã ký - hiển thị thông báo thành công -->
+                                <div class="alert alert-success" style="margin-top: 15px;">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>Thành công:</strong> Đơn hàng đã được ký điện tử và đảm bảo tính toàn vẹn.
                                 </div>
-                                <div>Chữ ký số:</div>
-                                <input type="text"  readonly class="signature-image"/>
                             </c:when>
                             <c:otherwise>
                                 <!-- Chưa ký - hiển thị form để ký -->
-                                <div class="hash-display" style="margin-bottom: 8px;">
-                                    <div>Thông tin đơn hàng:</div>
-                                    <div id="hash-value" style="font-size:0.97em;">
-                                        <strong>Ngày đặt:</strong> ${order.orderAt.format(dateFormatter)}<br>
-                                        <strong>Họ tên:</strong> ${shippingInfo.recipientName}<br>
-                                        <strong>SĐT:</strong> ${shippingInfo.phoneNumber}<br>
-                                        <strong>Địa chỉ:</strong> ${shippingInfo.addressLine}, ${shippingInfo.ward}, ${shippingInfo.district}, ${shippingInfo.province}<br>
-                                        <strong>Sản phẩm:</strong><br>
-                                        <c:forEach var="item" items="${orderItems}">
-                                        &nbsp;&nbsp;• ${item.nameSnapshot} x${item.quantity}: ${item.priceSnapshot * item.quantity} VNĐ<br>
-                                        </c:forEach>
-                                        <strong>Tổng tiền:</strong> ${order.totalPrice} VNĐ
-                                    </div>
-                                    <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;" title="Copy"><i class="fas fa-copy"></i></button>
-                                    <button class="copy-btn" id="exportHashBtn" type="button" style="top:65px;" title="Xuất file"><i class="fas fa-file-export"></i></button>
-                                </div>
-                                
                                 <form class="signature-form" id="signature-form" onsubmit="submitSignature(event)">
                                     <input type="hidden" name="orderId" value="${order.orderId}"/>
-                                    <input type="text" name="signature" placeholder="Nhập chữ ký số của bạn (ít nhất 10 ký tự)..." required class="signature-input" minlength="10"/>
-                                    <button type="submit" class="btn btn-primary btn-sm">Xác nhận ký</button>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-edit"></i> Chữ ký số:
+                                        </label>
+                                        <input type="text" name="signature"
+                                               placeholder="Vui lòng nhập chữ ký điện tử để xác nhận đơn hàng"
+                                               required class="signature-input" minlength="10"/>
+                                        <small class="form-text text-muted">
+                                            Chữ ký phải có ít nhất 10 ký tự để đảm bảo tính bảo mật.
+                                        </small>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-save"></i> Ký đơn hàng
+                                    </button>
                                 </form>
                             </c:otherwise>
                         </c:choose>
@@ -800,27 +841,35 @@
 
 <script>
     // Xử lý copy thông tin đơn hàng
-    document.getElementById('copyHashBtn').addEventListener('click', function() {
-        var info = document.getElementById('hash-value').textContent;
-        var btn = this;
+    document.getElementById('copyHashBtn').addEventListener('click', function () {
+        var infoElement = document.getElementById('hash-value');
+        var info = infoElement.textContent || infoElement.innerText;
         
+        // Loại bỏ khoảng trắng thừa ở đầu và cuối
+        info = info.trim();
+        
+        // Loại bỏ khoảng trắng thừa giữa các dòng
+        info = info.replace(/\n\s+/g, '\n');
+        
+        var btn = this;
+
         // Thêm hiệu ứng loading
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btn.disabled = true;
-        
-        navigator.clipboard.writeText(info).then(function() {
+
+        navigator.clipboard.writeText(info).then(function () {
             // Hiệu ứng thành công
             btn.innerHTML = '<i class="fas fa-check"></i>';
             btn.classList.add('copied');
             showNotification('Đã copy thông tin đơn hàng!', 'success');
-            
+
             // Reset sau 2 giây
             setTimeout(() => {
                 btn.innerHTML = '<i class="fas fa-copy"></i>';
                 btn.classList.remove('copied');
                 btn.disabled = false;
             }, 2000);
-        }).catch(function() {
+        }).catch(function () {
             // Fallback cho trình duyệt cũ
             var textArea = document.createElement('textarea');
             textArea.value = info;
@@ -828,12 +877,12 @@
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            
+
             // Hiệu ứng thành công
             btn.innerHTML = '<i class="fas fa-check"></i>';
             btn.classList.add('copied');
             showNotification('Đã copy thông tin đơn hàng!', 'success');
-            
+
             // Reset sau 2 giây
             setTimeout(() => {
                 btn.innerHTML = '<i class="fas fa-copy"></i>';
@@ -844,15 +893,23 @@
     });
 
     // Xử lý xuất file thông tin đơn hàng
-    document.getElementById('exportHashBtn').addEventListener('click', function() {
-        var info = document.getElementById('hash-value').textContent;
-        var btn = this;
+    document.getElementById('exportHashBtn').addEventListener('click', function () {
+        var infoElement = document.getElementById('hash-value');
+        var info = infoElement.textContent || infoElement.innerText;
         
+        // Loại bỏ khoảng trắng thừa ở đầu và cuối
+        info = info.trim();
+        
+        // Loại bỏ khoảng trắng thừa giữa các dòng
+        info = info.replace(/\n\s+/g, '\n');
+        
+        var btn = this;
+
         // Thêm hiệu ứng loading
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btn.disabled = true;
-        
-        var blob = new Blob([info], { type: 'text/plain;charset=utf-8' });
+
+        var blob = new Blob([info], {type: 'text/plain;charset=utf-8'});
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
@@ -861,12 +918,12 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
+
         // Hiệu ứng thành công
         btn.innerHTML = '<i class="fas fa-check"></i>';
         btn.classList.add('copied');
         showNotification('Đã xuất file thông tin đơn hàng!', 'success');
-        
+
         // Reset sau 2 giây
         setTimeout(() => {
             btn.innerHTML = '<i class="fas fa-file-export"></i>';
@@ -902,7 +959,7 @@
         // Set nội dung và style
         notification.textContent = message;
         notification.className = 'notification ' + type;
-        
+
         if (type === 'success') {
             notification.style.backgroundColor = '#28a745';
         } else if (type === 'error') {
@@ -916,7 +973,7 @@
         notification.style.display = 'block';
 
         // Tự động ẩn sau 3 giây
-        setTimeout(function() {
+        setTimeout(function () {
             notification.style.display = 'none';
         }, 3000);
     }
@@ -940,55 +997,58 @@
     // Xử lý submit signature form
     function submitSignature(event) {
         event.preventDefault();
-        
+
         var form = document.getElementById('signature-form');
         var formData = new FormData(form);
         var signature = formData.get('signature');
         var orderId = formData.get('orderId');
         var submitBtn = form.querySelector('button[type="submit"]');
-        
+
         // Validation
         if (!signature || signature.trim() === '') {
             showNotification('Vui lòng nhập chữ ký số!', 'error');
             return;
         }
-        
+
         if (signature.trim().length < 10) {
             showNotification('Chữ ký số phải có ít nhất 10 ký tự!', 'warning');
             return;
         }
-        
+
         // Thêm hiệu ứng loading
         var originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang ký...';
         submitBtn.disabled = true;
-        
+
         // Gửi PATCH request
         fetch('${pageContext.request.contextPath}/user/order/detail/' + orderId, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'signature=' + encodeURIComponent(signature)
+            body: 'signature=' + encodeURIComponent(signature.trim())
         })
-        .then(response => {
-            if (response.ok) {
-                showNotification('Ký đơn hàng thành công!', 'success');
-                // Reload trang sau 2 giây
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Có lỗi xảy ra khi ký đơn hàng!', 'error');
-            // Reset button
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
+            .then(response => {
+                if (response.ok) {
+                    showNotification('Ký đơn hàng thành công!', 'success');
+                    // Reload trang sau 2 giây
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Có lỗi xảy ra khi ký đơn hàng');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                var errorMessage = error.message || 'Có lỗi xảy ra khi ký đơn hàng!';
+                showNotification(errorMessage, 'error');
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
     }
 </script>
 </body>
