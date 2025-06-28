@@ -1,24 +1,30 @@
 package com.atbm.controllers.auth;
 
+
 import com.atbm.config.BaseController;
+import com.atbm.mapper.FormMapper;
 import com.atbm.models.wrapper.request.RegisterRequest;
 import com.atbm.services.AccountService;
+import com.atbm.services.RecaptchaService;
 import com.atbm.utils.ConfigUtils;
-import com.atbm.mapper.FormMapper;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
-import com.atbm.services.RecaptchaService;
-import jakarta.inject.Inject;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @WebServlet("/register")
 public class RegisterController extends BaseController {
-    @Inject
     private AccountService accountService;
+
+    @Override
+    public void init() throws ServletException {
+        accountService = CDI.current().select(AccountService.class).get();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,22 +44,22 @@ public class RegisterController extends BaseController {
         RegisterRequest registerRequest = FormMapper.bind(req.getParameterMap(), RegisterRequest.class);
         String confirmPassword = req.getParameter("confirmPassword");
 
-        if (registerRequest.username() == null || registerRequest.email() == null ||
-                registerRequest.password() == null || confirmPassword == null ||
-                registerRequest.username().trim().isEmpty() || registerRequest.email().trim().isEmpty() ||
-                registerRequest.password().trim().isEmpty() || confirmPassword.trim().isEmpty()) {
+        if (registerRequest.getUsername() == null || registerRequest.getEmail() == null ||
+                registerRequest.getPassword() == null || confirmPassword == null ||
+                registerRequest.getEmail().trim().isEmpty() || registerRequest.getUsername().trim().isEmpty() ||
+                registerRequest.getPassword().trim().isEmpty() || confirmPassword.trim().isEmpty()) {
             HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ thông tin đăng ký.");
             HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;
         }
 
-        if (!registerRequest.password().equals(confirmPassword)) {
+        if (!registerRequest.getPassword().equals(confirmPassword)) {
             HttpUtils.setAttribute(req, "error", "Mật khẩu xác nhận không khớp.");
             HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;
         }
 
-        if (!registerRequest.email().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+        if (!registerRequest.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             HttpUtils.setAttribute(req, "error", "Vui lòng nhập email hợp lệ.");
             HttpUtils.dispatcher(req, resp, "/views/register.jsp");
             return;

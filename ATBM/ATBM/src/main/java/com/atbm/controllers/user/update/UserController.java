@@ -85,8 +85,8 @@ public class UserController extends BaseController {
                     HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
                     return;
                 }
-                if (account.username().equals(updateProfileRequest.username().trim()) &&
-                        account.email().equals(updateProfileRequest.email().trim())) {
+                if (account.getUsername().equals(updateProfileRequest.username().trim()) &&
+                        account.getEmail().equals(updateProfileRequest.email().trim())) {
                     HttpUtils.setAttribute(req, "message", "Không có thay đổi nào để cập nhật.");
                 } else {
                     accountService.updateProfile(accountId, updateProfileRequest);

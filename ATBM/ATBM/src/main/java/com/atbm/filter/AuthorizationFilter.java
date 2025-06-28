@@ -33,7 +33,7 @@ public class AuthorizationFilter implements Filter {
         }
 
         // Lấy role của user
-        Role role = accountResponse.role();
+        Role role = accountResponse.getRole();
         String path = request.getRequestURI();
 
         if (path.startsWith(request.getContextPath() + "/admin") && Role.ADMIN != role) {

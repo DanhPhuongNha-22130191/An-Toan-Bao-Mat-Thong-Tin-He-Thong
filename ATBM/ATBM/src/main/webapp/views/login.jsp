@@ -71,7 +71,7 @@
 					<div class="hover">
 						<h4>Mới sử dụng trang web của chúng tôi?</h4>
 						<p>Hãy đăng ký ngay để khám phá nhiều tính năng hấp dẫn!</p>
-						<a href="${pageContext.request.contextPath}/register">Tạo tài khoản</a>
+						<a href="${pageContext.request.contextPath}/register" style="color: whitesmoke">Tạo tài khoản</a>
 					</div>
 				</div>
 			</div>

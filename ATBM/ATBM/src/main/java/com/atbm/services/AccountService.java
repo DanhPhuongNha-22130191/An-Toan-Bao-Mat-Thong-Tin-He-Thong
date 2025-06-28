@@ -2,7 +2,11 @@ package com.atbm.services;
 
 import com.atbm.dao.account.AccountDao;
 import com.atbm.dao.account.impl.AccountDaoImpl;
+import com.atbm.dao.cart.CartDao;
+import com.atbm.database.SQLTransactionStep;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
+import com.atbm.models.entity.Cart;
 import com.atbm.models.wrapper.request.AddAccountRequest;
 import com.atbm.models.wrapper.request.EditAccountRequest;
 import com.atbm.models.wrapper.request.ChangePasswordRequest;
@@ -26,28 +30,41 @@ import java.util.Random;
 @ApplicationScoped
 public class AccountService {
     private final AccountDao accountDao;
+    private final CartDao cartDao;
+    private final ExecuteSQLHelper executeSQLHelper;
 
     public AccountService() {
         accountDao = null;
+        cartDao = null;
+        executeSQLHelper = null;
     }
 
     @Inject
-    public AccountService(AccountDao accountDao) {
+    public AccountService(AccountDao accountDao, CartDao cartDao, ExecuteSQLHelper executeSQLHelper) {
         this.accountDao = accountDao;
+        this.cartDao = cartDao;
+        this.executeSQLHelper = executeSQLHelper;
     }
 
     // Đăng ký tài khoản từ RegisterRequest
     public boolean register(RegisterRequest registerRequest) throws NoSuchAlgorithmException {
-        if (accountDao.existsByUsername(registerRequest.username().trim())) {
+        if (accountDao.existsByUsername(registerRequest.getUsername().trim())) {
             return false;
         }
-        String hashedPassword = SignatureUtils.hash(registerRequest.password());
+        String hashedPassword = SignatureUtils.hash(registerRequest.getPassword());
         Account account = new Account(
-                registerRequest.username().trim(),
+                registerRequest.getUsername().trim(),
                 hashedPassword,
-                registerRequest.email().trim()
+                registerRequest.getPassword().trim()
         );
-        return accountDao.insert(account);
+        SQLTransactionStep<Long> insertAccountStep = accountDao.insert(account);
+        return executeSQLHelper.executeStepsInTransaction(List.of(
+                connection -> {
+                    long id = insertAccountStep.apply(connection);
+                    cartDao.insert(new Cart(id));
+                    return id;
+                }
+        ));
     }
 
     // Đăng ký tài khoản từ AddAccountRequest
@@ -65,7 +82,14 @@ public class AccountService {
                 account.setRole(request.role());
             }
             account.setDeleted(request.isDeleted() != null ? request.isDeleted() : false);
-            return accountDao.insert(account);
+            SQLTransactionStep<Long> insertAccountStep = accountDao.insert(account);
+            return executeSQLHelper.executeStepsInTransaction(List.of(
+                    connection -> {
+                        long id = insertAccountStep.apply(connection);
+                        cartDao.insert(new Cart(id));
+                        return id;
+                    }
+            ));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing password", e);
         }
@@ -74,8 +98,8 @@ public class AccountService {
 
     // Đăng nhập
     public AccountResponse login(LoginRequest loginRequest) throws NoSuchAlgorithmException {
-        Account account = accountDao.getAccountByUsername(loginRequest.username().trim());
-        if (account != null && SignatureUtils.hash(loginRequest.password()).equals(account.getPassword())) {
+        Account account = accountDao.getAccountByUsername(loginRequest.getUsername().trim());
+        if (account != null && SignatureUtils.hash(loginRequest.getPassword()).equals(account.getPassword())) {
             return new AccountResponse(
                     account.getAccountId(),
                     account.getUsername(),
@@ -219,6 +243,7 @@ public class AccountService {
         }
         return false;
     }
+
     public AccountResponse getUserInfo(long accountId) {
         return getAccountById(accountId);
     }

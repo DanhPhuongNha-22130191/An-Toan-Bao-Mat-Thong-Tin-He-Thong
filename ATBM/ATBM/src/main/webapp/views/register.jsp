@@ -18,16 +18,18 @@
                     <div class="hover">
                         <h4>Bạn đã có tài khoản?</h4>
                         <p>Đăng nhập ngay để tiếp tục!</p>
-                        <a href="${pageContext.request.contextPath}/login">Đăng nhập ngay</a>
+                        <a href="${pageContext.request.contextPath}/login" style="color: whitesmoke">Đăng nhập ngay</a>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="login_form_inner register_form_inner">
                     <h3>Tạo tài khoản</h3>
-                    <form class="row login_form" action="${pageContext.request.contextPath}/register" method="post" id="register_form">
+                    <form class="row login_form" action="${pageContext.request.contextPath}/register" method="post"
+                          id="register_form">
                         <div class="col-md-12 form-group">
-                            <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập" required>
+                            <input type="text" class="form-control" name="username" placeholder="Tên đăng nhập"
+                                   required>
                         </div>
                         <div class="col-md-12 form-group">
                             <input type="email" class="form-control" name="email" placeholder="Địa chỉ email" required>
@@ -36,7 +38,8 @@
                             <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
                         </div>
                         <div class="col-md-12 form-group">
-                            <input type="password" class="form-control" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                            <input type="password" class="form-control" name="confirmPassword"
+                                   placeholder="Xác nhận mật khẩu" required>
                         </div>
                         <div class="col-md-12 form-group">
                             <div class="g-recaptcha" data-sitekey="6LcooTwrAAAAAEudofsBFa634LNkfxLdH3804Pqa"></div>

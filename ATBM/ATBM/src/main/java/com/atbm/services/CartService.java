@@ -76,7 +76,6 @@ public class CartService {
     public void addProductToCart(long accountId, AddCartRequest addCartRequest) {
         Cart cart = cartDao.getCartByAccountId(accountId);
         Product product = productDao.getProductById(addCartRequest.getProductId());
-
         double priceToAdd = product.getPrice() * addCartRequest.getQuantity();
         double newTotalPrice = cart.getTotalPrice() + priceToAdd;
         if (!executeSQLHelper.executeStepsInTransaction(List.of(
