@@ -159,5 +159,4 @@ public class ProductDaoImpl implements ProductDao {
             throw new RuntimeException("Lỗi lấy giá cao nhất", e);
         }
     }
-
 }

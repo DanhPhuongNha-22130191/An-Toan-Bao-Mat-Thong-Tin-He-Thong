@@ -308,7 +308,6 @@
             if (backdrop) backdrop.remove();
         }
     }
-
     function showTamperInfo() {
         const infoModal = new bootstrap.Modal(document.getElementById("tamperInfoModal"));
         infoModal.show();

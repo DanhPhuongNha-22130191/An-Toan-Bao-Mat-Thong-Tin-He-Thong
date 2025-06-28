@@ -178,3 +178,34 @@ create table OrderItem
 )
     go
 
+
+insert into Account (username, password, email, publicKeyActive, role, isDeleted)
+values
+    ('admin', 'hashed_password_123', 'admin@example.com', null, 'ADMIN', 0),
+    ('user1', 'hashed_password_456', 'user1@example.com', null, 'USER', 0);
+
+insert into Brand (name)
+values
+    (N'Rolex'),
+    (N'Omega'),
+    (N'Casio');
+
+insert into Category (name, image)
+values
+    (N'Luxury Watches', null),
+    (N'Sport Watches', null);
+
+insert into Strap (color, material, length)
+values
+    (N'Black', N'Leather', 22.0),
+    (N'Silver', N'Steel', 20.0);
+
+insert into Product (name, price, description, stock, image, size, waterResistance, brandId, strapId, isDeleted)
+values
+    (N'Rolex Submariner', 8500.00, N'Luxury diver''s watch', 10, null, 40.0, 1, 1, 1, 0),
+    (N'Casio G-Shock', 150.00, N'Rugged and affordable watch', 25, null, 45.0, 1, 3, 2, 0);
+
+insert into Cart (accountId, totalPrice, updateAt)
+values
+    (2, 0, GETDATE());
+

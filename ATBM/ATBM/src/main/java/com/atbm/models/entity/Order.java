@@ -4,6 +4,7 @@ import com.atbm.models.enums.OrderStatus;
 import com.atbm.models.enums.PaymentMethod;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Order {
     private long orderId;
@@ -108,6 +109,13 @@ public class Order {
     public void setOrderAt(LocalDateTime orderAt) {
         this.orderAt = orderAt;
     }
-
+    public String getOrderAtFormatted() {
+        if (orderAt == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        return orderAt.format(formatter);
+    }
+    public String getStatusName() {
+        return status.name();
+    }
 
 }

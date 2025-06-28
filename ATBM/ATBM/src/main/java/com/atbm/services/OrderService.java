@@ -46,6 +46,7 @@ public class OrderService {
         this.accountDao = accountDao;
     }
 
+
     public OrderService() {
         orderDao = null;
         shippingInfoDao = null;
@@ -57,6 +58,7 @@ public class OrderService {
         executeSQLHelper = null;
         accountDao = null;
     }
+
 
     public long checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
         Cart cart = cartDao.getCartByAccountId(accountId);
@@ -171,5 +173,9 @@ public class OrderService {
         }
 
         orderSecurityDao.updateSignature(order.getOrderSecurityId(), accountDao.getPublicKeyActive(accountId), signature.trim());
+    }
+
+    public List<Order> getOrders(){
+        return orderDao.getOrders();
     }
 }
