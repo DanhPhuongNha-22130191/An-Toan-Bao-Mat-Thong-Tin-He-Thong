@@ -148,14 +148,7 @@ public class UserController extends BaseController {
         if (filePart != null && filePart.getSize() > 0) {
             try {
                 String fileContent = new String(filePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                String[] lines = fileContent.split("\n");
-                StringBuilder keyBuilder = new StringBuilder();
-                for (String line : lines) {
-                    if (!line.startsWith("-----")) {
-                        keyBuilder.append(line.trim());
-                    }
-                }
-                return keyBuilder.toString();
+                return fileContent.trim();
             } catch (Exception e) {
                 LogUtils.debug(UserController.class, "Lỗi khi đọc file khóa công khai: " + e.getMessage());
                 return null;
@@ -163,4 +156,5 @@ public class UserController extends BaseController {
         }
         return publicKeyText != null ? publicKeyText.trim() : null;
     }
+
 }

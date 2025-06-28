@@ -33,9 +33,30 @@ public class SignatureUtils {
      * Convert public key từ Base64 string
      */
     public static PublicKey getPublicKeyFromBase64(String base64PublicKey) throws Exception {
-        byte[] keyBytes = Base64.getDecoder().decode(base64PublicKey);
+        byte[] keyBytes = Base64.getDecoder().decode(extractBase64FromPEM(base64PublicKey));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(spec);
     }
+
+    public static String extractBase64FromPEM(String pem) {
+        if (pem == null) return null;
+
+        StringBuilder base64Content = new StringBuilder();
+        String[] lines = pem.split("\\r?\\n");
+        boolean insideKey = false;
+
+        for (String line : lines) {
+            if (line.contains("BEGIN PUBLIC KEY")) {
+                insideKey = true;
+            } else if (line.contains("END PUBLIC KEY")) {
+                break;
+            } else if (insideKey) {
+                base64Content.append(line.trim());
+            }
+        }
+
+        return base64Content.toString();
+    }
+
 }
