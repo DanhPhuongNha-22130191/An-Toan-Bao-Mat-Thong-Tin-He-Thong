@@ -27,6 +27,8 @@ public class CustomHttpServletRequestWrapper extends HttpServletRequestWrapper {
                     parameterMap.put(key, new String[]{value});
                 }
             }
+        } else {
+            parameterMap.putAll(request.getParameterMap());
         }
     }
 

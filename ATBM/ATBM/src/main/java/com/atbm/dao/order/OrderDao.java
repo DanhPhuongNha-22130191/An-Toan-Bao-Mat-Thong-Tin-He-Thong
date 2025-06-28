@@ -2,6 +2,7 @@ package com.atbm.dao.order;
 
 import com.atbm.database.SQLTransactionStep;
 import com.atbm.models.entity.Order;
+import com.atbm.models.wrapper.response.OrderResponse;
 
 import java.util.List;
 
@@ -22,5 +23,7 @@ public interface OrderDao {
 
     Order getOrderById(long accountId, long orderId);
 
-    void updateStatus(long accountId, long orderId, String status);
+    void updateStatus( long orderId, String status);
+
+    List<Order> getOrdersByStatus(String status);
 }
