@@ -1,5 +1,6 @@
 package com.atbm.controllers.user.update;
 
+import com.atbm.config.BaseController;
 import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdateProfileRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
@@ -7,13 +8,13 @@ import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.models.wrapper.response.OrderResponse;
 import com.atbm.services.AccountService;
 import com.atbm.services.OrderService;
+import com.atbm.mapper.FormMapper;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +26,7 @@ import java.util.List;
 
 @WebServlet("/user/update")
 @MultipartConfig
-public class UserController extends HttpServlet {
+public class UserController extends BaseController {
     @Inject
     private AccountService accountService;
     @Inject
@@ -33,23 +34,18 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("accountId") == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-        long accountId = Long.parseLong(session.getAttribute("accountId").toString());
         try {
+            long accountId = getAccountId(req);
             AccountResponse account = accountService.getAccountById(accountId);
             if (account == null) {
-                session.invalidate();
-                resp.sendRedirect(req.getContextPath() + "/login");
+                req.getSession().invalidate();
+                HttpUtils.sendRedirect(req, resp, "/login");
                 return;
             }
             HttpUtils.setAttribute(req, "account", account);
             String activeTab = req.getParameter("tab");
             if (activeTab == null || activeTab.isEmpty()) {
-                activeTab = "profile";
+                activeTab = "account-settings";
             }
             if ("order-history".equals(activeTab)) {
                 List<OrderResponse> orders = orderService.getOrdersByAccountId(accountId);
@@ -75,47 +71,39 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("accountId") == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-
-        long accountId = Long.parseLong(session.getAttribute("accountId").toString());
-        String action = req.getParameter("action");
-
         try {
+            long accountId = getAccountId(req);
+            String action = req.getParameter("action");
+            AccountResponse account = accountService.getAccountById(accountId);
+            HttpUtils.setAttribute(req, "account", account);
+
             if ("updateProfile".equals(action)) {
-                String username = req.getParameter("username");
-                String email = req.getParameter("email");
-                if (username == null || email == null || username.trim().isEmpty() || email.trim().isEmpty()) {
+                UpdateProfileRequest updateProfileRequest = FormMapper.bind(req.getParameterMap(), UpdateProfileRequest.class);
+                if (updateProfileRequest.username() == null || updateProfileRequest.email() == null ||
+                        updateProfileRequest.username().trim().isEmpty() || updateProfileRequest.email().trim().isEmpty()) {
                     HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ thông tin.");
                     HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
                     return;
                 }
-                UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest(username.trim(), email.trim());
-                AccountResponse currentAccount = accountService.getAccountById(accountId);
-                if (currentAccount.username().equals(username.trim()) && currentAccount.email().equals(email.trim())) {
+                if (account.username().equals(updateProfileRequest.username().trim()) &&
+                        account.email().equals(updateProfileRequest.email().trim())) {
                     HttpUtils.setAttribute(req, "message", "Không có thay đổi nào để cập nhật.");
                 } else {
                     accountService.updateProfile(accountId, updateProfileRequest);
                     HttpUtils.setAttribute(req, "message", "Cập nhật hồ sơ thành công.");
-                    // Cập nhật session để phản ánh thay đổi
-                    AccountResponse updatedAccount = accountService.getAccountById(accountId);
-                    session.setAttribute("user", updatedAccount);
+                    updateSession(req, accountId);
                 }
             } else if ("changePassword".equals(action)) {
-                String oldPassword = req.getParameter("oldPassword");
-                String newPassword = req.getParameter("newPassword");
-                if (oldPassword == null || newPassword == null || oldPassword.trim().isEmpty() || newPassword.trim().isEmpty()) {
+                ChangePasswordRequest changePasswordRequest = FormMapper.bind(req.getParameterMap(), ChangePasswordRequest.class);
+                if (changePasswordRequest.oldPassword() == null || changePasswordRequest.newPassword() == null ||
+                        changePasswordRequest.oldPassword().trim().isEmpty() || changePasswordRequest.newPassword().trim().isEmpty()) {
                     HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ mật khẩu.");
                     HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
                     return;
                 }
-                if (oldPassword.equals(newPassword)) {
+                if (changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword())) {
                     HttpUtils.setAttribute(req, "error", "Mật khẩu mới không được giống mật khẩu cũ.");
                 } else {
-                    ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(oldPassword.trim(), newPassword.trim());
                     boolean success = accountService.changePassword(accountId, changePasswordRequest);
                     if (success) {
                         HttpUtils.setAttribute(req, "message", "Đổi mật khẩu thành công.");
@@ -131,29 +119,29 @@ public class UserController extends HttpServlet {
                     UpdatePublicKeyRequest updatePublicKeyRequest = new UpdatePublicKeyRequest(publicKey);
                     accountService.updatePublicKey(accountId, updatePublicKeyRequest);
                     HttpUtils.setAttribute(req, "message", "Cập nhật khóa công khai thành công.");
-                    // Cập nhật session để phản ánh public key mới
-                    AccountResponse updatedAccount = accountService.getAccountById(accountId);
-                    session.setAttribute("user", updatedAccount);
+                    updateSession(req, accountId);
                 } else {
                     HttpUtils.setAttribute(req, "error", "Vui lòng tải lên file hoặc nhập khóa công khai.");
                 }
             } else if ("revokePublicKey".equals(action)) {
                 accountService.revokePublicKey(accountId);
                 HttpUtils.setAttribute(req, "message", "Thu hồi khóa công khai thành công.");
-                // Cập nhật session để phản ánh thay đổi
-                AccountResponse updatedAccount = accountService.getAccountById(accountId);
-                session.setAttribute("user", updatedAccount);
+                updateSession(req, accountId);
             } else {
                 HttpUtils.setAttribute(req, "error", "Hành động không hợp lệ.");
             }
-            HttpUtils.setAttribute(req, "account", accountService.getAccountById(accountId));
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
         } catch (Exception e) {
             LogUtils.debug(UserController.class, "Lỗi khi cập nhật hồ sơ: " + e.getMessage());
             HttpUtils.setAttribute(req, "error", "Lỗi khi cập nhật hồ sơ: " + e.getMessage());
-            HttpUtils.setAttribute(req, "account", accountService.getAccountById(accountId));
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
         }
+    }
+
+    private void updateSession(HttpServletRequest req, long accountId) {
+        AccountResponse updatedAccount = accountService.getAccountById(accountId);
+        HttpSession session = req.getSession();
+        session.setAttribute("user", updatedAccount);
     }
 
     private String extractPublicKeyFromFile(Part filePart, String publicKeyText) {

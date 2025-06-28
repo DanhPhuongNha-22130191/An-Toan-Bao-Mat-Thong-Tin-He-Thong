@@ -1,45 +1,28 @@
 package com.atbm.controllers.user.info;
 
+import com.atbm.config.BaseController;
 import com.atbm.models.wrapper.response.AccountResponse;
 import com.atbm.services.AccountService;
 import com.atbm.utils.HttpUtils;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/user/info")
-public class PersonalInfoController extends HttpServlet {
+public class PersonalInfoController extends BaseController {
+    @Inject
     private AccountService accountService;
-
-//    @Override
-//    public void init() throws ServletException {
-//        accountService = new AccountService();
-//    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("accountId") == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-
-        long accountId = Long.parseLong(session.getAttribute("accountId").toString());
         try {
+            long accountId = getAccountId(req);
             AccountResponse account = accountService.getUserInfo(accountId);
             HttpUtils.setAttribute(req, "account", account);
-
-            // Giữ trạng thái tab
-            String activeTab = req.getParameter("tab");
-            if (activeTab == null || activeTab.isEmpty()) {
-                activeTab = "profile";
-            }
-            HttpUtils.setAttribute(req, "activeTab", activeTab);
-
+            HttpUtils.setAttribute(req, "activeTab", "profile");
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
         } catch (RuntimeException e) {
             HttpUtils.setAttribute(req, "error", e.getMessage());

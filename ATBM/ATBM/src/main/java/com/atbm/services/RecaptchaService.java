@@ -9,7 +9,7 @@ import java.net.*;
 public class RecaptchaService {
     private static final String RECAPTCHA_SECRET_KEY = ConfigUtils.get("recaptcha.secret");
 
-    public static boolean verify(String recaptchaResponse) {
+    public static boolean verify(String recaptchaResponse, String s) {
         try {
             URL url = new URL("https://www.google.com/recaptcha/api/siteverify");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

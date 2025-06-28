@@ -1,7 +1,9 @@
 package com.atbm.controllers.auth;
 
+import com.atbm.config.BaseController;
 import com.atbm.models.entity.Account;
 import com.atbm.services.AccountService;
+import com.atbm.utils.ConfigUtils;
 import com.atbm.utils.EmailUtils;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
@@ -9,13 +11,12 @@ import com.atbm.services.RecaptchaService;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/forgot-password")
-public class ForgotPasswordController extends HttpServlet {
+public class ForgotPasswordController extends BaseController {
     @Inject
     private AccountService accountService;
     @Inject
@@ -30,7 +31,7 @@ public class ForgotPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String recaptchaResponse = req.getParameter("g-recaptcha-response");
-        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse);
+        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse, ConfigUtils.get("recaptcha.secret"));
         if (!isRecaptchaValid) {
             HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
             HttpUtils.setAttribute(req, "showForgotPasswordModal", true);
