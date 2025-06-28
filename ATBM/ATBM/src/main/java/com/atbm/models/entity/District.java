@@ -70,4 +70,15 @@ public class District {
     public void setWards(List<Ward> wards) {
         this.wards = wards;
     }
+
+    @Override
+    public String toString() {
+        return "District{" +
+                "id=" + id +
+                ", provinceId=" + provinceId +
+                ", name='" + name + '\'' +
+                ", code=" + code +
+                ", wards=" + wards +
+                '}';
+    }
 }

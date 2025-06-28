@@ -6,7 +6,7 @@ import com.atbm.models.entity.ShippingInfo;
 public interface ShippingInfoDao {
     String TABLE_NAME = "ShippingInfo";
     String SHIPPING_INFO_ID = "shippingInfoId";
-    String RECEIVER_NAME = "receiverName";
+    String RECEIVER_NAME = "recipientName";
     String PHONE_NUMBER = "phoneNumber";
     String ADDRESS_LINE = "addressLine";
     String DISTRICT = "district";

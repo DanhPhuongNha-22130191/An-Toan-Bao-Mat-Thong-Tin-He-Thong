@@ -3,11 +3,13 @@ package com.atbm.services;
 import com.atbm.dao.location.district.DistrictDao;
 import com.atbm.dao.location.province.ProvinceDao;
 import com.atbm.dao.location.ward.WardDao;
+import com.atbm.database.CachedTransactionStep;
 import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.District;
 import com.atbm.models.entity.Province;
 import com.atbm.models.entity.Ward;
+import com.atbm.models.wrapper.request.CalculateShippingRequest;
 import com.atbm.utils.HttpClientUtils;
 import com.google.gson.reflect.TypeToken;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,7 +31,7 @@ public class LocationService {
         this.provinceDao = null;
         this.districtDao = null;
         this.wardDao = null;
-        executeSQLHelper = null;
+        this.executeSQLHelper = null;
     }
 
     @Inject
@@ -38,11 +40,18 @@ public class LocationService {
         this.districtDao = districtDao;
         this.wardDao = wardDao;
         this.executeSQLHelper = executeSQLHelper;
-        fetchLocation();
+//        fetchLocation();
     }
 
     public List<Province> getProvinces() {
-        return provinceDao.getProvinces();
+        List<Province> provinces = provinceDao.getProvinces();
+        for (Province province : provinces) {
+            province.setDistricts(districtDao.getDistrictsByProvinceId(province.getId()));
+            for (District district : province.getDistricts()) {
+                district.setWards(wardDao.getWardsByDistrictId(district.getId()));
+            }
+        }
+        return provinces;
     }
 
     public List<District> getDistricts(Long provinceId) {
@@ -72,8 +81,17 @@ public class LocationService {
     /**
      * Triển khai sau
      */
-    public double calculateShippingFee(long provinceId, long districtId, long wardId) {
-        return 0;
+    public double calculateShippingFee(CalculateShippingRequest calculateShippingRequest) {
+        // Kiểm tra địa chỉ hợp lệ
+        boolean valid = validationLocation(
+            calculateShippingRequest.getProvinceId(),
+            calculateShippingRequest.getDistrictId(),
+            calculateShippingRequest.getWardId()
+        );
+        if (!valid) {
+            return -1; // Địa chỉ không hợp lệ
+        }
+        return 30000;
     }
 
     private void fetchLocation() {
@@ -85,28 +103,29 @@ public class LocationService {
             List<SQLTransactionStep<?>> allSteps = new ArrayList<>();
 
             for (Province province : provinces) {
-                SQLTransactionStep<Long> provinceStep = buildInsertProvinceStep(province);
                 allSteps.add(connection -> {
-                    province.setId(provinceStep.apply(connection));
+                    // Step 1: insert province
+                    CachedTransactionStep<Long> provinceStep = new CachedTransactionStep<>(buildInsertProvinceStep(province));
+                    Long provinceId = provinceStep.apply(connection);
+                    province.setId(provinceId);
+
+                    // Step 2: insert districts
+                    for (District district : province.getDistricts()) {
+                        district.setProvinceId(provinceId);
+                        CachedTransactionStep<Long> districtStep = new CachedTransactionStep<>(buildInsertDistrictStep(district));
+                        Long districtId = districtStep.apply(connection);
+                        district.setId(districtId);
+
+                        // Step 3: insert wards
+                        for (Ward ward : district.getWards()) {
+                            ward.setDistrictId(districtId);
+                            SQLTransactionStep<Long> wardStep = buildInsertWardStep(ward);
+                            wardStep.apply(connection);
+                        }
+                    }
+
                     return provinceStep;
                 });
-
-                for (District district : province.getDistricts()) {
-                    SQLTransactionStep<Long> districtStep = buildInsertDistrictStep(district);
-                    allSteps.add(connection -> {
-                        district.setProvinceId(province.getId());
-                        district.setId(districtStep.apply(connection));
-                        return districtStep;
-                    });
-
-                    for (Ward ward : district.getWards()) {
-                        SQLTransactionStep<Long> wardStep = buildInsertWardStep(ward);
-                        allSteps.add(connection -> {
-                            ward.setId(wardStep.apply(connection));
-                            return wardStep;
-                        });
-                    }
-                }
             }
             boolean success = executeSQLHelper.executeStepsInTransaction(allSteps);
             if (!success) {

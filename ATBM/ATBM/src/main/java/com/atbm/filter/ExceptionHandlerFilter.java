@@ -16,7 +16,8 @@ public class ExceptionHandlerFilter implements Filter {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             String uri = request.getRequestURI();
-            response.sendRedirect(request.getContextPath() + uri + "?errorMessage=" + e.getMessage());
+//            response.sendRedirect(request.getContextPath() + uri + "?errorMessage=" + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
