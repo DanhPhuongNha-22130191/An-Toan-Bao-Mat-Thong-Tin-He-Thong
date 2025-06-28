@@ -22,13 +22,13 @@ import java.util.List;
 
 @ApplicationScoped
 public class OrderService {
-    private final OrderDao orderDao;
-    private final ShippingInfoDao shippingInfoDao;
-    private final OrderItemDao orderItemDao;
-    private final OrderSecurityDao orderSecurityDao;
-    private final CartDao cartDao;
-    private final OrderBuilderHelper orderBuilderHelper;
-    private final ExecuteSQLHelper executeSQLHelper;
+    private  OrderDao orderDao;
+    private  ShippingInfoDao shippingInfoDao;
+    private  OrderItemDao orderItemDao;
+    private  OrderSecurityDao orderSecurityDao;
+    private  CartDao cartDao;
+    private  OrderBuilderHelper orderBuilderHelper;
+    private  ExecuteSQLHelper executeSQLHelper;
 
     @Inject
     public OrderService(OrderDao orderDao, ShippingInfoDao shippingInfoDao, OrderItemDao orderItemDao, OrderSecurityDao orderSecurityDao, CartDao cartDao, OrderBuilderHelper orderBuilderHelper, ExecuteSQLHelper executeSQLHelper) {
@@ -41,15 +41,7 @@ public class OrderService {
         this.executeSQLHelper = executeSQLHelper;
     }
 
-    public OrderService() {
-        orderDao = null;
-        shippingInfoDao = null;
-        orderItemDao = null;
-        orderSecurityDao = null;
-        cartDao = null;
-        orderBuilderHelper = null;
-        executeSQLHelper = null;
-    }
+    public OrderService(){}
 
     public long checkout(long accountId, CheckoutOrderRequest checkoutOrderRequest, LocalDate updateAt) {
         Cart cart = cartDao.getCartByAccountId(accountId);
@@ -153,5 +145,9 @@ public class OrderService {
         }
         Order order = orderDao.getOrderById(orderId, id);
         orderSecurityDao.updateSignature(order.getOrderSecurityId(), signature);
+    }
+
+    public List<Order> getOrders(){
+        return orderDao.getOrders();
     }
 }

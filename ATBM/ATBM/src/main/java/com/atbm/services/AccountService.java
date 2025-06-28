@@ -29,21 +29,18 @@ import java.util.Random;
 
 @ApplicationScoped
 public class AccountService {
-    private final AccountDao accountDao;
-    private final CartDao cartDao;
-    private final ExecuteSQLHelper executeSQLHelper;
-
-    public AccountService() {
-        accountDao = null;
-        cartDao = null;
-        executeSQLHelper = null;
-    }
+    private AccountDao accountDao;
+    private CartDao cartDao;
+    private ExecuteSQLHelper executeSQLHelper;
 
     @Inject
     public AccountService(AccountDao accountDao, CartDao cartDao, ExecuteSQLHelper executeSQLHelper) {
         this.accountDao = accountDao;
         this.cartDao = cartDao;
         this.executeSQLHelper = executeSQLHelper;
+    }
+
+    public AccountService() {
     }
 
     // Đăng ký tài khoản từ RegisterRequest
@@ -198,21 +195,11 @@ public class AccountService {
         return password.toString();
     }
 
-    // Lấy danh sách tài khoản (bao gồm cả tài khoản bị xóa)
-    public List<AccountResponse> getAccounts() {
-        List<AccountResponse> accountResponses = new ArrayList<>();
-        List<Account> accounts = accountDao.getAccounts();
-        for (Account account : accounts) {
-            accountResponses.add(new AccountResponse(
-                    account.getAccountId(),
-                    account.getUsername(),
-                    account.getEmail(),
-                    account.getPublicKeyActive(),
-                    account.getRole()
-            ));
-        }
-        return accountResponses;
+    // Lấy danh sách tài khoản
+    public List<Account> getAccounts() {
+        return accountDao.getAccounts();
     }
+
 
     // Cập nhật tài khoản từ EditAccountRequest
     public boolean update(EditAccountRequest request) {
@@ -237,16 +224,16 @@ public class AccountService {
     // Xóa tài khoản (đánh dấu isDeleted = true)
     public boolean delete(long accountId) {
         Account account = accountDao.getAccountById(accountId);
-        if (account != null && !account.isDeleted()) {
-            account.setDeleted(true);
-            return accountDao.update(account);
+        if (account.isDeleted()) {
+            return false;
         }
-        return false;
+        account.setDeleted(true); // Đánh dấu isDeleted = true
+        return accountDao.update(account); // Cập nhật trạng thái
     }
+
 
     public AccountResponse getUserInfo(long accountId) {
         return getAccountById(accountId);
     }
-
 
 }

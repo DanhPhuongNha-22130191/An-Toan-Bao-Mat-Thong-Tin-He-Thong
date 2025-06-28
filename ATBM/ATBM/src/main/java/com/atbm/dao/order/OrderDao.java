@@ -26,4 +26,6 @@ public interface OrderDao {
     void updateStatus( long orderId, String status);
 
     List<Order> getOrdersByStatus(String status);
+
+    List<Order> getOrders();
 }
