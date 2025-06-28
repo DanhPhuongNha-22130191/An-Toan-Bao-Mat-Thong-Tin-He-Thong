@@ -44,12 +44,6 @@
                     Sản phẩm
                 </a>
             </div>
-            <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link">
-                    <i class="fas fa-ticket-alt"></i>
-                    Voucher
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -109,7 +103,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${user.publicKeyActive != null}">
-                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#publicKeyModal" onclick="showPublicKey('<c:out value="${user.publicKeyActive}"/>')">
+                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#publicKeyModal" onclick="showPublicKey('<c:out value='${user.publicKeyActive}'/>')">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </c:when>
@@ -119,7 +113,8 @@
                                 </c:choose>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="openEditUserModal('${user.accountId}', '<c:out value="${user.username}"/>', '<c:out value="${user.email != null ? user.email : ''}"/>')">
+                                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal"
+                                        onclick="openEditUserModal('${user.accountId}', '<c:out value='${user.username}'/>', '<c:out value='${user.email != null ? user.email : ""}'/>')">
                                     <i class="fas fa-edit"></i> Sửa
                                 </button>
                                 <button class="btn btn-sm btn-danger" onclick="confirmDelete('${user.accountId}')">
@@ -132,20 +127,7 @@
                 </table>
             </div>
 
-            <div class="pagination-container">
-                <div class="pagination-info">
-                    Hiển thị <span id="currentPageInfo">1-5</span> của <span id="totalRecords">0</span> người dùng
-                </div>
-                <div class="pagination">
-                    <button id="prevPage" class="btn btn-outline-secondary btn-sm" onclick="previousPage()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div id="pageNumbers" class="d-flex gap-1"></div>
-                    <button id="nextPage" class="btn btn-outline-secondary btn-sm" onclick="nextPage()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
+            <!-- pagination (giữ nguyên nếu có) -->
         </div>
     </div>
 </div>
@@ -154,11 +136,11 @@
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addUserModalLabel">Thêm người dùng mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <form id="addUserForm" action="${pageContext.request.contextPath}/admin/users" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Thêm người dùng mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add">
                     <div class="mb-3">
@@ -187,11 +169,11 @@
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">Sửa thông tin người dùng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <form id="editUserForm" action="${pageContext.request.contextPath}/admin/users" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Sửa thông tin người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" id="editUserId" name="userId">
@@ -210,157 +192,71 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Public Key Modal -->
+<!-- Public Key Modal (nếu bạn muốn giữ) -->
 <div class="modal fade" id="publicKeyModal" tabindex="-1" aria-labelledby="publicKeyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="publicKeyModalLabel">Khóa công khai</h5>
+                <h5 class="modal-title">Khóa công khai</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="position-relative">
-                    <textarea id="publicKeyText" class="form-control" readonly style="height: 150px; font-family: 'Courier New', monospace;"></textarea>
-                    <button class="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2" onclick="copyPublicKey()">
-                        <i class="fas fa-copy"></i> Sao chép
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <pre id="publicKeyContent" style="white-space: pre-wrap; word-break: break-word;"></pre>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS and Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+<!-- Form ẩn gửi POST XÓA -->
+<form id="deleteUserForm" action="${pageContext.request.contextPath}/admin/users" method="post" style="display:none;">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" id="deleteUserId" name="userId">
+</form>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initializePagination();
-        document.getElementById("searchInput").addEventListener("input", searchUsers);
-    });
-
-    let currentPage = 1;
-    const itemsPerPage = 5;
-    let allRows = [];
-    let filteredRows = [];
-
-    function initializePagination() {
-        allRows = Array.from(document.querySelectorAll("#userTableBody tr"));
-        filteredRows = [...allRows];
-        currentPage = 1;
-        updatePagination();
-        showPage(currentPage);
+    // Mở modal sửa và điền dữ liệu
+    function openEditUserModal(userId, username, email) {
+        document.getElementById('editUserId').value = userId;
+        document.getElementById('editUsername').value = username;
+        document.getElementById('editEmail').value = email;
     }
 
-    function showPage(page) {
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-
-        allRows.forEach(row => row.style.display = 'none');
-        filteredRows.forEach((row, index) => {
-            row.style.display = (index >= startIndex && index < endIndex) ? '' : 'none';
-        });
-
-        updatePaginationInfo(page);
+    // Hiển thị public key trong modal
+    function showPublicKey(publicKey) {
+        document.getElementById('publicKeyContent').textContent = publicKey;
     }
 
-    function updatePagination() {
-        const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
-        const pageNumbers = document.getElementById('pageNumbers');
-        pageNumbers.innerHTML = '';
-
-        document.getElementById('prevPage').disabled = currentPage === 1;
-        document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
-
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-outline-secondary btn-sm' + (i === currentPage ? ' active' : '');
-            btn.textContent = i;
-            btn.addEventListener('click', () => goToPage(i));
-            pageNumbers.appendChild(btn);
-        }
-    }
-
-    function updatePaginationInfo(page) {
-        const startItem = (page - 1) * itemsPerPage + 1;
-        const endItem = Math.min(page * itemsPerPage, filteredRows.length);
-        const totalRecords = filteredRows.length;
-
-        document.getElementById('currentPageInfo').textContent = `${startItem}-${endItem}`;
-        document.getElementById('totalRecords').textContent = totalRecords;
-    }
-
-    function goToPage(page) {
-        currentPage = page;
-        showPage(currentPage);
-        updatePagination();
-    }
-
-    function previousPage() {
-        if (currentPage > 1) {
-            goToPage(currentPage - 1);
-        }
-    }
-
-    function nextPage() {
-        const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
-        if (currentPage < totalPages) {
-            goToPage(currentPage + 1);
-        }
-    }
-
-    function openEditUserModal(userId, username, email, role) {
-        document.getElementById("editUserId").value = userId;
-        document.getElementById("editUsername").value = username;
-        document.getElementById("editEmail").value = email || '';
-        document.getElementById("editRole").value = role || 'USER';
-    }
-
-    function showPublicKey(key) {
-        const keyText = key && key !== 'null' ? key : 'Chưa có khóa công khai';
-        document.getElementById("publicKeyText").value = keyText;
-    }
-
-    function copyPublicKey() {
-        const textarea = document.getElementById("publicKeyText");
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            alert('Đã sao chép khóa công khai!');
-        } catch (err) {
-            console.error("Copy failed:", err);
-            alert('Không thể sao chép khóa công khai.');
-        }
-    }
-
+    // Xác nhận xóa user bằng cách submit form ẩn POST
     function confirmDelete(userId) {
         if (confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-            window.location.href = `/admin/users?action=delete&userId=${userId}`;
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('deleteUserForm').submit();
         }
     }
 
+    // Tìm kiếm người dùng (lọc table theo tên đăng nhập)
     function searchUsers() {
-        const input = document.getElementById("searchInput").value.toLowerCase();
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#userTableBody tr');
 
-        filteredRows = allRows.filter(row => {
-            return Array.from(row.querySelectorAll("td")).some(cell =>
-                cell.textContent.toLowerCase().includes(input)
-            );
+        rows.forEach(row => {
+            const username = row.cells[1].textContent.toLowerCase();
+            if (username.includes(input)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
         });
-
-        currentPage = 1;
-        updatePagination();
-        showPage(currentPage);
     }
 </script>
 </body>

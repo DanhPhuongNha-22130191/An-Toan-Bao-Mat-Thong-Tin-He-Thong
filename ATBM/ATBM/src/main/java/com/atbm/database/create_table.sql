@@ -178,3 +178,67 @@ create table OrderItem
 )
     go
 
+insert into Account (username, password, email, publicKeyActive, role, isDeleted)
+values
+    ('admin', 'hashed_password_123', 'admin@example.com', null, 'ADMIN', 0),
+    ('user1', 'hashed_password_456', 'user1@example.com', null, 'USER', 0);
+
+insert into Brand (name)
+values
+    (N'Rolex'),
+    (N'Omega'),
+    (N'Casio');
+
+insert into Category (name, image)
+values
+    (N'Luxury Watches', null),
+    (N'Sport Watches', null);
+
+insert into Strap (color, material, length)
+values
+    (N'Black', N'Leather', 22.0),
+    (N'Silver', N'Steel', 20.0);
+
+insert into Product (name, price, description, stock, image, size, waterResistance, brandId, strapId, isDeleted)
+values
+    (N'Rolex Submariner', 8500.00, N'Luxury diver''s watch', 10, null, 40.0, 1, 1, 1, 0),
+    (N'Casio G-Shock', 150.00, N'Rugged and affordable watch', 25, null, 45.0, 1, 3, 2, 0);
+
+insert into Cart (accountId, totalPrice, updateAt)
+values
+    (2, 150.00, GETDATE());
+
+insert into CartItem (cartId, productId, quantity, priceSnapshot, nameSnapshot, imageSnapshot)
+values
+    (1, 2, 1, 150.00, N'Casio G-Shock', null);
+
+insert into OrderSecurity (publicKey, signature)
+values
+    ('public_key_example', 'signature_example');
+
+insert into Province (code, name)
+values
+    (1, N'Hà Nội'),
+    (2, N'Hồ Chí Minh');
+
+insert into District (provinceId, name, code)
+values
+    (1, N'Ba Đình', 101),
+    (2, N'Quận 1', 201);
+
+insert into Ward (districtId, name, code)
+values
+    (1, N'Phúc Xá', 1001),
+    (2, N'Bến Nghé', 2001);
+
+insert into ShippingInfo (recipientName, phoneNumber, addressLine, district, province, ward, note, shippingMethod, shippingFee, provinceId, districtId, wardId)
+values
+    (N'Nguyễn Văn A', '0123456789', N'123 Đường ABC', N'Ba Đình', N'Hà Nội', N'Phúc Xá', N'Giao trong giờ hành chính', N'Express', 30000, 1, 1, 1);
+
+insert into Orders (accountId, orderSecurityId, shippingInfoId, totalPrice, status, paymentMethod, orderAt)
+values
+    (2, 1, 1, 150.00, 'Pending', 'COD', GETDATE());
+
+insert into OrderItem (orderId, productId, quantity, nameSnapshot, priceSnapshot, imageSnapshot)
+values
+    (1, 2, 1, N'Casio G-Shock', 150.00, null);

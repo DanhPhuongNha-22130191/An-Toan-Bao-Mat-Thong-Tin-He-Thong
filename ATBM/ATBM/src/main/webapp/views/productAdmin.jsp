@@ -56,12 +56,6 @@
                     Sản phẩm
                 </a>
             </div>
-            <div class="nav-item">
-                <a href="${pageContext.request.contextPath}/admin/voucher" class="nav-link">
-                    <i class="fas fa-ticket-alt"></i>
-                    Voucher
-                </a>
-            </div>
         </nav>
     </div>
 

@@ -84,6 +84,21 @@ public class OrderDaoImpl implements OrderDao {
         return result;
     }
 
+    @Override
+    public List<Order> getOrders() {
+        String query = "SELECT * FROM orders";
+        List<Order> result = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
+            while (rs.next()) {
+                result.add(createOrder(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+
     private Order createOrder(ResultSet resultSet) throws Exception {
         return new Order(
                 resultSet.getLong(ORDER_ID),
