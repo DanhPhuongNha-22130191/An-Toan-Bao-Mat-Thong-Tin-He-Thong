@@ -8,7 +8,7 @@ public class ConfigUtils {
     private static final Properties properties = new Properties();
 
     static {
-        try (InputStream input = ConfigUtils.class.getClassLoader().getResourceAsStream("config.properties")) {
+        try (InputStream input = ConfigUtils.class.getClassLoader().getResourceAsStream("./config/config.properties")) {
             if (input == null) {
                 throw new RuntimeException("Không tìm thấy file config.properties");
             }

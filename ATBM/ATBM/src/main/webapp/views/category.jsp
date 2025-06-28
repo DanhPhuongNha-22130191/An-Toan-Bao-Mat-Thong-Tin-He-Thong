@@ -141,7 +141,7 @@
                                         <p>${product.description}</p>
                                         <h4 class="card-product__title">
                                             <!-- LINK CHI TIẾT SẢN PHẨM -->
-                                            <a href="${pageContext.servletContext.contextPath}/product?action=details&id=${product.productId}">
+                                            <a href="${pageContext.servletContext.contextPath}/shop/product/${product.productId}">
                                                     ${product.name}
                                             </a>
                                         </h4>
@@ -174,7 +174,7 @@
 <!-- HÀM THÊM SẢN PHẨM VÀO GIỎ HÀNG BẰNG FETCH -->
 <script>
     function addToCart(productId) {
-        fetch(`${window.contextPath}/user/cart/add`, {
+        fetch("${pageContext.request.contextPath}/user/cart", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

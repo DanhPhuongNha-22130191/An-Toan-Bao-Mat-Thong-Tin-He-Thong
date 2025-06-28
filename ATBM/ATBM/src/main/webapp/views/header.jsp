@@ -96,7 +96,7 @@
 	<div class="main_menu">
 		<nav class="navbar navbar-expand-lg navbar-light">
 			<div class="container">
-				<a class="navbar-brand logo_h" href="${pageContext.request.contextPath}/shop/home"><img src="${pageContext.request.contextPath}/img/logo.png" alt=""></a>
+				<a class="navbar-brand logo_h" href="${pageContext.request.contextPath}/home"><img src="${pageContext.request.contextPath}/img/logo.png" alt=""></a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse"
 						data-target="#navbarSupportedContent"
 						aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -105,8 +105,8 @@
 				</button>
 				<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 					<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/shop/home">Trang chủ</a></li>
-						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/product/category">Lọc</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/shop/product">Lọc</a></li>
 						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/Blog.jsp">Tool mã hóa</a></li>
 						<li class="nav-item d-flex align-items-center">
 							<a href="${pageContext.request.contextPath}/user/cart" class="cart-link">
