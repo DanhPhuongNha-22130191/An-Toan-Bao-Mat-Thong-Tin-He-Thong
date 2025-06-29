@@ -1,14 +1,17 @@
 package com.atbm.dao.account.impl;
 
 import com.atbm.dao.account.AccountDao;
+import com.atbm.database.SQLTransactionStep;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Account;
+import com.atbm.models.entity.Product;
 import com.atbm.models.enums.Role;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -17,14 +20,14 @@ public class AccountDaoImpl implements AccountDao {
 
     @Inject
     public AccountDaoImpl(ExecuteSQLHelper executeSQLHelper) {
-        this.executeSQLHelper = executeSQLHelper;
+        this.executeSQLHelper =  executeSQLHelper;
     }
 
     @Override
-    public boolean insert(Account account) {
-        String query = "INSERT INTO Account (username, password, email, roles, publicKeyActive, isDeleted) VALUES (?, ?, ?, ?, ?, ?)";
+    public SQLTransactionStep<Long> insert(Account account) {
+        String query = executeSQLHelper.createInsertQuery(TABLE_NAME, List.of(USERNAME, PASSWORD, EMAIL, ROLES, PUBLIC_KEY_ACTIVE, IS_DELETED));
         try {
-            return executeSQLHelper.executeUpdate(query,
+            return executeSQLHelper.buildInsertStepReturningId(query,
                     account.getUsername(),
                     account.getPassword(),
                     account.getEmail(),
@@ -38,7 +41,7 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean update(Account account) {
-        String query = "UPDATE Account SET username = ?, password = ?, email = ?, roles = ?, publicKeyActive = ?, isDeleted = ? WHERE accountId = ?";
+        String query= executeSQLHelper.createUpdateQuery(TABLE_NAME, List.of(USERNAME, PASSWORD, EMAIL, ROLES, PUBLIC_KEY_ACTIVE, IS_DELETED), List.of(ACCOUNT_ID));
         try {
             return executeSQLHelper.executeUpdate(query,
                     account.getUsername(),
@@ -55,13 +58,14 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public boolean delete(long accountId) {
-        String query = "DELETE FROM Account WHERE accountId = ?";
+        String query = "UPDATE Account SET isDeleted = 1 WHERE accountId = ?";
         try {
             return executeSQLHelper.executeUpdate(query, accountId);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi xóa tài khoản: " + e.getMessage());
+            throw new RuntimeException("Lỗi khi xóa tài khoản: " + e.getMessage(), e);
         }
     }
+
 
     @Override
     public Account getAccountById(long accountId) {
@@ -127,7 +131,19 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public List<Account> getAccounts() {
-        return List.of();
+        String query = "SELECT * FROM Account WHERE isDeleted = 0";
+        List<Account> accounts = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
+            while (rs.next()) {
+                Account account = createAccount(rs);
+                if (account != null) {
+                    accounts.add(account);
+                }
+            }
+            return accounts;
+        } catch (SQLException e) {
+            throw new RuntimeException("Lấy Account lỗi", e);
+        }
     }
 
     private Account createAccount(ResultSet rs) throws SQLException {

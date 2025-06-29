@@ -38,8 +38,8 @@ public class LoginController extends BaseController {
         }
 
         LoginRequest loginRequest = FormMapper.bind(req.getParameterMap(), LoginRequest.class);
-        if (loginRequest.username() == null || loginRequest.password() == null ||
-                loginRequest.username().trim().isEmpty() || loginRequest.password().trim().isEmpty()) {
+        if (loginRequest.getUsername() == null || loginRequest.getPassword() == null ||
+                loginRequest.getUsername().trim().isEmpty() || loginRequest.getPassword().trim().isEmpty()) {
             HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
             HttpUtils.dispatcher(req, resp, "/views/login.jsp");
             return;
@@ -49,9 +49,9 @@ public class LoginController extends BaseController {
             AccountResponse account = accountService.login(loginRequest);
             if (account != null) {
                 HttpSession session = req.getSession();
-                session.setAttribute("accountId", account.accountId());
+                session.setAttribute("accountId", account.getAccountId());
                 session.setAttribute("user", account);
-                HttpUtils.sendRedirect(req, resp, "/product/category");
+                HttpUtils.sendRedirect(req, resp, "/home");
             } else {
                 HttpUtils.setAttribute(req, "error", "Sai tài khoản hoặc mật khẩu.");
                 HttpUtils.dispatcher(req, resp, "/views/login.jsp");

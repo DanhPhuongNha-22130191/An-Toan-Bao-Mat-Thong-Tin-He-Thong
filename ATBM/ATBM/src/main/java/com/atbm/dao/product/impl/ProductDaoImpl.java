@@ -1,10 +1,10 @@
 package com.atbm.dao.product.impl;
 
 import com.atbm.dao.product.ProductDao;
+import com.atbm.database.DBConnection;
+import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
-import com.atbm.helper.ExecuteSQLHelper;
-import com.atbm.utils.LogUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -15,19 +15,6 @@ import java.util.List;
 
 @ApplicationScoped
 public class ProductDaoImpl implements ProductDao {
-    private final String TABLE_NAME = "Product";
-    private final String PRODUCT_ID = "productId";
-    private final String NAME = "name";
-    private final String PRICE = "price";
-    private final String DESCRIPTION = "description";
-    private final String STOCK = "stock";
-    private final String IMAGE = "image";
-    private final String TRENDING = "isTrending";
-    private final String SIZE = "size";
-    private final String BRAND_ID = "brandId";
-    private final String STRAP_ID = "strapId";
-    private final String DELETED = "isDeleted";
-    private final String WATER_RESISTANCE = "waterResistance";
 
     private final ExecuteSQLHelper sqlHelper;
 
@@ -173,5 +160,4 @@ public class ProductDaoImpl implements ProductDao {
             throw new RuntimeException("Lỗi lấy giá cao nhất", e);
         }
     }
-
 }

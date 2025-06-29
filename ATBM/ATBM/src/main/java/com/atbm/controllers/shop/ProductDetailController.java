@@ -29,7 +29,7 @@ public class ProductDetailController extends HttpServlet {
                 long productId = Long.parseLong(productIdStr);
                 ProductResponse productResponse = productService.getProductById(productId);
                 HttpUtils.setAttribute(req, "product", productResponse);
-//        HttpUtils.dispatcher(req, resp, "/WEB-INF/views/shop/product.jsp");
+        HttpUtils.dispatcher(req, resp, "/views/productdetails.jsp");
             } catch (NumberFormatException e) {
                 LogUtils.debug(ProductDetailController.class, e.getMessage());
                 throw new RuntimeException("Trang không tồn tại");

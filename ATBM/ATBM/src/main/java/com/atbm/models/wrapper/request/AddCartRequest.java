@@ -19,4 +19,12 @@ public class AddCartRequest {
     public int getQuantity() {
         return quantity;
     }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }

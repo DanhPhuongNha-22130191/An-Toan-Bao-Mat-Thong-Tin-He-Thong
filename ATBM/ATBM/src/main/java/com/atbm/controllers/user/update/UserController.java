@@ -5,9 +5,7 @@ import com.atbm.models.wrapper.request.ChangePasswordRequest;
 import com.atbm.models.wrapper.request.UpdateProfileRequest;
 import com.atbm.models.wrapper.request.UpdatePublicKeyRequest;
 import com.atbm.models.wrapper.response.AccountResponse;
-import com.atbm.models.wrapper.response.OrderResponse;
 import com.atbm.services.AccountService;
-import com.atbm.services.OrderService;
 import com.atbm.mapper.FormMapper;
 import com.atbm.utils.HttpUtils;
 import com.atbm.utils.LogUtils;
@@ -21,16 +19,12 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet("/user/update")
 @MultipartConfig
 public class UserController extends BaseController {
     @Inject
     private AccountService accountService;
-    @Inject
-    private OrderService orderService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,19 +40,6 @@ public class UserController extends BaseController {
             String activeTab = req.getParameter("tab");
             if (activeTab == null || activeTab.isEmpty()) {
                 activeTab = "account-settings";
-            }
-            if ("order-history".equals(activeTab)) {
-                List<OrderResponse> orders = orderService.getOrdersByAccountId(accountId);
-                if (orders == null) {
-                    orders = new ArrayList<>();
-                }
-                List<Boolean> tamperStatuses = new ArrayList<>();
-                for (OrderResponse orderResponse : orders) {
-                    tamperStatuses.add(!orderResponse.isDigitallySigned());
-                }
-                HttpUtils.setAttribute(req, "orders", orders);
-                HttpUtils.setAttribute(req, "tamperStatuses", tamperStatuses);
-                HttpUtils.setAttribute(req, "ordersCount", orders.size());
             }
             HttpUtils.setAttribute(req, "activeTab", activeTab);
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
@@ -79,14 +60,14 @@ public class UserController extends BaseController {
 
             if ("updateProfile".equals(action)) {
                 UpdateProfileRequest updateProfileRequest = FormMapper.bind(req.getParameterMap(), UpdateProfileRequest.class);
-                if (updateProfileRequest.username() == null || updateProfileRequest.email() == null ||
-                        updateProfileRequest.username().trim().isEmpty() || updateProfileRequest.email().trim().isEmpty()) {
+                if (updateProfileRequest.getUsername() == null || updateProfileRequest.getEmail() == null ||
+                        updateProfileRequest.getUsername().trim().isEmpty() || updateProfileRequest.getEmail().trim().isEmpty()) {
                     HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ thông tin.");
                     HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
                     return;
                 }
-                if (account.username().equals(updateProfileRequest.username().trim()) &&
-                        account.email().equals(updateProfileRequest.email().trim())) {
+                if (account.getUsername().equals(updateProfileRequest.getUsername().trim()) &&
+                        account.getEmail().equals(updateProfileRequest.getEmail().trim())) {
                     HttpUtils.setAttribute(req, "message", "Không có thay đổi nào để cập nhật.");
                 } else {
                     accountService.updateProfile(accountId, updateProfileRequest);
@@ -148,14 +129,7 @@ public class UserController extends BaseController {
         if (filePart != null && filePart.getSize() > 0) {
             try {
                 String fileContent = new String(filePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                String[] lines = fileContent.split("\n");
-                StringBuilder keyBuilder = new StringBuilder();
-                for (String line : lines) {
-                    if (!line.startsWith("-----")) {
-                        keyBuilder.append(line.trim());
-                    }
-                }
-                return keyBuilder.toString();
+                return fileContent.trim();
             } catch (Exception e) {
                 LogUtils.debug(UserController.class, "Lỗi khi đọc file khóa công khai: " + e.getMessage());
                 return null;
@@ -163,4 +137,5 @@ public class UserController extends BaseController {
         }
         return publicKeyText != null ? publicKeyText.trim() : null;
     }
+
 }

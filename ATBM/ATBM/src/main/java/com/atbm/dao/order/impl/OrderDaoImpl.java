@@ -6,6 +6,7 @@ import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Order;
 import com.atbm.models.enums.OrderStatus;
 import com.atbm.models.enums.PaymentMethod;
+import com.atbm.models.wrapper.response.OrderResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -64,10 +65,40 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public void updateStatus(long accountId, long orderId, String status) {
-        String query = "UPDATE Orders SET status=? WHERE accountId=? AND orderId=?";
-        executeSQLHelper.executeUpdate(query, status, accountId, orderId);
+    public void updateStatus(long orderId, String status) {
+        String query = "UPDATE Orders SET status=? WHERE  orderId=?";
+        executeSQLHelper.executeUpdate(query, status, orderId);
     }
+
+    @Override
+    public List<Order> getOrdersByStatus(String status) {
+        String query = "SELECT * FROM Orders WHERE  status = ?";
+        List<Order> result = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query, status)) {
+            while (rs.next()) {
+                result.add(createOrder(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+
+    }
+
+    @Override
+    public List<Order> getOrders() {
+        String query = "SELECT * FROM orders";
+        List<Order> result = new ArrayList<>();
+        try (ResultSet rs = executeSQLHelper.executeQuery(query)) {
+            while (rs.next()) {
+                result.add(createOrder(rs));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
 
     private Order createOrder(ResultSet resultSet) throws Exception {
         return new Order(

@@ -1,4 +1,4 @@
-package com.atbm.controllers.admin;
+package com.atbm.controllers.shop;
 
 import com.atbm.models.wrapper.response.ProductResponse;
 import com.atbm.services.ProductService;

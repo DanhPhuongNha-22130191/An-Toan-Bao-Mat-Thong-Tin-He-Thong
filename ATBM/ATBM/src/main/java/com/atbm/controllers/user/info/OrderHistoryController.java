@@ -9,7 +9,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +25,25 @@ public class OrderHistoryController extends BaseController {
         try {
             long accountId = getAccountId(req);
             List<OrderResponse> orders = orderService.getOrdersByAccountId(accountId);
-            if (orders == null) {
-                orders = new ArrayList<>();
-            }
-
             List<Boolean> tamperStatuses = new ArrayList<>();
+            List<String> formattedDates = new ArrayList<>();
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            
             for (OrderResponse orderResponse : orders) {
-                tamperStatuses.add(!orderResponse.isDigitallySigned());
+                tamperStatuses.add(orderResponse.isChanged());
+                
+                // Format ngày tháng
+                String formattedDate = "N/A";
+                if (orderResponse.getOrder().getOrderAt() != null) {
+                    formattedDate = orderResponse.getOrder().getOrderAt().format(formatter);
+                }
+                formattedDates.add(formattedDate);
             }
-
+            
             HttpUtils.setAttribute(req, "orders", orders);
             HttpUtils.setAttribute(req, "tamperStatuses", tamperStatuses);
+            HttpUtils.setAttribute(req, "formattedDates", formattedDates);
             HttpUtils.setAttribute(req, "ordersCount", orders.size());
             HttpUtils.setAttribute(req, "activeTab", "order-history");
             HttpUtils.dispatcher(req, resp, "/views/profile.jsp");

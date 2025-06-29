@@ -27,7 +27,7 @@ public class HomeController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ProductResponse> products = productService.getProducts();
         HttpUtils.setAttribute(req, "newProducts", products);
-        HttpUtils.setAttribute(req, "trendingProducts", products.subList(0, 5));
+        HttpUtils.setAttribute(req, "trendingProducts", products.subList(0, Math.min(products.size(), 5)));
         HttpUtils.dispatcher(req, resp, "/views/index.jsp");
     }
 }

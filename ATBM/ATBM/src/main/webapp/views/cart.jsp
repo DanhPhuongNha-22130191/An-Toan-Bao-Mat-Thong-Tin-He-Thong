@@ -150,6 +150,86 @@
                 opacity: 0;
             }
         }
+
+        .public-key-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .public-key-warning .warning-icon {
+            color: #f39c12;
+            margin-right: 10px;
+        }
+
+        .gray_btn {
+            background: #f1f1f1;
+            color: #333;
+            border-radius: 4px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            border: none;
+            transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .gray_btn:hover {
+            background: #e2e2e2;
+            color: #111;
+        }
+
+        .btn-register-public-key {
+            background-color: #ff5252;
+            border: none;
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-register-public-key:hover {
+            background-color: #c0392b;
+            color: #fff;
+        }
+
+        .primary-btn {
+            background: #384aeb;
+            color: #fff;
+            border-radius: 4px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            border: none;
+            transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .primary-btn:hover {
+            background: #2d36a8;
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .checkout_btn_inner {
+                flex-direction: column !important;
+                gap: 10px !important;
+                align-items: stretch !important;
+            }
+            .gray_btn, .btn-register-public-key, .primary-btn {
+                width: 100%;
+                min-width: unset !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -158,11 +238,20 @@
 <c:set var="shopUrl" value="${contextPath}/shop/product"/>
 <c:set var="updateCartUrl" value="${contextPath}/user/cart"/>
 <c:set var="checkoutUrl" value="${contextPath}/user/checkout"/>
+<c:set var="profileUrl" value="${contextPath}/user/info"/>
 
 <!--================Cart Area =================-->
 <section class="cart_area">
     <div class="container">
         <div class="cart_inner">
+            <!-- Hiển thị cảnh báo nếu chưa có public key -->
+            <c:if test="${not empty publicKeyWarning}">
+                <div class="public-key-warning">
+                    <i class="fas fa-exclamation-triangle warning-icon"></i>
+                    <strong>Cảnh báo:</strong> ${publicKeyWarning}
+                </div>
+            </c:if>
+
             <!-- Phần chính của giỏ hàng -->
             <c:choose>
                 <c:when test="${empty cart.items}">
@@ -194,7 +283,7 @@
                                         <td>
                                             <div class="media">
                                                 <div class="d-flex">
-                                                    <img src="${pageContext.request.contextPath}/admin/productImage?productId=${item.productId}"
+                                                    <img src="${pageContext.request.contextPath}/product-image/${item.productId}"
                                                          alt="${item.nameSnapshot}" style="width: 100px;">
                                                 </div>
                                                 <div class="media-body">
@@ -231,16 +320,25 @@
 
                     <!-- Phần tổng kết và thanh toán -->
                     <div class="row">
-                        <div class="col-lg-4 ml-auto">
+                        <div class="col-lg-6 ml-auto">
                             <div class="cart-summary">
                                 <h4>Tổng giỏ hàng</h4>
                                 <div class="summary-row total-row">
                                     <span>Tổng cộng:</span>
                                     <span>${cart.totalPriceStringWithCurrency}</span>
                                 </div>
-                                <div class="checkout_btn_inner d-flex align-items-center mt-4">
-                                    <a class="gray_btn" href="${shopUrl}">Tiếp tục mua sắm</a>
-                                    <a class="primary-btn ml-2" href="${checkoutUrl}">Thanh toán</a>
+                                <div class="checkout_btn_inner d-flex justify-content-end align-items-center gap-2 mt-4">
+                                    <a class="gray_btn me-2" href="${shopUrl}">Tiếp tục mua sắm</a>
+                                    <c:choose>
+                                        <c:when test="${hasPublicKey}">
+                                            <a class="primary-btn" style="min-width:140px;" href="${checkoutUrl}">Thanh toán</a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a class="btn btn-register-public-key" style="min-width:180px;" href="${profileUrl}?publicKeyWarning=true">
+                                                <i class="fas fa-key"></i> Đăng ký Public Key
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
                         </div>
