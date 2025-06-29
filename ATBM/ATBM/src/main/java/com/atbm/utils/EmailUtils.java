@@ -3,7 +3,9 @@ package com.atbm.utils;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeUtility;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -28,11 +30,14 @@ public class EmailUtils {
 		});
 
 		try {
-			Message message = new MimeMessage(session);
+			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(USERNAME));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-			message.setSubject(subject);
-			message.setText(content);
+			message.setSubject(subject, "UTF-8"); // ✅ subject có dấu
+
+			// ✅ Gửi nội dung với encoding UTF-8 rõ ràng
+			message.setContent(content, "text/plain; charset=UTF-8");
+
 			Transport.send(message);
 			return true;
 		} catch (MessagingException e) {
@@ -40,4 +45,5 @@ public class EmailUtils {
 			return false;
 		}
 	}
+
 }

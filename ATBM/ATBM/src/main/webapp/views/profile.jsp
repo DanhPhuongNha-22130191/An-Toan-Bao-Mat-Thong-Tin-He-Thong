@@ -246,8 +246,7 @@
                         <label class="form-label" for="publicKeyText">Hoặc nhập Public Key:</label>
                         <textarea name="publicKeyText" id="publicKeyText" class="form-control" rows="3" placeholder="Nhập public key của bạn vào đây..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                     k                </form>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button> </form>
             </div>
         </div>
     </div>

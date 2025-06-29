@@ -53,7 +53,7 @@ public class AccountService {
         Account account = new Account(
                 registerRequest.getUsername().trim(),
                 hashedPassword,
-                registerRequest.getPassword().trim()
+                registerRequest.getEmail().trim()
         );
         SQLTransactionStep<Long> insertAccountStep = accountDao.insert(account);
         return executeSQLHelper.executeStepsInTransaction(List.of(
@@ -138,8 +138,8 @@ public class AccountService {
     // Đổi mật khẩu có kiểm tra mật khẩu cũ
     public boolean changePassword(long accountId, ChangePasswordRequest changePasswordRequest) throws NoSuchAlgorithmException {
         Account account = accountDao.getAccountById(accountId);
-        if (account != null && SignatureUtils.hash(changePasswordRequest.oldPassword()).equals(account.getPassword())) {
-            account.setPassword(SignatureUtils.hash(changePasswordRequest.newPassword()));
+        if (account != null && SignatureUtils.hash(changePasswordRequest.getOldPassword()).equals(account.getPassword())) {
+            account.setPassword(SignatureUtils.hash(changePasswordRequest.getNewPassword()));
             return accountDao.update(account);
         }
         return false;
