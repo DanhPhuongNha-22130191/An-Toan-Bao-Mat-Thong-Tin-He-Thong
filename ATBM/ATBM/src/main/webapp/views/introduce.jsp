@@ -5,67 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hướng Dẫn Sử Dụng Website Bán Đồng Hồ</title>
-<%--  <style>--%>
-<%--    body {--%>
-<%--      font-family: 'Georgia', serif;--%>
-<%--      line-height: 1.6;--%>
-<%--      margin: 0;--%>
-<%--      padding: 20px;--%>
-<%--      background-color: #FFFFFF;--%>
-<%--      color: #333333;--%>
-<%--    }--%>
-<%--    .container {--%>
-<%--      max-width: 800px;--%>
-<%--      margin: auto;--%>
-<%--      background: #F8F8F8;--%>
-<%--      padding: 20px;--%>
-<%--      border-radius: 10px;--%>
-<%--      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);--%>
-<%--      border: 1px solid #D4AF37;--%>
-<%--    }--%>
-<%--    h1, h2 {--%>
-<%--      color: #D4AF37;--%>
-<%--      font-weight: bold;--%>
-<%--    }--%>
-<%--    h1 {--%>
-<%--      text-align: center;--%>
-<%--      font-size: 2.2em;--%>
-<%--      border-bottom: 2px solid #D4AF37;--%>
-<%--      padding-bottom: 10px;--%>
-<%--    }--%>
-<%--    h2 {--%>
-<%--      font-size: 1.5em;--%>
-<%--      margin-top: 20px;--%>
-<%--    }--%>
-<%--    ol {--%>
-<%--      margin: 20px 0;--%>
-<%--      padding-left: 20px;--%>
-<%--    }--%>
-<%--    li {--%>
-<%--      margin-bottom: 10px;--%>
-<%--    }--%>
-<%--    .note {--%>
-<%--      background-color: #FFF8E7;--%>
-<%--      border-left: 6px solid #D4AF37;--%>
-<%--      padding: 10px;--%>
-<%--      margin: 10px 0;--%>
-<%--      color: #333333;--%>
-<%--    }--%>
-<%--    .footer {--%>
-<%--      text-align: center;--%>
-<%--      margin-top: 20px;--%>
-<%--      font-size: 0.9em;--%>
-<%--      color: #D4AF37;--%>
-<%--    }--%>
-<%--    a {--%>
-<%--      color: #D4AF37;--%>
-<%--      text-decoration: none;--%>
-<%--    }--%>
-<%--    a:hover {--%>
-<%--      text-decoration: underline;--%>
-<%--      color: #B8860B;--%>
-<%--    }--%>
-<%--  </style>--%>
 </head>
 <body>
 <!--================ Start Header Menu Area =================-->
@@ -73,6 +12,7 @@
 <!--================ End Header Menu Area =================-->
 
 <div class="container">
+  <a href="${pageContext.request.contextPath}/download">Tải về file ZIP</a>
   <h1>Hướng Dẫn Sử Dụng Website Bán Đồng Hồ</h1>
   <p>Chào mừng bạn đến với website bán đồng hồ của chúng tôi! Dưới đây là hướng dẫn chi tiết để bạn dễ dàng sử dụng các tính năng trên website.</p>
 

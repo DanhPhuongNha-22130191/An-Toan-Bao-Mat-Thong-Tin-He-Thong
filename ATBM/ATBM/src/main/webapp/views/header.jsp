@@ -107,7 +107,7 @@
 					<ul class="nav navbar-nav menu_nav ml-auto mr-auto">
 						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a></li>
 						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/shop/product">Lọc</a></li>
-						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/Blog.jsp">Tool mã hóa</a></li>
+						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/introduce.jsp">Tool mã hóa</a></li>
 						<li class="nav-item d-flex align-items-center">
 							<a href="${pageContext.request.contextPath}/user/cart" class="cart-link">
 								<i class="ti-shopping-cart"></i> <span class="nav-shop__circle"></span>
