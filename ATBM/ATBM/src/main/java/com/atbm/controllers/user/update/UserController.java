@@ -76,13 +76,13 @@ public class UserController extends BaseController {
                 }
             } else if ("changePassword".equals(action)) {
                 ChangePasswordRequest changePasswordRequest = FormMapper.bind(req.getParameterMap(), ChangePasswordRequest.class);
-                if (changePasswordRequest.oldPassword() == null || changePasswordRequest.newPassword() == null ||
-                        changePasswordRequest.oldPassword().trim().isEmpty() || changePasswordRequest.newPassword().trim().isEmpty()) {
+                if (changePasswordRequest.getOldPassword() == null || changePasswordRequest.getNewPassword() == null ||
+                        changePasswordRequest.getOldPassword().trim().isEmpty() || changePasswordRequest.getNewPassword().trim().isEmpty()) {
                     HttpUtils.setAttribute(req, "error", "Vui lòng nhập đầy đủ mật khẩu.");
                     HttpUtils.dispatcher(req, resp, "/views/profile.jsp");
                     return;
                 }
-                if (changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword())) {
+                if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
                     HttpUtils.setAttribute(req, "error", "Mật khẩu mới không được giống mật khẩu cũ.");
                 } else {
                     boolean success = accountService.changePassword(accountId, changePasswordRequest);
