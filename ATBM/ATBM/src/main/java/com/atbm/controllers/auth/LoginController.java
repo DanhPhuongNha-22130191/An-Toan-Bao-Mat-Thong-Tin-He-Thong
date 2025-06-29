@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import com.atbm.models.enums.Role;
 
 @WebServlet("/login")
 public class LoginController extends BaseController {
@@ -51,7 +52,12 @@ public class LoginController extends BaseController {
                 HttpSession session = req.getSession();
                 session.setAttribute("accountId", account.getAccountId());
                 session.setAttribute("user", account);
-                HttpUtils.sendRedirect(req, resp, "/home");
+                // Chuyển hướng dựa trên vai trò người dùng
+                if (account.getRole() != null && account.getRole() == Role.ADMIN) {
+                    HttpUtils.sendRedirect(req, resp, "/admin/users");
+                } else {
+                    HttpUtils.sendRedirect(req, resp, "/home");
+                }
             } else {
                 HttpUtils.setAttribute(req, "error", "Sai tài khoản hoặc mật khẩu.");
                 HttpUtils.dispatcher(req, resp, "/views/login.jsp");
