@@ -35,11 +35,27 @@ public class OrderDetailController extends BaseController {
 
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long id = getAccountId(req);
-        long orderId = getOrderId(req);
-        String signature = req.getParameter("signature");
-        orderService.updateSignature(id, orderId, signature);
-        doGet(req, resp);
+        try {
+            long id = getAccountId(req);
+            long orderId = getOrderId(req);
+            String signature = req.getParameter("signature");
+            
+            if (signature == null || signature.trim().isEmpty()) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Chữ ký không được bỏ trống");
+                return;
+            }
+            
+            orderService.updateSignature(id, orderId, signature);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write("Ký đơn hàng thành công");
+        } catch (RuntimeException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(e.getMessage());
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("Có lỗi xảy ra khi ký đơn hàng");
+        }
     }
 
     private long getOrderId(HttpServletRequest req) {

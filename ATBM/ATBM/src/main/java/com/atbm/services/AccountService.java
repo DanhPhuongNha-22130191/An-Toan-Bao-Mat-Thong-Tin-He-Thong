@@ -33,6 +33,7 @@ public class AccountService {
     private CartDao cartDao;
     private ExecuteSQLHelper executeSQLHelper;
 
+
     @Inject
     public AccountService(AccountDao accountDao, CartDao cartDao, ExecuteSQLHelper executeSQLHelper) {
         this.accountDao = accountDao;
@@ -127,8 +128,8 @@ public class AccountService {
     public boolean updateProfile(long accountId, UpdateProfileRequest updateProfileRequest) {
         Account account = accountDao.getAccountById(accountId);
         if (account != null) {
-            account.setUsername(updateProfileRequest.username().trim());
-            account.setEmail(updateProfileRequest.email().trim());
+            account.setUsername(updateProfileRequest.getUsername().trim());
+            account.setEmail(updateProfileRequest.getEmail().trim());
             return accountDao.update(account);
         }
         return false;
