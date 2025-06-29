@@ -1,6 +1,7 @@
 package com.atbm.dao.product.impl;
 
 import com.atbm.dao.product.ProductDao;
+import com.atbm.database.DBConnection;
 import com.atbm.helper.ExecuteSQLHelper;
 import com.atbm.models.entity.Brand;
 import com.atbm.models.entity.Product;
