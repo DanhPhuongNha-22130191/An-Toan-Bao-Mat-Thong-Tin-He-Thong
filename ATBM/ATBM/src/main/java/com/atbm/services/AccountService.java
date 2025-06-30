@@ -222,19 +222,18 @@ public class AccountService {
         return accountDao.update(account);
     }
 
-    // Xóa tài khoản (đánh dấu isDeleted = true)
-    public boolean delete(long accountId) {
+    // Đình chỉ hoặc kích hoạt tài khoản (chuyển đổi trạng thái isDeleted)
+    public boolean suspend(long accountId) {
         Account account = accountDao.getAccountById(accountId);
-        if (account.isDeleted()) {
+        if (account == null) {
             return false;
         }
-        account.setDeleted(true); // Đánh dấu isDeleted = true
-        return accountDao.update(account); // Cập nhật trạng thái
+        // Chuyển đổi trạng thái: true -> false hoặc false -> true
+        account.setDeleted(!account.isDeleted());
+        return accountDao.update(account);
     }
-
 
     public AccountResponse getUserInfo(long accountId) {
         return getAccountById(accountId);
     }
-
 }

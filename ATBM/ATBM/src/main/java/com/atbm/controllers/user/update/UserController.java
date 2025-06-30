@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -95,7 +96,9 @@ public class UserController extends BaseController {
             } else if ("uploadPublicKey".equals(action)) {
                 String publicKeyText = req.getParameter("publicKeyText");
                 Part filePart = req.getPart("publicKeyFile");
-                String publicKey = extractPublicKeyFromFile(filePart, publicKeyText);
+                String publicKeyRaw = extractPublicKeyFromFile(filePart, publicKeyText);
+                String publicKey = normalizePublicKey(publicKeyRaw);
+
                 if (publicKey != null) {
                     UpdatePublicKeyRequest updatePublicKeyRequest = new UpdatePublicKeyRequest(publicKey);
                     accountService.updatePublicKey(accountId, updatePublicKeyRequest);
@@ -126,16 +129,45 @@ public class UserController extends BaseController {
     }
 
     private String extractPublicKeyFromFile(Part filePart, String publicKeyText) {
-        if (filePart != null && filePart.getSize() > 0) {
-            try {
+        try {
+            if (filePart != null && filePart.getSize() > 0) {
                 String fileContent = new String(filePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                return fileContent.trim();
-            } catch (Exception e) {
-                LogUtils.debug(UserController.class, "Lỗi khi đọc file khóa công khai: " + e.getMessage());
-                return null;
+                fileContent = fileContent.strip(); // tốt hơn trim()
+                if (fileContent.startsWith("\uFEFF")) {  // BOM check
+                    fileContent = fileContent.substring(1);
+                }
+                return fileContent;
             }
+        } catch (Exception e) {
+            LogUtils.debug(UserController.class, "Lỗi khi đọc file khóa công khai: " + e.getMessage());
         }
-        return publicKeyText != null ? publicKeyText.trim() : null;
+        return publicKeyText != null ? publicKeyText.strip() : null;
     }
 
+    private String normalizePublicKey(String rawKey) {
+        if (rawKey == null || rawKey.isEmpty()) return null;
+
+        // Loại bỏ header/footer và whitespace
+        String keyContent = rawKey.replaceAll("-----BEGIN PUBLIC KEY-----", "")
+                .replaceAll("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s+", ""); // loại bỏ tất cả whitespace
+
+        // Kiểm tra nếu key content rỗng
+        if (keyContent.isEmpty()) return null;
+
+        // Format lại theo chuẩn PEM với dòng 64 ký tự
+        StringBuilder sb = new StringBuilder();
+        sb.append("-----BEGIN PUBLIC KEY-----");
+        sb.append(System.lineSeparator()); // Sử dụng line separator của hệ thống
+
+        // Chia key content thành các dòng 64 ký tự
+        for (int i = 0; i < keyContent.length(); i += 64) {
+            int end = Math.min(i + 64, keyContent.length());
+            sb.append(keyContent.substring(i, end));
+            sb.append(System.lineSeparator());
+        }
+
+        sb.append("-----END PUBLIC KEY-----");
+        return sb.toString();
+    }
 }
