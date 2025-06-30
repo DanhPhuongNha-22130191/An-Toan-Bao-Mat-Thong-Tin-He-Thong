@@ -22,6 +22,7 @@ public class DBConnection {
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
         } catch (Exception e) {
             LogUtils.debug(DBConnection.class, "Lỗi khi kết nối với cơ sở dữ liệu");
+            e.printStackTrace();
             throw new RuntimeException("Lỗi khi kết nối với cơ sở dữ liệu");
         }
     }
@@ -29,5 +30,7 @@ public class DBConnection {
     public Connection getConnection() {
         return connection;
     }
+
+
 }
 
