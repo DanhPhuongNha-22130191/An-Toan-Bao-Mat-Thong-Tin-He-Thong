@@ -127,7 +127,7 @@
                             <!-- CÁC CỘT THÔNG TIN SẢN PHẨM -->
                             <td>${p.productId}</td>
                             <td>${p.name}</td>
-                            <td>${brandMap[p.brandId].name}</td>
+                            <td>${p.brand.name}</td>
                             <td>${p.price} đ</td>
                             <td>${p.stock}</td>
                             <!-- NÚT SỬA VÀ XÓA -->
