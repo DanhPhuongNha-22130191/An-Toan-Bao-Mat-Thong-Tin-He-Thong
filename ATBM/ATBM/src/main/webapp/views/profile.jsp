@@ -214,7 +214,7 @@
                     <div class="mb-3">
                         <label class="form-label">Public Key hiện tại:</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="publicKeyInput" value="${user.publicKeyActive}" readonly>
+                            <textarea class="form-control" id="publicKeyInput" readonly rows="8" style="resize: none; font-family: monospace; font-size: 12px;">${user.publicKeyActive}</textarea>
                             <button class="btn btn-outline-secondary" type="button" onclick="copyPublicKey()">
                                 <i class="bi bi-clipboard"></i> Sao chép
                             </button>
@@ -269,9 +269,32 @@
 
     function copyPublicKey() {
         const publicKeyInput = document.getElementById("publicKeyInput");
-        publicKeyInput.select();
-        document.execCommand("copy");
-        alert("Public Key đã được sao chép vào clipboard!");
+
+        // Sử dụng modern clipboard API nếu có
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(publicKeyInput.value).then(function() {
+                alert("Public Key đã được sao chép vào clipboard!");
+            }).catch(function(err) {
+                console.error('Lỗi khi sao chép: ', err);
+                // Fallback nếu clipboard API thất bại
+                fallbackCopy();
+            });
+        } else {
+            // Fallback cho browser cũ
+            fallbackCopy();
+        }
+
+        function fallbackCopy() {
+            publicKeyInput.select();
+            publicKeyInput.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand("copy");
+                alert("Public Key đã được sao chép vào clipboard!");
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                alert("Không thể sao chép tự động. Vui lòng select và copy thủ công.");
+            }
+        }
     }
 
     function showOrderDetails(orderId, orderDate, totalAmount, paymentMethod, status, fullName, phone, email, address, orderNote) {
