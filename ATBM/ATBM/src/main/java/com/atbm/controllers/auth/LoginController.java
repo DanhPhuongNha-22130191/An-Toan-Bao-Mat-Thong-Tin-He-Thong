@@ -30,13 +30,13 @@ public class LoginController extends BaseController {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String recaptchaResponse = req.getParameter("g-recaptcha-response");
-        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse, ConfigUtils.get("recaptcha.secret"));
-        if (!isRecaptchaValid) {
-            HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
-            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
-            return;
-        }
+//        String recaptchaResponse = req.getParameter("g-recaptcha-response");
+//        boolean isRecaptchaValid = RecaptchaService.verify(recaptchaResponse, ConfigUtils.get("recaptcha.secret"));
+//        if (!isRecaptchaValid) {
+//            HttpUtils.setAttribute(req, "error", "Vui lòng xác nhận bạn không phải là robot.");
+//            HttpUtils.dispatcher(req, resp, "/views/login.jsp");
+//            return;
+//        }
 
         LoginRequest loginRequest = FormMapper.bind(req.getParameterMap(), LoginRequest.class);
         if (loginRequest.getUsername() == null || loginRequest.getPassword() == null ||

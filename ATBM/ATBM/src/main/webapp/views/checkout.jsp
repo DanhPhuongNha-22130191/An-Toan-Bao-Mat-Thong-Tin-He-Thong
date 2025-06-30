@@ -571,36 +571,49 @@
             }<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
     ];
-    var orderTotal = '<c:out value="${cart.totalPriceStringWithCurrency}"/>';
+    var orderTotal = '<c:out value="${cart.totalPrice}"/>';
 
     // Hàm tạo thông tin đơn hàng để ký số
     function getOrderInfoString() {
         var now = new Date();
-        var dateStr = now.toLocaleDateString('vi-VN');
+        var dateStr = formatDateVN(now); // chuẩn dd/MM/yyyy
+
         var name = document.getElementById('full-name').value.trim();
         var phone = document.getElementById('phone-number').value.trim();
         var address = document.getElementById('addressLine').value.trim();
         var province = document.getElementById('province');
         var district = document.getElementById('district');
         var ward = document.getElementById('ward');
-        
-        // Lấy tên địa chỉ từ select options
-        var provinceName = province.options[province.selectedIndex] ? province.options[province.selectedIndex].text : '';
-        var districtName = district.options[district.selectedIndex] ? district.options[district.selectedIndex].text : '';
-        var wardName = ward.options[ward.selectedIndex] ? ward.options[ward.selectedIndex].text : '';
-        
+
+        var provinceName = province.options[province.selectedIndex]?.text || '';
+        var districtName = district.options[district.selectedIndex]?.text || '';
+        var wardName = ward.options[ward.selectedIndex]?.text || '';
+
         var items = '';
         for (var i = 0; i < orderItems.length; i++) {
-            items += '• ' + orderItems[i].name + ' x' + orderItems[i].quantity + ': ' + orderItems[i].totalPrice + ' VNĐ\n';
+            var item = orderItems[i];
+            items += '• ' + item.name + ' x' + item.quantity + ': ' + formatCurrency(item.totalPrice) + '\n';
         }
-        var total = orderTotal;
-        
+
+        var total = formatCurrency(orderTotal);
+
         return 'Ngày đặt: ' + dateStr + '\n' +
-               'Họ tên: ' + name + '\n' +
-               'SĐT: ' + phone + '\n' +
-               'Địa chỉ: ' + address + ', ' + wardName + ', ' + districtName + ', ' + provinceName + '\n' +
-               'Sản phẩm:\n' + items +
-               'Tổng tiền: ' + total;
+            'Họ tên: ' + name + '\n' +
+            'SĐT: ' + phone + '\n' +
+            'Địa chỉ: ' + address + ', ' + wardName + ', ' + districtName + ', ' + provinceName + '\n' +
+            'Sản phẩm:\n' + items +
+            'Tổng tiền: ' + total;
+    }
+
+    function formatDateVN(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return day+'/'+month+'/'+year;
+    }
+
+    function formatCurrency(amount) {
+        return parseFloat(amount).toFixed(1) + ' VNĐ';
     }
     // Nút tạo thông tin đơn hàng
     document.getElementById('generateHashBtn').addEventListener('click', function() {

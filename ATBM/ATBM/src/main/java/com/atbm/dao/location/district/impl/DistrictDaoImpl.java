@@ -57,7 +57,7 @@ public class DistrictDaoImpl implements DistrictDao {
 
     @Override
     public String getDistrictNameById(long districtId) {
-        String query = "SELECT NAME FROM ward WHERE id = ? ";
+        String query = "SELECT NAME FROM district WHERE id = ? ";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, districtId)) {
             if (rs.next())
                 return rs.getString(DISTRICT_NAME);

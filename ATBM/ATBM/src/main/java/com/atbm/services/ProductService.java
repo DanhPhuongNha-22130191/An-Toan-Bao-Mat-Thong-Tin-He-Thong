@@ -18,9 +18,9 @@ import java.util.List;
 
 @ApplicationScoped
 public class ProductService {
-    private  ProductDao productDao;
-    private  BrandDao brandDao;
-    private  StrapDao strapDao;
+    private ProductDao productDao;
+    private BrandDao brandDao;
+    private StrapDao strapDao;
 
     @Inject
     public ProductService(ProductDao productDao, BrandDao brandDao, StrapDao strapDao) {
@@ -130,6 +130,7 @@ public class ProductService {
     public List<Brand> getBrands() {
         return brandDao.getBrands();
     }
+
     public List<Strap> getStraps() {
         return strapDao.getStraps();
     }
@@ -137,6 +138,7 @@ public class ProductService {
     public double getMinPrice() {
         return productDao.getMinPrice();
     }
+
     public double getMaxPrice() {
         return productDao.getMaxPrice();
     }
