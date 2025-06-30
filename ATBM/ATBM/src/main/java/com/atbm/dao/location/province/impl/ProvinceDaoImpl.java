@@ -57,7 +57,7 @@ public class ProvinceDaoImpl implements ProvinceDao {
 
     @Override
     public String getProvinceNameById(long provinceId) {
-        String query = "SELECT NAME FROM ward WHERE id = ? ";
+        String query = "SELECT NAME FROM Province WHERE id = ? ";
         try (ResultSet rs = executeSQLHelper.executeQuery(query, provinceId)) {
             if (rs.next())
                 return rs.getString(PROVINCE_NAME);

@@ -743,7 +743,7 @@
                         <c:if test="${!isDigitallySigned}">
                             <div class="alert alert-warning" style="margin-top: 15px;">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                <strong>Cảnh báo:</strong> Đơn hàng này chưa được ký điện tử. 
+                                <strong>Cảnh báo:</strong> Đơn hàng này chưa được ký điện tử.
                                 Vui lòng ký để đảm bảo tính toàn vẹn và xác thực của đơn hàng.
                             </div>
                         </c:if>
@@ -751,7 +751,8 @@
                         <!-- Hiển thị thông tin đơn hàng để ký -->
                         <div class="hash-display" style="margin-bottom: 8px;">
                             <div>Thông tin đơn hàng:</div>
-                            <div id="hash-value" style="font-size:0.97em; white-space: pre-line;"><c:out value="Ngày đặt: ${order.orderAt.format(dateFormatter)}
+                            <div id="hash-value" style="font-size:0.97em; white-space: pre-line;"><c:out
+                                    value="Ngày đặt: ${order.orderAt.format(dateFormatter)}
 Họ tên: ${shippingInfo.recipientName}
 SĐT: ${shippingInfo.phoneNumber}
 Địa chỉ: ${shippingInfo.addressLine}, ${shippingInfo.ward}, ${shippingInfo.district}, ${shippingInfo.province}
@@ -761,7 +762,8 @@ Tổng tiền: ${order.totalPrice} VNĐ"/></div>
                             <button class="copy-btn" id="copyHashBtn" type="button" style="top:35px;" title="Copy">
                                 <i class="fas fa-copy"></i>
                             </button>
-                            <button class="copy-btn" id="exportHashBtn" type="button" style="top:65px;" title="Xuất file">
+                            <button class="copy-btn" id="exportHashBtn" type="button" style="top:65px;"
+                                    title="Xuất file">
                                 <i class="fas fa-file-export"></i>
                             </button>
                         </div>
@@ -844,13 +846,13 @@ Tổng tiền: ${order.totalPrice} VNĐ"/></div>
     document.getElementById('copyHashBtn').addEventListener('click', function () {
         var infoElement = document.getElementById('hash-value');
         var info = infoElement.textContent || infoElement.innerText;
-        
+
         // Loại bỏ khoảng trắng thừa ở đầu và cuối
         info = info.trim();
-        
+
         // Loại bỏ khoảng trắng thừa giữa các dòng
         info = info.replace(/\n\s+/g, '\n');
-        
+
         var btn = this;
 
         // Thêm hiệu ứng loading
@@ -896,13 +898,13 @@ Tổng tiền: ${order.totalPrice} VNĐ"/></div>
     document.getElementById('exportHashBtn').addEventListener('click', function () {
         var infoElement = document.getElementById('hash-value');
         var info = infoElement.textContent || infoElement.innerText;
-        
+
         // Loại bỏ khoảng trắng thừa ở đầu và cuối
         info = info.trim();
-        
+
         // Loại bỏ khoảng trắng thừa giữa các dòng
         info = info.replace(/\n\s+/g, '\n');
-        
+
         var btn = this;
 
         // Thêm hiệu ứng loading
