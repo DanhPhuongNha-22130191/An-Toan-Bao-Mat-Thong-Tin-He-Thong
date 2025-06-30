@@ -1,11 +1,11 @@
-package com.atbm.controllers.admin;
+package com.atbm.controllers.shop;
 
 import java.io.*;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-@WebServlet("/download")
+@WebServlet("/download-zip")
 public class DownloadServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
